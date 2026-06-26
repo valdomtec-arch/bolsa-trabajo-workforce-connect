@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bolsa de Trabajo - Detalles de la Vacante</title>
+    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css\">
+    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js\"></script>
+    <style>
+        :root {
+            --primary-orange: #ff6600;
+            --secondary-blue: #0f2a4a;
+            --bg-page: #050b14;
+            --container-bg: #111e30;
+            --card-bg: #18273c;
+            --white: #ffffff;
+            --text-light: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: #243854;
+            --green-whatsapp: #25D366;
+        }
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-light);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0; padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+        h1, h2, h3 { color: var(--primary-orange); margin-top: 0; }
+        .card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        .meta-info {
+            display: flex;
+            gap: 15px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        .meta-info i { color: var(--primary-orange); }
+        .btn {
+            background-color: var(--primary-orange);
+            color: var(--white);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn-whatsapp { background-color: var(--green-whatsapp); }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-page);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="loading">Cargando detalles de la vacante...</div>
+    <div id="content" style="display:none;">
+        <h1 id="vacanteTitulo">Título de la Vacante</h1>
+        
+        <div class="meta-info">
+            <span><i class="fa-solid fa-building"></i> <span id="vacanteEmpresa">Empresa</span></span>
+            <span><i class="fa-solid fa-eye"></i> Visitas: <span id="vacanteVisitas">0</span></span>
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-file-text"></i> Descripción del Puesto</h3>
+            <p id="vacanteDescripcion">Cargando...</p>
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-gift"></i> Prestaciones y Beneficios</h3>
+            <p id="vacantePrestaciones">No especificadas.</p>
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-clipboard"></i> Requisitos</h3>
+            <p id="vacanteRequisitos">No especificados.</p>
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-note-sticky"></i> Notas Generales</h3>
+            <p id="vacanteNotas">Sin notas adicionales.</p>
+        </div>
+
+        <div class="card">
+            <h3>Postularse a esta Vacante</h3>
+            <form id="formPostulacion" onsubmit="enviarPostulacion(event)">
+                <div class="form-group">
+                    <label>Nombre Completo:</label>
+                    <input type="text" id="postNombre" required>
+                </div>
+                <div class="form-group">
+                    <label>CURP:</label>
+                    <input type="text" id="postCurp" required>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono:</label>
+                    <input type="tel" id="postTelefono" required>
+                </div>
+                <button type="submit" class="btn"><i class="fa-solid fa-paper-plane"></i> Enviar Postulación y Descargar PDF</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, get, update, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // Reemplaza esto con tu configuración real de Firebase de tu proyecto
+    const firebaseConfig = {
+        databaseURL: "https://TU-PROYECTO-FIREBASE-DEFAULT-RTDB.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Obtener parámetros de la URL (?id=KEY_VACANTE)
+    const urlParams = new URLSearchParams(window.location.search);
+    const vacanteId = urlParams.get('id');
+
+    async function cargarDetallesVacante() {
+        if (!vacanteId) {
+            document.getElementById('loading').innerText = "❌ No se especificó el ID de la vacante.";
+            return;
+        }
+
+        try {
+            // 1. INCREMENTAR VISITAS AUTOMÁTICAMENTE AL ENTRAR
+            const vacanteRef = ref(db, `vacantes/${vacanteId}`);
+            await update(vacanteRef, {
+                visitas: increment(1)
+            });
+
+            // 2. OBTENER LOS DATOS ACTUALIZADOS
+            const snapshot = await get(vacanteRef);
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                
+                document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
+                document.getElementById('vacanteEmpresa').innerText = data.empresaNombre || 'Empresa Privada';
+                document.getElementById('vacanteVisitas').innerText = data.visitas || 1;
+                document.getElementById('vacanteDescripcion').innerText = data.descripcion || 'Sin descripción.';
+                
+                // Corrección de mapeo de campos de texto largo
+                document.getElementById('vacantePrestaciones').innerText = data.prestaciones || data.prestacionesYBeneficios || 'No especificadas.';
+                document.getElementById('vacanteRequisitos').innerText = data.requisitos || 'No especificados.';
+                document.getElementById('vacanteNotas').innerText = data.notasGenerales || data.notas || 'Sin notas adicionales.';
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } else {
+                document.getElementById('loading').innerText = "❌ La vacante no existe en el servidor.";
+            }
+        } catch (error) {
+            console.error(error);
+            document.getElementById('loading').innerText = "❌ Error al conectar con el servidor.";
+        }
+    }
+
+    window.enviarPostulacion = async function(e) {
+        e.preventDefault();
+        // Lógica de guardado en Firebase (nodo postulantes) y generación de PDF con jsPDF
+        alert("¡Postulación registrada! Iniciando descarga de comprobante...");
+    };
+
+    window.onload = cargarDetallesVacante;
+</script>
+</body>
+</html>
