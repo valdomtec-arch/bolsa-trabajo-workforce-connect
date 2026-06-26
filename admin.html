@@ -375,7 +375,7 @@ pre.json-view { background:#061c15; color:#34d399; border:1px solid var(--green-
     <div class="form-group"><label>ID de la Empresa:</label><input type="text" id="admId" placeholder="Ej: katcon, taehwa" maxlength="40"></div> 
     <div class="form-group"><label>Nombre Comercial:</label><input type="text" id="admNombre" placeholder="Ej: Katcon S.A."></div> 
     <div class="form-group"><label>Ubicación Base:</label><input type="text" id="admUbicacion" placeholder="Ej: Jalisco"></div> 
-    <div class="form-group full-width"><label>Hipervínculo / Repositorio:</label><input type="url" id="admLink" placeholder="https://..."></div> 
+    <div class="form-group full-width"><label>Hipervínculo / Repositorio:</label><input type="url" id="admLink" placeholder="https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/"></div> 
     <div class="form-group"><label>URL Logo:</label><input type="url" id="admImagen" placeholder="https://..."></div> 
     <div class="form-group"><label>Etiquetas:</label><input type="text" id="admTags" placeholder="automotriz, 24h"></div>
     
@@ -569,14 +569,15 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { GoogleGenAI, Type } from "https://esm.run/@google/genai";
 
-const firebaseConfig = { databaseURL: "https://bolsa-de-trabajo-a52e4-default-rtdb.firebaseio.com/" };
+// CONFIGURACIÓN DE TU NUEVA BASE DE DATOS FIREBASE
+const firebaseConfig = { databaseURL: "https://bolsa-de-trabajo-workforce-default-rtdb.firebaseio.com/" };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 let empresasData = {};
 let vacantesProcesadasGlobal = [];
 let baseVacantesActualesEnFirebase = {};
-let cachePostulantesGlobal = {}; // Guardará los datos cargados de los postulantes
+let cachePostulantesGlobal = {}; 
 
 const apiKeyInput = document.getElementById('geminiApiKeyInput');
 if(localStorage.getItem('gemini_api_key')) apiKeyInput.value = localStorage.getItem('gemini_api_key');
@@ -609,6 +610,8 @@ window.limpiarFormularioEmpresas = function() {
   ['admId','admNombre','admUbicacion','admLink','admImagen','admTags'].forEach(id => {
     document.getElementById(id).value = '';
   });
+  document.getElementById('admId').value = '';
+  document.getElementById('admLink').value = 'https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/';
   document.getElementById('admId').disabled = false;
 };
 
@@ -944,7 +947,6 @@ window.guardarChangesPostulante = async function() {
     alert('❌ Error al actualizar: ' + e.message);
   }
 };
-// Alias global por el onclick de la plantilla html
 window.guardarCambiosPostulante = window.guardarChangesPostulante;
 
 window.eliminarPostulante = async function(key) {
