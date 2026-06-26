@@ -241,13 +241,13 @@
 <div class="container">
     <div id="loading"><i class="fas fa-spinner fa-spin"></i> Buscando vacantes de la empresa...</div>
     
-    <!-- Header General de la Empresa -->
+    <!-- Header General de la Empresa (Siempre Visible tras cargar) -->
     <div id="empresaHeaderBox" class="empresa-header" style="display: none;">
         <h1 id="mainEmpresaNombre">Nombre de la Empresa</h1>
         <div class="location"><i class="fa-solid fa-location-dot"></i> <span id="mainEmpresaLugar">—</span></div>
     </div>
 
-    <!-- VISTA 1: Contenedor del Menú de Vacantes (Se activa si hay múltiples) -->
+    <!-- VISTA 1: Contenedor del Menú Intermedio (Siempre se muestra primero) -->
     <div id="menuVacantesBox" style="display: none;">
         <div class="menu-titulo">Vacantes Disponibles Actualmente</div>
         <div id="listaVacantesDinamica" class="vacantes-lista">
@@ -257,7 +257,7 @@
 
     <!-- VISTA 2: Contenedor de Detalles de la Vacante Seleccionada -->
     <div id="content" style="display:none;">
-        <button id="btnVolverAlMenu" class="btn-regresar" onclick="regresarAlMenu()" style="display: none;">
+        <button id="btnVolverAlMenu" class="btn-regresar" onclick="regresarAlMenu()">
             <i class="fa-solid fa-arrow-left"></i> Volver a todas las vacantes
         </button>
 
@@ -355,43 +355,39 @@
                     return;
                 }
 
-                // Configurar datos generales de la empresa en el header superior
+                // Configurar cabecera superior con datos del primer registro
                 const primerVacante = todasLasVacantesEmpresa[keys[0]];
                 document.getElementById('mainEmpresaNombre').innerText = primerVacante.empresaNombre || empresaId.toUpperCase();
                 document.getElementById('mainEmpresaLugar').innerText = primerVacante.lugarOrigen || 'Ubicación no especificada';
                 document.getElementById('empresaHeaderBox').style.display = 'block';
 
-                // CONTROL DE FLUJO MULTIVACANTE (Visualización de lista de tarjetas)
-                if (keys.length > 1) {
-                    const listaContenedor = document.getElementById('listaVacantesDinamica');
-                    listaContenedor.innerHTML = ''; // Limpiar
+                // Generar de manera forzada el menú intermedio (incluso si es 1 sola vacante)
+                const listaContenedor = document.getElementById('listaVacantesDinamica');
+                listaContenedor.innerHTML = ''; 
+                
+                keys.forEach(key => {
+                    const vac = todasLasVacantesEmpresa[key];
                     
-                    keys.forEach(key => {
-                        const vac = todasLasVacantesEmpresa[key];
-                        
-                        // Crear tarjeta interactiva idéntica a tu proyecto previo
-                        const cardItem = document.createElement('div');
-                        cardItem.className = 'vacante-item-card';
-                        cardItem.onclick = () => renderizarPuestoEspecifico(key);
-                        
-                        cardItem.innerHTML = `
-                            <div class="vacante-item-info">
-                                <h2>${vac.vacanteNombre || key}</h2>
-                                <p><i class="fa-solid fa-money-bill-wave"></i> ${vac.salario || 'No especificado'}</p>
-                            </div>
-                            <div class="chevron-icon">
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </div>
-                        `;
-                        listaContenedor.appendChild(cardItem);
-                    });
+                    const cardItem = document.createElement('div');
+                    cardItem.className = 'vacante-item-card';
+                    cardItem.onclick = () => renderizarPuestoEspecifico(key);
                     
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('menuVacantesBox').style.display = 'block';
-                } else {
-                    // Si solo hay una, se salta el menú y abre los detalles directo
-                    renderizarPuestoEspecifico(keys[0]);
-                }
+                    cardItem.innerHTML = `
+                        <div class="vacante-item-info">
+                            <h2>${vac.vacanteNombre || key}</h2>
+                            <p><i class="fa-solid fa-money-bill-wave"></i> ${vac.salario || 'No especificado'}</p>
+                        </div>
+                        <div class="chevron-icon">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    `;
+                    listaContenedor.appendChild(cardItem);
+                });
+                
+                // Mostrar menú y ocultar spinner
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('menuVacantesBox').style.display = 'block';
+
             } else {
                 document.getElementById('loading').innerText = "❌ La empresa especificada no cuenta con vacantes en el servidor.";
             }
@@ -406,11 +402,11 @@
         const data = todasLasVacantesEmpresa[key];
         datosVacanteGlobal = data;
         
-        // Sumamos la visita
+        // Sumar la visita al servidor
         const vacanteIndividualRef = ref(db, `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}`);
         await update(vacanteIndividualRef, { visitas: increment(1) });
 
-        // Inyectamos textos en los campos de detalle
+        // Mapear los datos al diseño "vacante.jpg"
         document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
         document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
         document.getElementById('vacanteVisitas').innerText = (data.visitas || 0) + 1;
@@ -435,14 +431,7 @@
             document.getElementById('vacanteBannerBox').style.display = 'none';
         }
 
-        // Si hay múltiples vacantes en total, habilitamos el botón de retorno al menú
-        const totalKeys = Object.keys(todasLasVacantesEmpresa).filter(k => k !== 'undefined' && k !== '');
-        if (totalKeys.length > 1) {
-            document.getElementById('btnVolverAlMenu').style.display = 'inline-flex';
-        }
-
         // Transición de pantallas
-        document.getElementById('loading').style.display = 'none';
         document.getElementById('menuVacantesBox').style.display = 'none';
         document.getElementById('content').style.display = 'block';
     }
