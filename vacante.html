@@ -18,6 +18,7 @@
             --text-muted: #94a3b8;
             --border-color: #243854;
             --blue-accent: #38bdf8;
+            --orange-title: #f97316;
         }
         * { box-sizing: border-box; }
         body {
@@ -41,31 +42,92 @@
             font-size: 1.1rem;
             color: var(--text-muted);
         }
-        h1, h2, h3 { color: var(--primary-blue); margin-top: 0; }
-        h1 { font-size: 1.8rem; margin-bottom: 10px; }
         
-        /* Contenedor Elegante para Multivacantes */
-        .selector-multivacante {
-            background: #0d1724;
-            border: 2px dashed var(--primary-blue);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
+        /* Encabezado Corporativo estilo Menú */
+        .empresa-header {
             text-align: center;
+            margin-bottom: 30px;
         }
-        .selector-multivacante select {
-            width: 100%;
-            max-width: 400px;
-            padding: 12px;
-            background-color: var(--card-bg);
-            color: white;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
+        .empresa-header h1 {
+            color: var(--white);
+            font-size: 2rem;
+            margin-bottom: 6px;
+        }
+        .empresa-header .location {
+            color: var(--text-muted);
             font-size: 1rem;
-            outline: none;
-            margin-top: 10px;
-            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Sección de Lista de Vacantes */
+        .menu-titulo {
+            text-align: center;
+            font-size: 1.25rem;
+            color: var(--white);
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        .vacantes-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .vacante-item-card {
+            background-color: #142238;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .vacante-item-card:hover {
+            background-color: #1a2d4a;
+            transform: translateY(-2px);
+        }
+        .vacante-item-info h2 {
+            color: var(--orange-title);
+            font-size: 1.15rem;
+            margin: 0 0 6px 0;
+            text-transform: uppercase;
+        }
+        .vacante-item-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .vacante-item-card .chevron-icon {
+            color: var(--orange-title);
+            font-size: 1.2rem;
+        }
+
+        /* Detalles Internos */
+        h3 { color: var(--primary-blue); margin-top: 0; }
+        .btn-regresar {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-regresar:hover {
+            background: #142238;
+            color: var(--white);
         }
 
         .banner-container {
@@ -177,22 +239,35 @@
 <body>
 
 <div class="container">
-    <div id="loading"><i class="fas fa-spinner fa-spin"></i> Buscando vacante de la empresa...</div>
+    <div id="loading"><i class="fas fa-spinner fa-spin"></i> Buscando vacantes de la empresa...</div>
     
-    <div id="multivacanteBox" class="selector-multivacante" style="display: none;">
-        <label for="selectPuesto" style="color: var(--blue-accent); font-size: 1rem;"><i class="fa-solid fa-list-check"></i> Esta empresa cuenta con varias vacantes disponibles:</label>
-        <select id="selectPuesto" onchange="cambiarVacanteEspecifica(this.value)">
-            </select>
+    <!-- Header General de la Empresa -->
+    <div id="empresaHeaderBox" class="empresa-header" style="display: none;">
+        <h1 id="mainEmpresaNombre">Nombre de la Empresa</h1>
+        <div class="location"><i class="fa-solid fa-location-dot"></i> <span id="mainEmpresaLugar">—</span></div>
     </div>
 
+    <!-- VISTA 1: Contenedor del Menú de Vacantes (Se activa si hay múltiples) -->
+    <div id="menuVacantesBox" style="display: none;">
+        <div class="menu-titulo">Vacantes Disponibles Actualmente</div>
+        <div id="listaVacantesDinamica" class="vacantes-lista">
+            <!-- Aquí se estructuran las tarjetas estilo "menu de vacantes.jpg" -->
+        </div>
+    </div>
+
+    <!-- VISTA 2: Contenedor de Detalles de la Vacante Seleccionada -->
     <div id="content" style="display:none;">
+        <button id="btnVolverAlMenu" class="btn-regresar" onclick="regresarAlMenu()" style="display: none;">
+            <i class="fa-solid fa-arrow-left"></i> Volver a todas las vacantes
+        </button>
+
         <div class="banner-container" id="vacanteBannerBox">
             <img id="vacanteBanner" src="" alt="Banner Publicitario">
         </div>
 
-        <h1 id="vacanteTitulo">Título de la Vacante</h1>
+        <h1 id="vacanteTitulo" style="color: var(--white); font-size: 1.8rem; margin-bottom: 15px; text-align: center;">Título de la Vacante</h1>
         
-        <div class="meta-info">
+        <div class="meta-info" style="justify-content: center;">
             <span><i class="fa-solid fa-building"></i> Empresa: <code id="vacanteEmpresa" style="color:var(--white);">—</code></span>
             <span><i class="fa-solid fa-eye"></i> Visitas: <span id="vacanteVisitas">0</span></span>
         </div>
@@ -257,7 +332,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const empresaId = urlParams.get('empresa');
 
-    let todasLasVacantesEmpresa = null; // Guardará el conjunto completo de vacantes
+    let todasLasVacantesEmpresa = null;
     let datosVacanteGlobal = null;
     let vacanteKeyDetectada = "";
 
@@ -268,7 +343,6 @@
         }
 
         try {
-            // Jalamos el nodo completo de la empresa para auditar cuántas ofertas tiene
             const lasVacantesRef = ref(db, `vacantes_detalles/${empresaId}`);
             const snapshot = await get(lasVacantesRef);
             
@@ -281,28 +355,45 @@
                     return;
                 }
 
-                // SI ES MULTIVACANTE (Tiene 2 o más puestos registrados)
+                // Configurar datos generales de la empresa en el header superior
+                const primerVacante = todasLasVacantesEmpresa[keys[0]];
+                document.getElementById('mainEmpresaNombre').innerText = primerVacante.empresaNombre || empresaId.toUpperCase();
+                document.getElementById('mainEmpresaLugar').innerText = primerVacante.lugarOrigen || 'Ubicación no especificada';
+                document.getElementById('empresaHeaderBox').style.display = 'block';
+
+                // CONTROL DE FLUJO MULTIVACANTE (Visualización de lista de tarjetas)
                 if (keys.length > 1) {
-                    const selectElement = document.getElementById('selectPuesto');
-                    selectElement.innerHTML = '<option value="" disabled selected>-- Elige un puesto disponible --</option>';
+                    const listaContenedor = document.getElementById('listaVacantesDinamica');
+                    listaContenedor.innerHTML = ''; // Limpiar
                     
                     keys.forEach(key => {
                         const vac = todasLasVacantesEmpresa[key];
-                        const option = document.createElement('option');
-                        option.value = key;
-                        option.textContent = vac.vacanteNombre || key;
-                        selectElement.appendChild(option);
+                        
+                        // Crear tarjeta interactiva idéntica a tu proyecto previo
+                        const cardItem = document.createElement('div');
+                        cardItem.className = 'vacante-item-card';
+                        cardItem.onclick = () => renderizarPuestoEspecifico(key);
+                        
+                        cardItem.innerHTML = `
+                            <div class="vacante-item-info">
+                                <h2>${vac.vacanteNombre || key}</h2>
+                                <p><i class="fa-solid fa-money-bill-wave"></i> ${vac.salario || 'No especificado'}</p>
+                            </div>
+                            <div class="chevron-icon">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+                        `;
+                        listaContenedor.appendChild(cardItem);
                     });
                     
-                    // Mostramos la caja de selección arriba
-                    document.getElementById('multivacanteBox').style.display = 'block';
-                    document.getElementById('loading').innerHTML = '<i class="fa-solid fa-arrow-up"></i> Selecciona arriba la vacante que deseas revisar.';
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('menuVacantesBox').style.display = 'block';
                 } else {
-                    // Si solo tiene 1, se comporta lineal y la muestra de inmediato
+                    // Si solo hay una, se salta el menú y abre los detalles directo
                     renderizarPuestoEspecifico(keys[0]);
                 }
             } else {
-                document.getElementById('loading').innerText = "❌ La empresa específica no cuenta con vacantes en el servidor.";
+                document.getElementById('loading').innerText = "❌ La empresa especificada no cuenta con vacantes en el servidor.";
             }
         } catch (error) {
             console.error(error);
@@ -310,17 +401,16 @@
         }
     }
 
-    // Inyecta dinámicamente el puesto seleccionado en los componentes de la interfaz
     async function renderizarPuestoEspecifico(key) {
         vacanteKeyDetectada = key;
         const data = todasLasVacantesEmpresa[key];
         datosVacanteGlobal = data;
         
-        // Sumamos una visita a Firebase para este puesto específico
+        // Sumamos la visita
         const vacanteIndividualRef = ref(db, `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}`);
         await update(vacanteIndividualRef, { visitas: increment(1) });
 
-        // Pintamos los textos
+        // Inyectamos textos en los campos de detalle
         document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
         document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
         document.getElementById('vacanteVisitas').innerText = (data.visitas || 0) + 1;
@@ -337,7 +427,6 @@
         document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
         document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
 
-        // Manejo dinámico del banner publicitario
         if (data.bannerUrl && data.bannerUrl.trim() !== "") {
             const imgElement = document.getElementById('vacanteBanner');
             imgElement.src = data.bannerUrl.trim();
@@ -346,15 +435,21 @@
             document.getElementById('vacanteBannerBox').style.display = 'none';
         }
 
-        // Transición visual
+        // Si hay múltiples vacantes en total, habilitamos el botón de retorno al menú
+        const totalKeys = Object.keys(todasLasVacantesEmpresa).filter(k => k !== 'undefined' && k !== '');
+        if (totalKeys.length > 1) {
+            document.getElementById('btnVolverAlMenu').style.display = 'inline-flex';
+        }
+
+        // Transición de pantallas
         document.getElementById('loading').style.display = 'none';
+        document.getElementById('menuVacantesBox').style.display = 'none';
         document.getElementById('content').style.display = 'block';
     }
 
-    // Vinculación global para captar el cambio en el selector desplegable
-    window.cambiarVacanteEspecifica = function(key) {
-        if (!key) return;
-        renderizarPuestoEspecifico(key);
+    window.regresarAlMenu = function() {
+        document.getElementById('content').style.display = 'none';
+        document.getElementById('menuVacantesBox').style.display = 'block';
     }
 
     function extraerDatosCurp(curp) {
@@ -377,7 +472,7 @@
         }
 
         const fechaNacimiento = new Date(anio, mes - 1, dia);
-        const fechaActual = new Date(); // Contexto temporal 2026
+        const fechaActual = new Date(); 
         
         let edadCalculada = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
         const m = fechaActual.getMonth() - fechaNacimiento.getMonth();
@@ -417,9 +512,9 @@
             nombreCompleto: nombre,
             telefono: telefono,
             curp: curp,
-            edad: datosExtraidos.edad,   
-            sexo: datosExtraidos.sexo,   
-            genero: datosExtraidos.sexo, 
+            edad: datosExtraidos.edad,
+            sexo: datosExtraidos.sexo,
+            genero: datosExtraidos.sexo,
             empresa: empresaId,
             empresaDestino: empresaId,
             vacante: datosVacanteGlobal.vacanteNombre || 'Desconocida',
