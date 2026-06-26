@@ -8,8 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
-            --primary-orange: #ff6600;
-            --secondary-blue: #0f2a4a;
+            --primary-blue: #0284c7;
+            --secondary-teal: #0d9488;
             --bg-page: #050b14;
             --container-bg: #111e30;
             --card-bg: #18273c;
@@ -18,7 +18,7 @@
             --text-muted: #94a3b8;
             --border-color: #243854;
             --green-whatsapp: #25D366;
-            --blue-accent: #0284c7;
+            --blue-accent: #38bdf8;
         }
         * { box-sizing: border-box; }
         body {
@@ -42,7 +42,7 @@
             font-size: 1.1rem;
             color: var(--text-muted);
         }
-        h1, h2, h3 { color: var(--primary-orange); margin-top: 0; }
+        h1, h2, h3 { color: var(--primary-blue); margin-top: 0; }
         h1 { font-size: 1.8rem; margin-bottom: 10px; }
         
         .banner-container {
@@ -90,7 +90,7 @@
             border: 1px solid var(--border-color);
         }
         .meta-info span { display: inline-flex; align-items: center; gap: 6px; }
-        .meta-info i { color: var(--primary-orange); }
+        .meta-info i { color: var(--primary-blue); }
         
         .grid-detalles {
             display: grid;
@@ -126,7 +126,7 @@
         }
 
         .btn {
-            background-color: var(--primary-orange);
+            background-color: var(--secondary-teal);
             color: var(--white);
             border: none;
             padding: 14px 20px;
@@ -142,7 +142,7 @@
             width: 100%;
             transition: background 0.2s;
         }
-        .btn:hover { background-color: #e05500; }
+        .btn:hover { background-color: #0b7a6f; }
         
         .form-group {
             margin-bottom: 15px;
@@ -166,14 +166,14 @@
             transition: border-color 0.2s;
         }
         input:focus {
-            border-color: var(--primary-orange);
+            border-color: var(--primary-blue);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="loading"><i class="fas fa-spinner fa-spin"></i> Cargando detalles de la vacante...</div>
+    <div id="loading"><i class="fas fa-spinner fa-spin"></i> Buscando vacante de la empresa...</div>
     
     <div id="content" style="display:none;">
         <div class="banner-container" id="vacanteBannerBox">
@@ -183,7 +183,7 @@
         <h1 id="vacanteTitulo">Título de la Vacante</h1>
         
         <div class="meta-info">
-            <span><i class="fa-solid fa-building"></i> Empresa ID: <code id="vacanteEmpresa" style="color:var(--white);">—</code></span>
+            <span><i class="fa-solid fa-building"></i> Empresa: <code id="vacanteEmpresa" style="color:var(--white);">—</code></span>
             <span><i class="fa-solid fa-eye"></i> Visitas: <span id="vacanteVisitas">0</span></span>
         </div>
 
@@ -212,8 +212,8 @@
             <p id="vacanteNotas" class="texto-bloque">Sin notas adicionales.</p>
         </div>
 
-        <div class="card" style="border-color: var(--primary-orange); background: rgba(255,102,0,0.02);">
-            <h3 style="color: var(--white); border-bottom-color: var(--primary-orange);"><i class="fa-solid fa-id-card"></i> Postularse a esta Vacante</h3>
+        <div class="card" style="border-color: var(--primary-blue); background: rgba(2, 132, 199, 0.02);">
+            <h3 style="color: var(--white); border-bottom-color: var(--primary-blue);"><i class="fa-solid fa-id-card"></i> Postularse a esta Vacante</h3>
             <form id="formPostulacion" onsubmit="enviarPostulacion(event)">
                 <div class="form-group">
                     <label>Nombre Completo:</label>
@@ -245,7 +245,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, get, set, update, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // NUEVA CONFIGURACIÓN DE TU REALTIME DATABASE
     const firebaseConfig = {
         databaseURL: "https://bolsa-de-trabajo-workforce-default-rtdb.firebaseio.com/"
     };
@@ -253,39 +252,48 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Obtener parámetros de la URL (?empresa=id_empresa&id=id_puesto)
     const urlParams = new URLSearchParams(window.location.search);
     const empresaId = urlParams.get('empresa');
-    const vacanteId = urlParams.get('id');
 
     let datosVacanteGlobal = null;
+    let vacanteKeyDetectada = "";
 
     async function cargarDetallesVacante() {
-        if (!empresaId || !vacanteId) {
-            document.getElementById('loading').innerHTML = "❌ Parámetros incompletos en la URL.<br><small>Se requiere ?empresa=ID_EMPRESA&id=ID_VACANTE</small>";
+        if (!empresaId) {
+            document.getElementById('loading').innerHTML = "❌ Enlace no válido.<br><small>Se requiere especificar el parámetro ?empresa=ID_EMPRESA</small>";
             return;
         }
 
         try {
-            const vacanteRef = ref(db, `vacantes_detalles/${empresaId}/${vacanteId}`);
+            // Buscamos todas las vacantes asociadas a esa empresa
+            const lasVacantesRef = ref(db, `vacantes_detalles/${empresaId}`);
+            const snapshot = await get(lasVacantesRef);
             
-            // 1. INCREMENTAR VISITAS
-            await update(vacanteRef, {
-                visitas: increment(1)
-            });
-
-            // 2. RECUPERAR DATOS
-            const snapshot = await get(vacanteRef);
             if (snapshot.exists()) {
-                const data = snapshot.val();
+                const lasVacantes = snapshot.val();
+                
+                // Extraemos las llaves (IDs de puesto) válidas
+                const keys = Object.keys(lasVacantes).filter(k => k !== 'undefined' && k !== '');
+                
+                if (keys.length === 0) {
+                    document.getElementById('loading').innerText = "❌ No hay vacantes activas publicadas para esta empresa.";
+                    return;
+                }
+
+                // Tomamos de forma predeterminada la primera vacante disponible del nodo
+                vacanteKeyDetectada = keys[0];
+                const data = lasVacantes[vacanteKeyDetectada];
                 datosVacanteGlobal = data;
                 
-                // Setear Títulos e Identificadores
+                // Sumamos una visita a esa vacante específica de forma automática
+                const vacanteIndividualRef = ref(db, `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}`);
+                await update(vacanteIndividualRef, { visitas: increment(1) });
+
+                // Renderizamos la información en la plantilla
                 document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
-                document.getElementById('vacanteEmpresa').innerText = empresaId;
-                document.getElementById('vacanteVisitas').innerText = data.visitas || 1;
+                document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
+                document.getElementById('vacanteVisitas').innerText = (data.visitas || 0) + 1;
                 
-                // Elementos Modulares de la Cuadrícula
                 document.getElementById('detSalario').innerText = data.salario || 'No especificado';
                 document.getElementById('detLugar').innerText = data.lugarOrigen || 'No especificado';
                 document.getElementById('detTurnos').innerText = data.turnos || 'No especificado';
@@ -294,12 +302,10 @@
                 document.getElementById('detExperiencia').innerText = data.experiencia || 'No requerida';
                 document.getElementById('detEscolaridad').innerText = data.escolaridad || 'No especificada';
 
-                // Descripciones Largas
                 document.getElementById('vacanteActividades').innerText = data.actividades || 'No especificadas.';
                 document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
                 document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
 
-                // Manejo de Banner Publicitario opcional
                 if (data.bannerUrl && data.bannerUrl.trim() !== "") {
                     const imgElement = document.getElementById('vacanteBanner');
                     imgElement.src = data.bannerUrl.trim();
@@ -309,7 +315,7 @@
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
             } else {
-                document.getElementById('loading').innerText = "❌ La vacante especificada no existe en este servidor.";
+                document.getElementById('loading').innerText = "❌ La empresa especificada no cuenta con vacantes en el servidor.";
             }
         } catch (error) {
             console.error(error);
@@ -345,25 +351,18 @@
         };
 
         try {
-            // 1. Guardar registro estructurado en Firebase
             await set(ref(db, `postulantes/${timestampId}`), payloadPostulante);
-            
-            // 2. Incrementar el contador global de postulantes
-            await update(ref(db, 'postulantes_count'), {
-                total: increment(1)
-            });
+            await update(ref(db, 'postulantes_count'), { total: increment(1) });
 
             alert("¡Postulación registrada de manera exitosa en Workforce Connect! Descargando tu comprobante en PDF...");
 
-            // 3. Generación dinámica de comprobante en PDF usando jsPDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Encabezado Estilizado
-            doc.setFillColor(15, 42, 74); // Color institucional de fondo (--secondary-blue)
+            doc.setFillColor(15, 42, 74); 
             doc.rect(0, 0, 210, 40, 'F');
             
-            doc.setTextColor(255, 102, 0); // Naranja primario
+            doc.setTextColor(56, 189, 248); 
             doc.setFont("Helvetica", "bold");
             doc.setFontSize(22);
             doc.text("WORKFORCE CONNECT", 15, 26);
@@ -373,7 +372,6 @@
             doc.setFont("Helvetica", "normal");
             doc.text("COMPROBANTE DE POSTULACIÓN OFICIAL", 125, 25);
 
-            // Cuerpo del Documento
             doc.setTextColor(33, 33, 33);
             doc.setFontSize(14);
             doc.setFont("Helvetica", "bold");
@@ -389,7 +387,7 @@
             const datosImpresion = [
                 { label: "Folio Único:", val: timestampId },
                 { label: "Puesto Solicitado:", val: payloadPostulante.vacante },
-                { label: "Código Empresa:", val: payloadPostulante.empresa },
+                { label: "Código Empresa:", val: payloadPostulante.empresa.toUpperCase() },
                 { label: "Candidato:", val: payloadPostulante.nombre },
                 { label: "CURP:", val: payloadPostulante.curp },
                 { label: "Teléfono:", val: payloadPostulante.telefono },
@@ -405,7 +403,6 @@
                 y += 10;
             });
 
-            // Pie de página instructivo
             y += 10;
             doc.setFillColor(241, 245, 249);
             doc.rect(15, y, 180, 25, 'F');
@@ -417,10 +414,7 @@
             doc.text("Conserva este acuse digital. Un reclutador asignado se pondrá en contacto contigo a la", 20, y + 14);
             doc.text("brevedad a través del número telefónico proporcionado para agendar tu entrevista.", 20, y + 19);
 
-            // Forzar descarga del archivo
             doc.save(`Comprobante-${payloadPostulante.curp}.pdf`);
-            
-            // Opcional: Limpiar formulario tras postularse
             document.getElementById('formPostulacion').reset();
             
         } catch (err) {
