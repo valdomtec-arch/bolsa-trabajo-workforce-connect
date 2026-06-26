@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bolsa de Trabajo - Detalles de la Vacante</title>
-    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css\">
-    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js\"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --primary-orange: #ff6600;
@@ -18,22 +18,49 @@
             --text-muted: #94a3b8;
             --border-color: #243854;
             --green-whatsapp: #25D366;
+            --blue-accent: #0284c7;
         }
+        * { box-sizing: border-box; }
         body {
             background-color: var(--bg-page);
             color: var(--text-light);
             font-family: 'Segoe UI', system-ui, sans-serif;
-            margin: 0; padding: 20px;
+            margin: 0; padding: 20px 10px;
         }
         .container {
             max-width: 800px;
             margin: 0 auto;
             background-color: var(--container-bg);
             padding: 25px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        #loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.1rem;
+            color: var(--text-muted);
         }
         h1, h2, h3 { color: var(--primary-orange); margin-top: 0; }
+        h1 { font-size: 1.8rem; margin-bottom: 10px; }
+        
+        .banner-container {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+        .banner-container img {
+            width: 100%;
+            height: auto;
+            max-height: 350px;
+            object-fit: cover;
+            display: block;
+        }
+
         .card {
             background-color: var(--card-bg);
             padding: 20px;
@@ -41,159 +68,365 @@
             margin-bottom: 20px;
             border: 1px solid var(--border-color);
         }
+        .card h3 {
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         .meta-info {
             display: flex;
+            flex-wrap: wrap;
             gap: 15px;
             color: var(--text-muted);
             font-size: 0.9rem;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            background: #0d1724;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
         }
+        .meta-info span { display: inline-flex; align-items: center; gap: 6px; }
         .meta-info i { color: var(--primary-orange); }
+        
+        .grid-detalles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .detalle-item {
+            background: #142238;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        .detalle-item strong {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--blue-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        .detalle-item span {
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        .texto-bloque {
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+            color: #cbd5e1;
+        }
+
         .btn {
             background-color: var(--primary-orange);
             color: var(--white);
             border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
+            padding: 14px 20px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 1rem;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             text-decoration: none;
+            width: 100%;
+            transition: background 0.2s;
         }
-        .btn:hover { opacity: 0.9; }
-        .btn-whatsapp { background-color: var(--green-whatsapp); }
+        .btn:hover { background-color: #e05500; }
+        
         .form-group {
             margin-bottom: 15px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.88rem;
             color: var(--text-muted);
         }
-        input, textarea, select {
+        input {
             width: 100%;
-            padding: 10px;
-            background-color: var(--bg-page);
+            padding: 12px;
+            background-color: #1d2e47;
             border: 1px solid var(--border-color);
-            color: var(--text-light);
-            border-radius: 5px;
+            color: white;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: var(--primary-orange);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="loading">Cargando detalles de la vacante...</div>
+    <div id="loading"><i class="fas fa-spinner fa-spin"></i> Cargando detalles de la vacante...</div>
+    
     <div id="content" style="display:none;">
+        <div class="banner-container" id="vacanteBannerBox">
+            <img id="vacanteBanner" src="" alt="Banner Publicitario">
+        </div>
+
         <h1 id="vacanteTitulo">Título de la Vacante</h1>
         
         <div class="meta-info">
-            <span><i class="fa-solid fa-building"></i> <span id="vacanteEmpresa">Empresa</span></span>
+            <span><i class="fa-solid fa-building"></i> Empresa ID: <code id="vacanteEmpresa" style="color:var(--white);">—</code></span>
             <span><i class="fa-solid fa-eye"></i> Visitas: <span id="vacanteVisitas">0</span></span>
         </div>
 
+        <div class="grid-detalles">
+            <div class="detalle-item"><strong>💰 Salario Ofrecido</strong><span id="detSalario">—</span></div>
+            <div class="detalle-item"><strong>📍 Zona de Trabajo</strong><span id="detLugar">—</span></div>
+            <div class="detalle-item"><strong>🕒 Horarios y Turnos</strong><span id="detTurnos">—</span></div>
+            <div class="detalle-item"><strong>🔞 Edad Solicitada</strong><span id="detEdad">—</span></div>
+            <div class="detalle-item"><strong>👫 Género / Sexo</strong><span id="detSexo">—</span></div>
+            <div class="detalle-item"><strong>💼 Experiencia Mínima</strong><span id="detExperiencia">—</span></div>
+            <div class="detalle-item"><strong>🎓 Escolaridad</strong><span id="detEscolaridad">—</span></div>
+        </div>
+
         <div class="card">
-            <h3><i class="fa-solid fa-file-text"></i> Descripción del Puesto</h3>
-            <p id="vacanteDescripcion">Cargando...</p>
+            <h3><i class="fa-solid fa-toolbox"></i> Actividades Principales</h3>
+            <p id="vacanteActividades" class="texto-bloque">Cargando...</p>
         </div>
 
         <div class="card">
             <h3><i class="fa-solid fa-gift"></i> Prestaciones y Beneficios</h3>
-            <p id="vacantePrestaciones">No especificadas.</p>
+            <p id="vacanteBeneficios" class="texto-bloque">No especificadas.</p>
         </div>
 
         <div class="card">
-            <h3><i class="fa-solid fa-clipboard"></i> Requisitos</h3>
-            <p id="vacanteRequisitos">No especificados.</p>
+            <h3><i class="fa-solid fa-note-sticky"></i> Notas Adicionales</h3>
+            <p id="vacanteNotas" class="texto-bloque">Sin notas adicionales.</p>
         </div>
 
-        <div class="card">
-            <h3><i class="fa-solid fa-note-sticky"></i> Notas Generales</h3>
-            <p id="vacanteNotas">Sin notas adicionales.</p>
-        </div>
-
-        <div class="card">
-            <h3>Postularse a esta Vacante</h3>
+        <div class="card" style="border-color: var(--primary-orange); background: rgba(255,102,0,0.02);">
+            <h3 style="color: var(--white); border-bottom-color: var(--primary-orange);"><i class="fa-solid fa-id-card"></i> Postularse a esta Vacante</h3>
             <form id="formPostulacion" onsubmit="enviarPostulacion(event)">
                 <div class="form-group">
                     <label>Nombre Completo:</label>
-                    <input type="text" id="postNombre" required>
+                    <input type="text" id="postNombre" placeholder="Ingresa tus nombres y apellidos" required>
+                </div>
+                <div class="form-group">
+                    <label>Edad:</label>
+                    <input type="text" id="postEdad" placeholder="Ej: 25" required>
+                </div>
+                <div class="form-group">
+                    <label>Género / Sexo:</label>
+                    <input type="text" id="postSexo" placeholder="Ej: Masculino, Femenino" required>
                 </div>
                 <div class="form-group">
                     <label>CURP:</label>
-                    <input type="text" id="postCurp" required>
+                    <input type="text" id="postCurp" placeholder="18 caracteres de tu CURP" maxlength="18" style="text-transform: uppercase;" required>
                 </div>
                 <div class="form-group">
-                    <label>Teléfono:</label>
-                    <input type="tel" id="postTelefono" required>
+                    <label>Teléfono de Contacto:</label>
+                    <input type="tel" id="postTelefono" placeholder="Ej: 6461234567" required>
                 </div>
-                <button type="submit" class="btn"><i class="fa-solid fa-paper-plane"></i> Enviar Postulación y Descargar PDF</button>
+                <button type="submit" class="btn"><i class="fa-solid fa-file-pdf"></i> Confirmar Postulación y Descargar Folio</button>
             </form>
         </div>
     </div>
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, get, update, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, set, update, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // Reemplaza esto con tu configuración real de Firebase de tu proyecto
+    // NUEVA CONFIGURACIÓN DE TU REALTIME DATABASE
     const firebaseConfig = {
-        databaseURL: "https://TU-PROYECTO-FIREBASE-DEFAULT-RTDB.firebaseio.com"
+        databaseURL: "https://bolsa-de-trabajo-workforce-default-rtdb.firebaseio.com/"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Obtener parámetros de la URL (?id=KEY_VACANTE)
+    // Obtener parámetros de la URL (?empresa=id_empresa&id=id_puesto)
     const urlParams = new URLSearchParams(window.location.search);
+    const empresaId = urlParams.get('empresa');
     const vacanteId = urlParams.get('id');
 
+    let datosVacanteGlobal = null;
+
     async function cargarDetallesVacante() {
-        if (!vacanteId) {
-            document.getElementById('loading').innerText = "❌ No se especificó el ID de la vacante.";
+        if (!empresaId || !vacanteId) {
+            document.getElementById('loading').innerHTML = "❌ Parámetros incompletos en la URL.<br><small>Se requiere ?empresa=ID_EMPRESA&id=ID_VACANTE</small>";
             return;
         }
 
         try {
-            // 1. INCREMENTAR VISITAS AUTOMÁTICAMENTE AL ENTRAR
-            const vacanteRef = ref(db, `vacantes/${vacanteId}`);
+            const vacanteRef = ref(db, `vacantes_detalles/${empresaId}/${vacanteId}`);
+            
+            // 1. INCREMENTAR VISITAS
             await update(vacanteRef, {
                 visitas: increment(1)
             });
 
-            // 2. OBTENER LOS DATOS ACTUALIZADOS
+            // 2. RECUPERAR DATOS
             const snapshot = await get(vacanteRef);
             if (snapshot.exists()) {
                 const data = snapshot.val();
+                datosVacanteGlobal = data;
                 
+                // Setear Títulos e Identificadores
                 document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
-                document.getElementById('vacanteEmpresa').innerText = data.empresaNombre || 'Empresa Privada';
+                document.getElementById('vacanteEmpresa').innerText = empresaId;
                 document.getElementById('vacanteVisitas').innerText = data.visitas || 1;
-                document.getElementById('vacanteDescripcion').innerText = data.descripcion || 'Sin descripción.';
                 
-                // Corrección de mapeo de campos de texto largo
-                document.getElementById('vacantePrestaciones').innerText = data.prestaciones || data.prestacionesYBeneficios || 'No especificadas.';
-                document.getElementById('vacanteRequisitos').innerText = data.requisitos || 'No especificados.';
-                document.getElementById('vacanteNotas').innerText = data.notasGenerales || data.notas || 'Sin notas adicionales.';
+                // Elementos Modulares de la Cuadrícula
+                document.getElementById('detSalario').innerText = data.salario || 'No especificado';
+                document.getElementById('detLugar').innerText = data.lugarOrigen || 'No especificado';
+                document.getElementById('detTurnos').innerText = data.turnos || 'No especificado';
+                document.getElementById('detEdad').innerText = data.edad || 'Indistinto';
+                document.getElementById('detSexo').innerText = data.sexo || 'Indistinto';
+                document.getElementById('detExperiencia').innerText = data.experiencia || 'No requerida';
+                document.getElementById('detEscolaridad').innerText = data.escolaridad || 'No especificada';
+
+                // Descripciones Largas
+                document.getElementById('vacanteActividades').innerText = data.actividades || 'No especificadas.';
+                document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
+                document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
+
+                // Manejo de Banner Publicitario opcional
+                if (data.bannerUrl && data.bannerUrl.trim() !== "") {
+                    const imgElement = document.getElementById('vacanteBanner');
+                    imgElement.src = data.bannerUrl.trim();
+                    document.getElementById('vacanteBannerBox').style.display = 'block';
+                }
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
             } else {
-                document.getElementById('loading').innerText = "❌ La vacante no existe en el servidor.";
+                document.getElementById('loading').innerText = "❌ La vacante especificada no existe en este servidor.";
             }
         } catch (error) {
             console.error(error);
-            document.getElementById('loading').innerText = "❌ Error al conectar con el servidor.";
+            document.getElementById('loading').innerText = "❌ Error al conectar con la base de datos de Workforce.";
         }
     }
 
     window.enviarPostulacion = async function(e) {
         e.preventDefault();
-        // Lógica de guardado en Firebase (nodo postulantes) y generación de PDF con jsPDF
-        alert("¡Postulación registrada! Iniciando descarga de comprobante...");
+        
+        const nombre = document.getElementById('postNombre').value.trim();
+        const edad = document.getElementById('postEdad').value.trim();
+        const sexo = document.getElementById('postSexo').value.trim();
+        const curp = document.getElementById('postCurp').value.trim().toUpperCase();
+        const telefono = document.getElementById('postTelefono').value.trim();
+        
+        const timestampId = "post-" + Date.now();
+        
+        const payloadPostulante = {
+            id: timestampId,
+            nombre: nombre,
+            nombreCompleto: nombre,
+            edad: edad,
+            sexo: sexo,
+            genero: sexo,
+            curp: curp,
+            telefono: telefono,
+            empresa: empresaId,
+            empresaDestino: empresaId,
+            vacante: datosVacanteGlobal.vacanteNombre || 'Desconocida',
+            puesto: datosVacanteGlobal.vacanteNombre || 'Desconocida',
+            fechaRegistro: new Date().toLocaleString()
+        };
+
+        try {
+            // 1. Guardar registro estructurado en Firebase
+            await set(ref(db, `postulantes/${timestampId}`), payloadPostulante);
+            
+            // 2. Incrementar el contador global de postulantes
+            await update(ref(db, 'postulantes_count'), {
+                total: increment(1)
+            });
+
+            alert("¡Postulación registrada de manera exitosa en Workforce Connect! Descargando tu comprobante en PDF...");
+
+            // 3. Generación dinámica de comprobante en PDF usando jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Encabezado Estilizado
+            doc.setFillColor(15, 42, 74); // Color institucional de fondo (--secondary-blue)
+            doc.rect(0, 0, 210, 40, 'F');
+            
+            doc.setTextColor(255, 102, 0); // Naranja primario
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(22);
+            doc.text("WORKFORCE CONNECT", 15, 26);
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.setFont("Helvetica", "normal");
+            doc.text("COMPROBANTE DE POSTULACIÓN OFICIAL", 125, 25);
+
+            // Cuerpo del Documento
+            doc.setTextColor(33, 33, 33);
+            doc.setFontSize(14);
+            doc.setFont("Helvetica", "bold");
+            doc.text("Detalles de la Solicitud", 15, 55);
+            
+            doc.setLineWidth(0.5);
+            doc.setDrawColor(210, 210, 210);
+            doc.line(15, 58, 195, 58);
+
+            doc.setFontSize(11);
+            let y = 68;
+            
+            const datosImpresion = [
+                { label: "Folio Único:", val: timestampId },
+                { label: "Puesto Solicitado:", val: payloadPostulante.vacante },
+                { label: "Código Empresa:", val: payloadPostulante.empresa },
+                { label: "Candidato:", val: payloadPostulante.nombre },
+                { label: "CURP:", val: payloadPostulante.curp },
+                { label: "Teléfono:", val: payloadPostulante.telefono },
+                { label: "Edad / Sexo:", val: `${payloadPostulante.edad} años — ${payloadPostulante.sexo}` },
+                { label: "Fecha de Registro:", val: payloadPostulante.fechaRegistro }
+            ];
+
+            datosImpresion.forEach(item => {
+                doc.setFont("Helvetica", "bold");
+                doc.text(item.label, 15, y);
+                doc.setFont("Helvetica", "normal");
+                doc.text(String(item.val), 60, y);
+                y += 10;
+            });
+
+            // Pie de página instructivo
+            y += 10;
+            doc.setFillColor(241, 245, 249);
+            doc.rect(15, y, 180, 25, 'F');
+            doc.setTextColor(15, 42, 74);
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(10);
+            doc.text("Nota importante para el candidato:", 20, y + 8);
+            doc.setFont("Helvetica", "normal");
+            doc.text("Conserva este acuse digital. Un reclutador asignado se pondrá en contacto contigo a la", 20, y + 14);
+            doc.text("brevedad a través del número telefónico proporcionado para agendar tu entrevista.", 20, y + 19);
+
+            // Forzar descarga del archivo
+            doc.save(`Comprobante-${payloadPostulante.curp}.pdf`);
+            
+            // Opcional: Limpiar formulario tras postularse
+            document.getElementById('formPostulacion').reset();
+            
+        } catch (err) {
+            console.error(err);
+            alert("❌ Ocurrió un error al procesar tu postulación: " + err.message);
+        }
     };
 
     window.onload = cargarDetallesVacante;
