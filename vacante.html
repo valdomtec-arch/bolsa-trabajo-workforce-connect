@@ -44,6 +44,30 @@
         h1, h2, h3 { color: var(--primary-blue); margin-top: 0; }
         h1 { font-size: 1.8rem; margin-bottom: 10px; }
         
+        /* Contenedor Elegante para Multivacantes */
+        .selector-multivacante {
+            background: #0d1724;
+            border: 2px dashed var(--primary-blue);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .selector-multivacante select {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            background-color: var(--card-bg);
+            color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            margin-top: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
         .banner-container {
             width: 100%;
             margin-bottom: 20px;
@@ -155,6 +179,12 @@
 <div class="container">
     <div id="loading"><i class="fas fa-spinner fa-spin"></i> Buscando vacante de la empresa...</div>
     
+    <div id="multivacanteBox" class="selector-multivacante" style="display: none;">
+        <label for="selectPuesto" style="color: var(--blue-accent); font-size: 1rem;"><i class="fa-solid fa-list-check"></i> Esta empresa cuenta con varias vacantes disponibles:</label>
+        <select id="selectPuesto" onchange="cambiarVacanteEspecifica(this.value)">
+            </select>
+    </div>
+
     <div id="content" style="display:none;">
         <div class="banner-container" id="vacanteBannerBox">
             <img id="vacanteBanner" src="" alt="Banner Publicitario">
@@ -227,6 +257,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const empresaId = urlParams.get('empresa');
 
+    let todasLasVacantesEmpresa = null; // Guardará el conjunto completo de vacantes
     let datosVacanteGlobal = null;
     let vacanteKeyDetectada = "";
 
@@ -237,51 +268,41 @@
         }
 
         try {
+            // Jalamos el nodo completo de la empresa para auditar cuántas ofertas tiene
             const lasVacantesRef = ref(db, `vacantes_detalles/${empresaId}`);
             const snapshot = await get(lasVacantesRef);
             
             if (snapshot.exists()) {
-                const lasVacantes = snapshot.val();
-                const keys = Object.keys(lasVacantes).filter(k => k !== 'undefined' && k !== '');
+                todasLasVacantesEmpresa = snapshot.val();
+                const keys = Object.keys(todasLasVacantesEmpresa).filter(k => k !== 'undefined' && k !== '');
                 
                 if (keys.length === 0) {
                     document.getElementById('loading').innerText = "❌ No hay vacantes activas publicadas para esta empresa.";
                     return;
                 }
 
-                vacanteKeyDetectada = keys[0];
-                const data = lasVacantes[vacanteKeyDetectada];
-                datosVacanteGlobal = data;
-                
-                const vacanteIndividualRef = ref(db, `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}`);
-                await update(vacanteIndividualRef, { visitas: increment(1) });
-
-                document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
-                document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
-                document.getElementById('vacanteVisitas').innerText = (data.visitas || 0) + 1;
-                
-                document.getElementById('detSalario').innerText = data.salario || 'No especificado';
-                document.getElementById('detLugar').innerText = data.lugarOrigen || 'No especificado';
-                document.getElementById('detTurnos').innerText = data.turnos || 'No especificado';
-                document.getElementById('detEdad').innerText = data.edad || 'Indistinto';
-                document.getElementById('detSexo').innerText = data.sexo || 'Indistinto';
-                document.getElementById('detExperiencia').innerText = data.experiencia || 'No requerida';
-                document.getElementById('detEscolaridad').innerText = data.escolaridad || 'No especificada';
-
-                document.getElementById('vacanteActividades').innerText = data.actividades || 'No especificadas.';
-                document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
-                document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
-
-                if (data.bannerUrl && data.bannerUrl.trim() !== "") {
-                    const imgElement = document.getElementById('vacanteBanner');
-                    imgElement.src = data.bannerUrl.trim();
-                    document.getElementById('vacanteBannerBox').style.display = 'block';
+                // SI ES MULTIVACANTE (Tiene 2 o más puestos registrados)
+                if (keys.length > 1) {
+                    const selectElement = document.getElementById('selectPuesto');
+                    selectElement.innerHTML = '<option value="" disabled selected>-- Elige un puesto disponible --</option>';
+                    
+                    keys.forEach(key => {
+                        const vac = todasLasVacantesEmpresa[key];
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = vac.vacanteNombre || key;
+                        selectElement.appendChild(option);
+                    });
+                    
+                    // Mostramos la caja de selección arriba
+                    document.getElementById('multivacanteBox').style.display = 'block';
+                    document.getElementById('loading').innerHTML = '<i class="fa-solid fa-arrow-up"></i> Selecciona arriba la vacante que deseas revisar.';
+                } else {
+                    // Si solo tiene 1, se comporta lineal y la muestra de inmediato
+                    renderizarPuestoEspecifico(keys[0]);
                 }
-
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
             } else {
-                document.getElementById('loading').innerText = "❌ La empresa especificada no cuenta con vacantes en el servidor.";
+                document.getElementById('loading').innerText = "❌ La empresa específica no cuenta con vacantes en el servidor.";
             }
         } catch (error) {
             console.error(error);
@@ -289,34 +310,74 @@
         }
     }
 
-    // Algoritmo para parsear CURP y extraer Edad y Género de manera inteligente
+    // Inyecta dinámicamente el puesto seleccionado en los componentes de la interfaz
+    async function renderizarPuestoEspecifico(key) {
+        vacanteKeyDetectada = key;
+        const data = todasLasVacantesEmpresa[key];
+        datosVacanteGlobal = data;
+        
+        // Sumamos una visita a Firebase para este puesto específico
+        const vacanteIndividualRef = ref(db, `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}`);
+        await update(vacanteIndividualRef, { visitas: increment(1) });
+
+        // Pintamos los textos
+        document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
+        document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
+        document.getElementById('vacanteVisitas').innerText = (data.visitas || 0) + 1;
+        
+        document.getElementById('detSalario').innerText = data.salario || 'No especificado';
+        document.getElementById('detLugar').innerText = data.lugarOrigen || 'No especificado';
+        document.getElementById('detTurnos').innerText = data.turnos || 'No especificado';
+        document.getElementById('detEdad').innerText = data.edad || 'Indistinto';
+        document.getElementById('detSexo').innerText = data.sexo || 'Indistinto';
+        document.getElementById('detExperiencia').innerText = data.experiencia || 'No requerida';
+        document.getElementById('detEscolaridad').innerText = data.escolaridad || 'No especificada';
+
+        document.getElementById('vacanteActividades').innerText = data.actividades || 'No especificadas.';
+        document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
+        document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
+
+        // Manejo dinámico del banner publicitario
+        if (data.bannerUrl && data.bannerUrl.trim() !== "") {
+            const imgElement = document.getElementById('vacanteBanner');
+            imgElement.src = data.bannerUrl.trim();
+            document.getElementById('vacanteBannerBox').style.display = 'block';
+        } else {
+            document.getElementById('vacanteBannerBox').style.display = 'none';
+        }
+
+        // Transición visual
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+    }
+
+    // Vinculación global para captar el cambio en el selector desplegable
+    window.cambiarVacanteEspecifica = function(key) {
+        if (!key) return;
+        renderizarPuestoEspecifico(key);
+    }
+
     function extraerDatosCurp(curp) {
         if (!curp || curp.length < 11) return { edad: "Indistinto", sexo: "Indistinto" };
         
-        // 1. Extraer Sexo (Posición 11 de la CURP)
         const letraSexo = curp.charAt(10).toUpperCase();
         let sexo = "Indistinto";
         if (letraSexo === 'H') sexo = "Masculino";
         else if (letraSexo === 'M') sexo = "Femenino";
 
-        // 2. Extraer Año, Mes y Día de Nacimiento
         let anio = parseInt(curp.substr(4, 2), 10);
         const mes = parseInt(curp.substr(6, 2), 10);
         const dia = parseInt(curp.substr(8, 2), 10);
         
-        // Determinar el siglo (Dígito en posición 17 de la CURP: Número para nacidos en el siglo XXI)
         const digitoSiglo = curp.charAt(16);
         if (isNaN(parseInt(digitoSiglo, 10))) {
-            // Si es una letra, por regla general son nacidos a partir del año 2000
             anio += 2000;
         } else {
-            // Si es número, depende del año actual para aproximar (Bifurcación estándar)
             anio += (anio > 30) ? 1900 : 2000; 
         }
 
-        // 3. Calcular Edad Exacta comparado con el año actual (2026)
         const fechaNacimiento = new Date(anio, mes - 1, dia);
-        const fechaActual = new Date(); // Año en curso de tu ecosistema: 2026
+        const fechaActual = new Date(); // Contexto temporal 2026
         
         let edadCalculada = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
         const m = fechaActual.getMonth() - fechaNacimiento.getMonth();
@@ -333,6 +394,11 @@
     window.enviarPostulacion = async function(e) {
         e.preventDefault();
         
+        if (!datosVacanteGlobal) {
+            alert("Por favor, selecciona primero un puesto de trabajo.");
+            return;
+        }
+
         const nombre = document.getElementById('postNombre').value.trim();
         const telefono = document.getElementById('postTelefono').value.trim();
         const curp = document.getElementById('postCurp').value.trim().toUpperCase();
@@ -342,20 +408,18 @@
             return;
         }
 
-        // Ejecución del parseo inteligente
         const datosExtraidos = extraerDatosCurp(curp);
         const timestampId = "post-" + Date.now();
         
-        // Mapeo estructurado para Firebase respetando los campos requeridos
         const payloadPostulante = {
             id: timestampId,
             nombre: nombre,
             nombreCompleto: nombre,
             telefono: telefono,
             curp: curp,
-            edad: datosExtraidos.edad,   // Auto-calculada guardada en registro
-            sexo: datosExtraidos.sexo,   // Auto-calculada guardada en registro
-            genero: datosExtraidos.sexo, // Duplicado por compatibilidad de nodos
+            edad: datosExtraidos.edad,   
+            sexo: datosExtraidos.sexo,   
+            genero: datosExtraidos.sexo, 
             empresa: empresaId,
             empresaDestino: empresaId,
             vacante: datosVacanteGlobal.vacanteNombre || 'Desconocida',
@@ -369,7 +433,6 @@
 
             alert(`¡Postulación procesada! Los datos se han guardado con éxito.\nEdad detectada: ${datosExtraidos.edad} años.\nSexo: ${datosExtraidos.sexo}.\n\nDescargando tu acuse...`);
 
-            // Generar Acuse en PDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
