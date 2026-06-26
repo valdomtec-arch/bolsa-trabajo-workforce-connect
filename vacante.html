@@ -241,7 +241,7 @@
 <div class="container">
     <div id="loading"><i class="fas fa-spinner fa-spin"></i> Buscando vacantes de la empresa...</div>
     
-    <!-- Header General de la Empresa (Siempre Visible tras cargar) -->
+    <!-- Header General de la Empresa -->
     <div id="empresaHeaderBox" class="empresa-header" style="display: none;">
         <h1 id="mainEmpresaNombre">Nombre de la Empresa</h1>
         <div class="location"><i class="fa-solid fa-location-dot"></i> <span id="mainEmpresaLugar">—</span></div>
@@ -332,7 +332,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const empresaId = urlParams.get('empresa');
 
-    let todasLasVacantesEmpresa = null;
+    let todasLasVacantesEmpresa = {};
     let datosVacanteGlobal = null;
     let vacanteKeyDetectada = "";
 
@@ -347,7 +347,19 @@
             const snapshot = await get(lasVacantesRef);
             
             if (snapshot.exists()) {
-                todasLasVacantesEmpresa = snapshot.val();
+                const dataRaw = snapshot.val();
+                
+                // VALIDACIÓN CRUCIAL: Detectar si es un objeto único directo o una lista de puestos
+                if (dataRaw.vacanteNombre || dataRaw.salario) {
+                    // Es una sola vacante guardada directamente en la raíz de la empresa
+                    todasLasVacantesEmpresa = {};
+                    const llaveUnica = dataRaw.vacanteNombre.replace(/\s+/g, '_').toLowerCase() || "puesto_unico";
+                    todasLasVacantesEmpresa[llaveUnica] = dataRaw;
+                } else {
+                    // Es un diccionario estándar con múltiples puestos anidados
+                    todasLasVacantesEmpresa = dataRaw;
+                }
+
                 const keys = Object.keys(todasLasVacantesEmpresa).filter(k => k !== 'undefined' && k !== '');
                 
                 if (keys.length === 0) {
@@ -355,13 +367,13 @@
                     return;
                 }
 
-                // Configurar cabecera superior con datos del primer registro
+                // Configurar cabecera general superior de la empresa
                 const primerVacante = todasLasVacantesEmpresa[keys[0]];
                 document.getElementById('mainEmpresaNombre').innerText = primerVacante.empresaNombre || empresaId.toUpperCase();
                 document.getElementById('mainEmpresaLugar').innerText = primerVacante.lugarOrigen || 'Ubicación no especificada';
                 document.getElementById('empresaHeaderBox').style.display = 'block';
 
-                // Generar de manera forzada el menú intermedio (incluso si es 1 sola vacante)
+                // Renderizar el menú intermedio de manera forzada
                 const listaContenedor = document.getElementById('listaVacantesDinamica');
                 listaContenedor.innerHTML = ''; 
                 
@@ -384,8 +396,9 @@
                     listaContenedor.appendChild(cardItem);
                 });
                 
-                // Mostrar menú y ocultar spinner
+                // Forzar visualización del menú intermedio ocultando el cargador
                 document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'none';
                 document.getElementById('menuVacantesBox').style.display = 'block';
 
             } else {
@@ -402,11 +415,14 @@
         const data = todasLasVacantesEmpresa[key];
         datosVacanteGlobal = data;
         
-        // Sumar la visita al servidor
-        const vacanteIndividualRef = ref(db, `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}`);
-        await update(vacanteIndividualRef, { visitas: increment(1) });
+        // Intentar sumar la visita en el servidor si la ruta es la correcta
+        try {
+            const esRutaDirecta = !todasLasVacantesEmpresa.hasOwnProperty(key);
+            const pathVisita = esRutaDirecta ? `vacantes_detalles/${empresaId}` : `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}`;
+            await update(ref(db, pathVisita), { visitas: increment(1) });
+        } catch(e) { console.log("Visita no acumulada"); }
 
-        // Mapear los datos al diseño "vacante.jpg"
+        // Mapear los datos al contenedor detallado estilo "vacante.jpg"
         document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
         document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
         document.getElementById('vacanteVisitas').innerText = (data.visitas || 0) + 1;
@@ -431,14 +447,16 @@
             document.getElementById('vacanteBannerBox').style.display = 'none';
         }
 
-        // Transición de pantallas
+        // Intercambio visual suave de componentes
         document.getElementById('menuVacantesBox').style.display = 'none';
         document.getElementById('content').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     window.regresarAlMenu = function() {
         document.getElementById('content').style.display = 'none';
         document.getElementById('menuVacantesBox').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function extraerDatosCurp(curp) {
