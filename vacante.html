@@ -17,7 +17,6 @@
             --text-light: #f1f5f9;
             --text-muted: #94a3b8;
             --border-color: #243854;
-            --green-whatsapp: #25D366;
             --blue-accent: #38bdf8;
         }
         * { box-sizing: border-box; }
@@ -112,18 +111,9 @@
             letter-spacing: 0.5px;
             margin-bottom: 2px;
         }
-        .detalle-item span {
-            font-size: 0.95rem;
-            color: var(--text-light);
-        }
+        .detalle-item span { font-size: 0.95rem; color: var(--text-light); }
 
-        .texto-bloque {
-            white-space: pre-wrap;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin: 0;
-            color: #cbd5e1;
-        }
+        .texto-bloque { white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6; margin: 0; color: #cbd5e1; }
 
         .btn {
             background-color: var(--secondary-teal);
@@ -144,16 +134,8 @@
         }
         .btn:hover { background-color: #0b7a6f; }
         
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: 0.88rem;
-            color: var(--text-muted);
-        }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.88rem; color: var(--text-muted); }
         input {
             width: 100%;
             padding: 12px;
@@ -165,9 +147,7 @@
             outline: none;
             transition: border-color 0.2s;
         }
-        input:focus {
-            border-color: var(--primary-blue);
-        }
+        input:focus { border-color: var(--primary-blue); }
     </style>
 </head>
 <body>
@@ -213,27 +193,19 @@
         </div>
 
         <div class="card" style="border-color: var(--primary-blue); background: rgba(2, 132, 199, 0.02);">
-            <h3 style="color: var(--white); border-bottom-color: var(--primary-blue);"><i class="fa-solid fa-id-card"></i> Postularse a esta Vacante</h3>
+            <h3 style="color: var(--white); border-bottom-color: var(--primary-blue);"><i class="fa-solid fa-id-card"></i> Formulario de Postulación Exprés</h3>
             <form id="formPostulacion" onsubmit="enviarPostulacion(event)">
                 <div class="form-group">
-                    <label>Nombre Completo:</label>
+                    <label>Nombre y Apellidos:</label>
                     <input type="text" id="postNombre" placeholder="Ingresa tus nombres y apellidos" required>
-                </div>
-                <div class="form-group">
-                    <label>Edad:</label>
-                    <input type="text" id="postEdad" placeholder="Ej: 25" required>
-                </div>
-                <div class="form-group">
-                    <label>Género / Sexo:</label>
-                    <input type="text" id="postSexo" placeholder="Ej: Masculino, Femenino" required>
-                </div>
-                <div class="form-group">
-                    <label>CURP:</label>
-                    <input type="text" id="postCurp" placeholder="18 caracteres de tu CURP" maxlength="18" style="text-transform: uppercase;" required>
                 </div>
                 <div class="form-group">
                     <label>Teléfono de Contacto:</label>
                     <input type="tel" id="postTelefono" placeholder="Ej: 6461234567" required>
+                </div>
+                <div class="form-group">
+                    <label>CURP:</label>
+                    <input type="text" id="postCurp" placeholder="18 caracteres de tu CURP" maxlength="18" style="text-transform: uppercase;" required>
                 </div>
                 <button type="submit" class="btn"><i class="fa-solid fa-file-pdf"></i> Confirmar Postulación y Descargar Folio</button>
             </form>
@@ -265,14 +237,11 @@
         }
 
         try {
-            // Buscamos todas las vacantes asociadas a esa empresa
             const lasVacantesRef = ref(db, `vacantes_detalles/${empresaId}`);
             const snapshot = await get(lasVacantesRef);
             
             if (snapshot.exists()) {
                 const lasVacantes = snapshot.val();
-                
-                // Extraemos las llaves (IDs de puesto) válidas
                 const keys = Object.keys(lasVacantes).filter(k => k !== 'undefined' && k !== '');
                 
                 if (keys.length === 0) {
@@ -280,16 +249,13 @@
                     return;
                 }
 
-                // Tomamos de forma predeterminada la primera vacante disponible del nodo
                 vacanteKeyDetectada = keys[0];
                 const data = lasVacantes[vacanteKeyDetectada];
                 datosVacanteGlobal = data;
                 
-                // Sumamos una visita a esa vacante específica de forma automática
                 const vacanteIndividualRef = ref(db, `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}`);
                 await update(vacanteIndividualRef, { visitas: increment(1) });
 
-                // Renderizamos la información en la plantilla
                 document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
                 document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
                 document.getElementById('vacanteVisitas').innerText = (data.visitas || 0) + 1;
@@ -323,26 +289,73 @@
         }
     }
 
+    // Algoritmo para parsear CURP y extraer Edad y Género de manera inteligente
+    function extraerDatosCurp(curp) {
+        if (!curp || curp.length < 11) return { edad: "Indistinto", sexo: "Indistinto" };
+        
+        // 1. Extraer Sexo (Posición 11 de la CURP)
+        const letraSexo = curp.charAt(10).toUpperCase();
+        let sexo = "Indistinto";
+        if (letraSexo === 'H') sexo = "Masculino";
+        else if (letraSexo === 'M') sexo = "Femenino";
+
+        // 2. Extraer Año, Mes y Día de Nacimiento
+        let anio = parseInt(curp.substr(4, 2), 10);
+        const mes = parseInt(curp.substr(6, 2), 10);
+        const dia = parseInt(curp.substr(8, 2), 10);
+        
+        // Determinar el siglo (Dígito en posición 17 de la CURP: Número para nacidos en el siglo XXI)
+        const digitoSiglo = curp.charAt(16);
+        if (isNaN(parseInt(digitoSiglo, 10))) {
+            // Si es una letra, por regla general son nacidos a partir del año 2000
+            anio += 2000;
+        } else {
+            // Si es número, depende del año actual para aproximar (Bifurcación estándar)
+            anio += (anio > 30) ? 1900 : 2000; 
+        }
+
+        // 3. Calcular Edad Exacta comparado con el año actual (2026)
+        const fechaNacimiento = new Date(anio, mes - 1, dia);
+        const fechaActual = new Date(); // Año en curso de tu ecosistema: 2026
+        
+        let edadCalculada = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
+        const m = fechaActual.getMonth() - fechaNacimiento.getMonth();
+        if (m < 0 || (m === 0 && fechaActual.getDate() < fechaNacimiento.getDate())) {
+            edadCalculada--;
+        }
+
+        return {
+            edad: isNaN(edadCalculada) ? "Indistinto" : String(edadCalculada),
+            sexo: sexo
+        };
+    }
+
     window.enviarPostulacion = async function(e) {
         e.preventDefault();
         
         const nombre = document.getElementById('postNombre').value.trim();
-        const edad = document.getElementById('postEdad').value.trim();
-        const sexo = document.getElementById('postSexo').value.trim();
-        const curp = document.getElementById('postCurp').value.trim().toUpperCase();
         const telefono = document.getElementById('postTelefono').value.trim();
+        const curp = document.getElementById('postCurp').value.trim().toUpperCase();
         
+        if (curp.length !== 18) {
+            alert("Por favor, ingresa una CURP válida de 18 caracteres.");
+            return;
+        }
+
+        // Ejecución del parseo inteligente
+        const datosExtraidos = extraerDatosCurp(curp);
         const timestampId = "post-" + Date.now();
         
+        // Mapeo estructurado para Firebase respetando los campos requeridos
         const payloadPostulante = {
             id: timestampId,
             nombre: nombre,
             nombreCompleto: nombre,
-            edad: edad,
-            sexo: sexo,
-            genero: sexo,
-            curp: curp,
             telefono: telefono,
+            curp: curp,
+            edad: datosExtraidos.edad,   // Auto-calculada guardada en registro
+            sexo: datosExtraidos.sexo,   // Auto-calculada guardada en registro
+            genero: datosExtraidos.sexo, // Duplicado por compatibilidad de nodos
             empresa: empresaId,
             empresaDestino: empresaId,
             vacante: datosVacanteGlobal.vacanteNombre || 'Desconocida',
@@ -354,8 +367,9 @@
             await set(ref(db, `postulantes/${timestampId}`), payloadPostulante);
             await update(ref(db, 'postulantes_count'), { total: increment(1) });
 
-            alert("¡Postulación registrada de manera exitosa en Workforce Connect! Descargando tu comprobante en PDF...");
+            alert(`¡Postulación procesada! Los datos se han guardado con éxito.\nEdad detectada: ${datosExtraidos.edad} años.\nSexo: ${datosExtraidos.sexo}.\n\nDescargando tu acuse...`);
 
+            // Generar Acuse en PDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -389,9 +403,10 @@
                 { label: "Puesto Solicitado:", val: payloadPostulante.vacante },
                 { label: "Código Empresa:", val: payloadPostulante.empresa.toUpperCase() },
                 { label: "Candidato:", val: payloadPostulante.nombre },
-                { label: "CURP:", val: payloadPostulante.curp },
+                { label: "CURP Validada:", val: payloadPostulante.curp },
                 { label: "Teléfono:", val: payloadPostulante.telefono },
-                { label: "Edad / Sexo:", val: `${payloadPostulante.edad} años — ${payloadPostulante.sexo}` },
+                { label: "Edad calculada:", val: `${payloadPostulante.edad} años` },
+                { label: "Sexo detectado:", val: payloadPostulante.sexo },
                 { label: "Fecha de Registro:", val: payloadPostulante.fechaRegistro }
             ];
 
@@ -411,15 +426,15 @@
             doc.setFontSize(10);
             doc.text("Nota importante para el candidato:", 20, y + 8);
             doc.setFont("Helvetica", "normal");
-            doc.text("Conserva este acuse digital. Un reclutador asignado se pondrá en contacto contigo a la", 20, y + 14);
-            doc.text("brevedad a través del número telefónico proporcionado para agendar tu entrevista.", 20, y + 19);
+            doc.text("Conserva este acuse digital. Tu perfil ya se encuentra guardado en el sistema de base de datos.", 20, y + 14);
+            doc.text("Un reclutador se comunicará contigo al teléfono provisto en caso de cubrir con el perfil.", 20, y + 19);
 
             doc.save(`Comprobante-${payloadPostulante.curp}.pdf`);
             document.getElementById('formPostulacion').reset();
             
         } catch (err) {
             console.error(err);
-            alert("❌ Ocurrió un error al procesar tu postulación: " + err.message);
+            alert("❌ Ocurrió un error al guardar la postulación: " + err.message);
         }
     };
 
