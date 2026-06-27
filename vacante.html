@@ -19,139 +19,289 @@
             --border-color: #243854;
             --blue-accent: #38bdf8;
             --orange-title: #f97316;
-            --green-whatsapp: #25D366;
         }
         * { box-sizing: border-box; }
         body {
             background-color: var(--bg-page);
             color: var(--text-light);
             font-family: 'Segoe UI', system-ui, sans-serif;
-            margin: 0; padding: 20px;
-            min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            margin: 0; padding: 20px 10px;
         }
         .container {
-            max-width: 750px; width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
             background-color: var(--container-bg);
-            padding: 30px; border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        #loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+        .empresa-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .empresa-header h1 {
+            color: var(--white);
+            font-size: 2rem;
+            margin-bottom: 6px;
+        }
+        .empresa-header .location {
+            color: var(--text-muted);
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .menu-titulo {
+            text-align: center;
+            font-size: 1.25rem;
+            color: var(--white);
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        .vacantes-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .vacante-item-card {
+            background-color: #142238;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .vacante-item-card:hover {
+            background-color: #1a2d4a;
+            transform: translateY(-2px);
+        }
+        .vacante-item-info h2 {
+            color: var(--orange-title);
+            font-size: 1.15rem;
+            margin: 0 0 6px 0;
+            text-transform: uppercase;
+        }
+        .vacante-item-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .vacante-item-card .chevron-icon {
+            color: var(--orange-title);
+            font-size: 1.2rem;
+        }
+        .btn-regresar {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-regresar:hover {
+            background: #142238;
+            color: var(--white);
+        }
+        .banner-container {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+        .banner-container img {
+            width: 100%;
+            height: auto;
+            max-height: 350px;
+            object-fit: cover;
+            display: block;
+        }
+        .card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             border: 1px solid var(--border-color);
         }
-        .back-link {
-            display: inline-flex; align-items: center; gap: 8px;
-            color: var(--blue-accent); text-decoration: none;
-            font-weight: 600; margin-bottom: 20px; transition: opacity 0.2s;
+        .card h3 {
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .back-link:hover { opacity: 0.8; }
-        h1 { color: var(--orange-title); margin-top: 0; font-size: 2rem; }
-        .empresa-nombre { color: var(--blue-accent); font-size: 1.2rem; font-weight: 600; margin-top: -10px; margin-bottom: 25px; }
+        .meta-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            background: #0d1724;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        .meta-info span { display: inline-flex; align-items: center; gap: 6px; }
+        .meta-info i { color: var(--primary-blue); }
         
-        .info-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px; margin-bottom: 30px;
+        .grid-detalles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
         }
-        .info-card {
-            background-color: var(--card-bg); padding: 15px; border-radius: 8px;
-            border-left: 4px solid var(--primary-blue);
+        .detalle-item {
+            background: #142238;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
         }
-        .info-card.orange { border-left-color: var(--orange-title); }
-        .info-card label { display: block; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-        .info-card span { font-size: 1.05rem; font-weight: 700; }
-        
-        .section-block {
-            background-color: var(--card-bg); padding: 20px; border-radius: 8px;
-            margin-bottom: 25px; border: 1px solid var(--border-color);
+        .detalle-item strong {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--blue-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
         }
-        .section-block h3 { margin-top: 0; color: var(--blue-accent); font-size: 1.15rem; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
-        .section-block p { margin-bottom: 0; white-space: pre-line; line-height: 1.5; color: #cbd5e1; }
-        
-        .form-postulacion {
-            background: linear-gradient(145deg, #13253e, #111e30);
-            padding: 25px; border-radius: 12px; border: 2px solid var(--primary-blue); margin-top: 35px;
+        .detalle-item span { font-size: 0.95rem; color: var(--text-light); }
+        .texto-bloque { white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6; margin: 0; color: #cbd5e1; }
+        .btn {
+            background-color: var(--secondary-teal);
+            color: var(--white);
+            border: none;
+            padding: 14px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            width: 100%;
+            transition: background 0.2s;
         }
-        .form-postulacion h3 { margin-top: 0; color: var(--white); font-size: 1.3rem; text-align: center; margin-bottom: 20px; }
-        .fg { display: flex; flex-direction: column; margin-bottom: 15px; }
-        .fg label { margin-bottom: 6px; font-size: 0.9rem; font-weight: 600; color: var(--text-light); }
-        .fg input {
-            padding: 12px; border-radius: 6px; border: 1px solid var(--border-color);
-            background-color: var(--bg-page); color: var(--white); font-size: 1rem; outline: none;
+        .btn:hover { background-color: #0b7a6f; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.88rem; color: var(--text-muted); }
+        input {
+            width: 100%;
+            padding: 12px;
+            background-color: #1d2e47;
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
         }
-        .fg input:focus { border-color: var(--blue-accent); }
-        
-        .btn-submit {
-            width: 100%; padding: 15px; border: none; border-radius: 6px;
-            background-color: var(--primary-blue); color: var(--white);
-            font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px;
-        }
-        .btn-submit:hover { background-color: #0274ae; }
-        
-        .error-container { text-align: center; padding: 40px 20px; }
-        .error-container i { font-size: 3.5rem; color: #ef4444; margin-bottom: 15px; }
+        input:focus { border-color: var(--primary-blue); }
     </style>
 </head>
 <body>
 
-<div class="container" id="mainContainer">
-    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Volver a la Bolsa de Trabajo</a>
+<div class="container">
+    <div id="loading"><i class="fas fa-spinner fa-spin"></i> Buscando vacantes de la empresa...</div>
     
-    <div id="loadingView" style="text-align: center; padding: 40px 0;">
-        <i class="fas fa-spinner fa-spin" style="font-size: 2.5rem; color: var(--blue-accent); margin-bottom: 15px;"></i>
-        <p>Cargando los detalles oficiales de la vacante...</p>
+    <div id="empresaHeaderBox" class="empresa-header" style="display: none;">
+        <h1 id="mainEmpresaNombre">Nombre de la Empresa</h1>
+        <div class="location"><i class="fa-solid fa-location-dot"></i> <span id="mainEmpresaLugar">—</span></div>
     </div>
 
-    <div id="contentView" style="display: none;">
-        <h1 id="puestoTitulo">---</h1>
-        <div class="empresa-nombre" id="empresaNombre">---</div>
+    <!-- VISTA 1: Contenedor del Menú Intermedio (Funciona con tu link directo) -->
+    <div id="menuVacantesBox" style="display: none;">
+        <div class="menu-titulo">Vacantes Disponibles Actualmente</div>
+        <div id="listaVacantesDinamica" class="vacantes-lista"></div>
+    </div>
+
+    <!-- VISTA 2: Contenedor de Detalles -->
+    <div id="content" style="display:none;">
+        <button id="btnVolverAlMenu" class="btn-regresar" onclick="regresarAlMenu()">
+            <i class="fa-solid fa-arrow-left"></i> Volver a todas las vacantes
+        </button>
+
+        <div class="banner-container" id="vacanteBannerBox">
+            <img id="vacanteBanner" src="" alt="Banner Publicitario">
+        </div>
+
+        <h1 id="vacanteTitulo" style="color: var(--white); font-size: 1.8rem; margin-bottom: 15px; text-align: center;">Título de la Vacante</h1>
         
-        <div class="info-grid">
-            <div class="info-card">
-                <label><i class="fas fa-money-bill-wave"></i> Sueldo Mensual</label>
-                <span id="puestoSueldo">---</span>
-            </div>
-            <div class="info-card">
-                <label><i class="fas fa-clock"></i> Horario / Turno</label>
-                <span id="puestoTurno">---</span>
-            </div>
-            <div class="info-card orange">
-                <label><i class="fas fa-map-marker-alt"></i> Ubicación</label>
-                <span id="puestoUbicacion">---</span>
-            </div>
+        <div class="meta-info" style="justify-content: center;">
+            <span><i class="fa-solid fa-building"></i> Empresa: <code id="vacanteEmpresa" style="color:var(--white);">—</code></span>
+            <span><i class="fa-solid fa-eye"></i> Visitas: <span id="vacanteVisitas">0</span></span>
         </div>
 
-        <div class="section-block" id="bloqueRequisitos">
-            <h3><i class="fas fa-list-ul"></i> Requisitos del Puesto</h3>
-            <p id="puestoRequisitos">---</p>
+        <div class="grid-detalles">
+            <div class="detalle-item"><strong>💰 Salario Ofrecido</strong><span id="detSalario">—</span></div>
+            <div class="detalle-item"><strong>📍 Zona de Trabajo</strong><span id="detLugar">—</span></div>
+            <div class="detalle-item"><strong>🕒 Horarios y Turnos</strong><span id="detTurnos">—</span></div>
+            <div class="detalle-item"><strong>🔞 Edad Solicitada</strong><span id="detEdad">—</span></div>
+            <div class="detalle-item"><strong>👫 Género / Sexo</strong><span id="detSexo">—</span></div>
+            <div class="detalle-item"><strong>💼 Experiencia Mínima</strong><span id="detExperiencia">—</span></div>
+            <div class="detalle-item"><strong>🎓 Escolaridad</strong><span id="detEscolaridad">—</span></div>
         </div>
 
-        <div class="section-block" id="bloqueBeneficios">
-            <h3><i class="fas fa-gift"></i> Prestaciones y Beneficios</h3>
-            <p id="puestoBeneficios">---</p>
+        <div class="card">
+            <h3><i class="fa-solid fa-toolbox"></i> Actividades Principales</h3>
+            <p id="vacanteActividades" class="texto-bloque">Cargando...</p>
         </div>
 
-        <div class="section-block" id="bloqueNotas">
-            <h3><i class="fas fa-info-circle"></i> Información General / Notas</h3>
-            <p id="puestoNotas">---</p>
+        <!-- Muestra dinámicamente el campo prestaciones -->
+        <div class="card">
+            <h3><i class="fa-solid fa-gift"></i> Prestaciones y Beneficios</h3>
+            <p id="vacanteBeneficios" class="texto-bloque">No especificadas.</p>
         </div>
 
-        <form class="form-postulacion" id="formPostulacion" onsubmit="enviarPostulacion(event)">
-            <h3><i class="fas fa-user-check"></i> Postulación Express con CURP</h3>
-            <div class="fg">
-                <label>Nombre Completo</label>
-                <input type="text" id="postNombre" required placeholder="Introduce tu nombre y apellidos" autocomplete="off">
-            </div>
-            <div class="fg">
-                <label>Teléfono de Contacto (WhatsApp)</label>
-                <input type="tel" id="postTelefono" required maxlength="10" placeholder="Ej: 6461234567" autocomplete="off">
-            </div>
-            <div class="fg">
-                <label>Clave CURP (18 caracteres oficiales)</label>
-                <input type="text" id="postCurp" required maxlength="18" placeholder="Introduce tu CURP para validación" autocomplete="off" style="text-transform: uppercase;">
-            </div>
-            <button type="submit" class="btn-submit">
-                <i class="fas fa-paper-plane"></i> Confirmar Postulación y Enviar Folio
-            </button>
-        </form>
+        <!-- Muestra dinámicamente el campo notas -->
+        <div class="card">
+            <h3><i class="fa-solid fa-note-sticky"></i> Notas Adicionales</h3>
+            <p id="vacanteNotas" class="texto-bloque">Sin notas adicionales.</p>
+        </div>
+
+        <div class="card" style="border-color: var(--primary-blue); background: rgba(2, 132, 199, 0.02);">
+            <h3 style="color: var(--white); border-bottom-color: var(--primary-blue);"><i class="fa-solid fa-id-card"></i> Formulario de Postulación Exprés</h3>
+            <form id="formPostulacion" onsubmit="enviarPostulacion(event)">
+                <div class="form-group">
+                    <label>Nombre y Apellidos:</label>
+                    <input type="text" id="postNombre" placeholder="Ingresa tus nombres y apellidos" required>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono de Contacto:</label>
+                    <input type="tel" id="postTelefono" placeholder="Ej: 6461234567" required>
+                </div>
+                <div class="form-group">
+                    <label>CURP:</label>
+                    <input type="text" id="postCurp" placeholder="18 caracteres de tu CURP" maxlength="18" style="text-transform: uppercase;" required>
+                </div>
+                <button type="submit" class="btn"><i class="fa-solid fa-file-pdf"></i> Confirmar Postulación y Enviar Folio</button>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -160,104 +310,177 @@
     import { getDatabase, ref, get, set, update, increment, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
-        databaseURL: "https://bolsa-de-trabajo-a52e4-default-rtdb.firebaseio.com/"
+        databaseURL: "https://bolsa-de-trabajo-workforce-default-rtdb.firebaseio.com/"
     };
-    
+
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
     const urlParams = new URLSearchParams(window.location.search);
     const empresaId = urlParams.get('empresa');
-    const vacanteId = urlParams.get('id');
 
+    let todasLasVacantesEmpresa = {};
     let datosVacanteGlobal = null;
-    let datosEmpresaGlobal = null;
+    let vacanteKeyDetectada = "";
 
-    if (!empresaId || !vacanteId) {
-        mostrarErrorPantalla("La ruta de acceso a la vacante es incorrecta o no tiene los parámetros requeridos.");
-    } else {
-        cargarInformacionEstructural();
-    }
+    async function cargarDetallesVacante() {
+        if (!empresaId) {
+            document.getElementById('loading').innerHTML = "❌ Enlace no válido.<br><small>Se requiere especificar el parámetro ?empresa=ID_EMPRESA</small>";
+            return;
+        }
 
-    async function cargarInformacionEstructural() {
         try {
-            const empresaSnap = await get(ref(db, `empresas/${empresaId}`));
-            const vacanteSnap = await get(ref(db, `vacantes_detalles/${empresaId}/${vacanteId}`));
-
-            if (!empresaSnap.exists() || !vacanteSnap.exists()) {
-                mostrarErrorPantalla("La vacante solicitada ya no se encuentra disponible o fue dada de baja del sistema.");
-                return;
-            }
-
-            datosEmpresaGlobal = empresaSnap.val();
-            datosVacanteGlobal = vacanteSnap.val();
-
-            // Renderizar Información en la Interfaz
-            document.getElementById('puestoTitulo').textContent = datosVacanteGlobal.vacanteNombre || 'Puesto Operativo';
-            document.getElementById('empresaNombre').textContent = datosEmpresaGlobal.nombre || 'Empresa Afiliada';
-            document.getElementById('puestoSueldo').textContent = datosVacanteGlobal.salario || 'No especificado';
-            document.getElementById('puestoTurno').textContent = datosVacanteGlobal.turnos || 'A convenir';
-            document.getElementById('puestoUbicacion').textContent = datosEmpresaGlobal.ubicacion || 'N/A';
-            document.getElementById('puestoRequisitos').textContent = datosVacanteGlobal.requisitos || 'Se darán detalles en la entrevista presencial.';
+            const lasVacantesRef = ref(db, `vacantes_detalles/${empresaId}`);
+            const snapshot = await get(lasVacantesRef);
             
-            // Renderizado de las nuevas llaves dinámicas
-            document.getElementById('puestoBeneficios').textContent = datosVacanteGlobal.beneficios || 'Prestaciones de ley correspondientes.';
-            document.getElementById('puestoNotas').textContent = datosVacanteGlobal.informacionGeneral || 'Sin comentarios adicionales.';
+            if (snapshot.exists()) {
+                const dataRaw = snapshot.val();
+                
+                if (dataRaw.vacanteNombre || dataRaw.salario) {
+                    todasLasVacantesEmpresa = {};
+                    const llaveUnica = dataRaw.vacanteNombre.replace(/\s+/g, '_').toLowerCase() || "puesto_unico";
+                    todasLasVacantesEmpresa[llaveUnica] = dataRaw;
+                } else {
+                    todasLasVacantesEmpresa = dataRaw;
+                }
 
-            document.getElementById('loadingView').style.display = 'none';
-            document.getElementById('contentView').style.display = 'block';
+                const keys = Object.keys(todasLasVacantesEmpresa).filter(k => k !== 'undefined' && k !== '');
+                
+                if (keys.length === 0) {
+                    document.getElementById('loading').innerText = "❌ No hay vacantes activas publicadas para esta empresa.";
+                    return;
+                }
 
-            // --- CONTADOR DE VISITAS INTELIGENTE (Solucionado con runTransaction y sessionStorage) ---
-            if (!sessionStorage.getItem(`visita_vacante_${vacanteId}`)) {
-                const visitasRef = ref(db, `vacantes_detalles/${empresaId}/${vacanteId}/visitas`);
-                runTransaction(visitasRef, (currentValue) => {
-                    return (currentValue || 0) + 1;
-                }).then(() => {
-                    sessionStorage.setItem(`visita_vacante_${vacanteId}`, 'true');
-                    console.log("📈 Contador de visitas actualizado de forma segura.");
-                }).catch(e => console.error("Error al registrar la métrica de visita:", e));
+                const primerVacante = todasLasVacantesEmpresa[keys[0]];
+                document.getElementById('mainEmpresaNombre').innerText = primerVacante.empresaNombre || empresaId.toUpperCase();
+                document.getElementById('mainEmpresaLugar').innerText = primerVacante.lugarOrigen || 'Ubicación no especificada';
+                document.getElementById('empresaHeaderBox').style.display = 'block';
+
+                const listaContenedor = document.getElementById('listaVacantesDinamica');
+                listaContenedor.innerHTML = ''; 
+                
+                keys.forEach(key => {
+                    const vac = todasLasVacantesEmpresa[key];
+                    
+                    const cardItem = document.createElement('div');
+                    cardItem.className = 'vacante-item-card';
+                    cardItem.onclick = () => renderizarPuestoEspecifico(key);
+                    
+                    cardItem.innerHTML = `
+                        <div class="vacante-item-info">
+                            <h2>${vac.vacanteNombre || key}</h2>
+                            <p><i class="fa-solid fa-money-bill-wave"></i> ${vac.salario || 'No especificado'}</p>
+                        </div>
+                        <div class="chevron-icon">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    `;
+                    listaContenedor.appendChild(cardItem);
+                });
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'none';
+                document.getElementById('menuVacantesBox').style.display = 'block';
+
+            } else {
+                document.getElementById('loading').innerText = "❌ La empresa especificada no cuenta con vacantes en el servidor.";
             }
-
         } catch (error) {
             console.error(error);
-            mostrarErrorPantalla("Ocurrió un inconveniente técnico al intentar conectar con la base de datos distribuida.");
+            document.getElementById('loading').innerText = "❌ Error al conectar con la base de datos de Workforce.";
         }
     }
 
-    function extraerDatosCurp(curpVal) {
-        const curpClean = curpVal.trim().toUpperCase();
-        if (curpClean.length < 10) return { edad: "N/A", sexo: "N/A" };
+    async function renderizarPuestoEspecifico(key) {
+        vacanteKeyDetectada = key;
+        const data = todasLasVacantesEmpresa[key];
+        datosVacanteGlobal = data;
         
-        let anioDigitos = curpClean.substring(4, 6);
-        let mesDigitos = curpClean.substring(6, 8);
-        let diaDigitos = curpClean.substring(8, 10);
-        let sexoLetra = curpClean.charAt(10);
+        // --- CONTADOR DE VISITAS SEGURO CON RUNTRANSACTION Y SESSIONSTORAGE ---
+        const pathVisita = `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}/visitas`;
+        if (!sessionStorage.getItem(`visita_${empresaId}_${vacanteKeyDetectada}`)) {
+            try {
+                await runTransaction(ref(db, pathVisita), (currentValue) => {
+                    return (currentValue || 0) + 1;
+                });
+                sessionStorage.setItem(`visita_${empresaId}_${vacanteKeyDetectada}`, 'true');
+            } catch(e) { console.log("Visita no acumulada de forma síncrona"); }
+        }
+
+        document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
+        document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
+        document.getElementById('vacanteVisitas').innerText = data.visitas ? (data.visitas + 1) : 1;
         
-        let siglo = 1900;
-        if (parseInt(anioDigitos) < 30) siglo = 2000;
+        document.getElementById('detSalario').innerText = data.salario || 'No especificado';
+        document.getElementById('detLugar').innerText = data.lugarOrigen || 'No especificado';
+        document.getElementById('detTurnos').innerText = data.turnos || 'No especificado';
+        document.getElementById('detEdad').innerText = data.edad || 'Indistinto';
+        document.getElementById('detSexo').innerText = data.sexo || 'Indistinto';
+        document.getElementById('detExperiencia').innerText = data.experiencia || 'No requerida';
+        document.getElementById('detEscolaridad').innerText = data.escolaridad || 'No especificada';
+
+        document.getElementById('vacanteActividades').innerText = data.actividades || 'No especificadas.';
+        document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
+        document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
+
+        if (data.bannerUrl && data.bannerUrl.trim() !== "") {
+            const imgElement = document.getElementById('vacanteBanner');
+            imgElement.src = data.bannerUrl.trim();
+            document.getElementById('vacanteBannerBox').style.display = 'block';
+        } else {
+            document.getElementById('vacanteBannerBox').style.display = 'none';
+        }
+
+        document.getElementById('menuVacantesBox').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.regresarAlMenu = function() {
+        document.getElementById('content').style.display = 'none';
+        document.getElementById('menuVacantesBox').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function extraerDatosCurp(curp) {
+        if (!curp || curp.length < 11) return { edad: "Indistinto", sexo: "Indistinto" };
         
-        let anioCompleto = siglo + parseInt(anioDigitos);
-        let fechaNac = new Date(anioCompleto, parseInt(mesDigitos) - 1, parseInt(diaDigitos));
-        let hoy = new Date();
+        const letraSexo = curp.charAt(10).toUpperCase();
+        let sexo = "Indistinto";
+        if (letraSexo === 'H') sexo = "Masculino";
+        else if (letraSexo === 'M') sexo = "Femenino";
+
+        let anio = parseInt(curp.substr(4, 2), 10);
+        const mes = parseInt(curp.substr(6, 2), 10);
+        const dia = parseInt(curp.substr(8, 2), 10);
         
-        let edadCalculada = hoy.getFullYear() - fechaNac.getFullYear();
-        let m = hoy.getMonth() - fechaNac.getMonth();
-        if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
+        const digitoSiglo = curp.charAt(16);
+        if (isNaN(parseInt(digitoSiglo, 10))) {
+            anio += 2000;
+        } else {
+            anio += (anio > 30) ? 1900 : 2000; 
+        }
+
+        const fechaNacimiento = new Date(anio, mes - 1, dia);
+        const fechaActual = new Date(); 
+        
+        let edadCalculada = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
+        const m = fechaActual.getMonth() - fechaNacimiento.getMonth();
+        if (m < 0 || (m === 0 && fechaActual.getDate() < fechaNacimiento.getDate())) {
             edadCalculada--;
         }
-        
-        let sexoFormato = "Desconocido";
-        if (sexoLetra === 'H') sexoFormato = "Masculino";
-        if (sexoLetra === 'M') sexoFormato = "Femenino";
-        
-        return { edad: edadCalculada, sexo: sexoFormato };
+
+        return {
+            edad: isNaN(edadCalculada) ? "Indistinto" : String(edadCalculada),
+            sexo: sexo
+        };
     }
 
     window.enviarPostulacion = async function(e) {
         e.preventDefault();
         
-        if (!datosVacanteGlobal || !datosEmpresaGlobal) {
-            alert("Los datos estructurales no se han cargado por completo. Intenta de nuevo.");
+        if (!datosVacanteGlobal) {
+            alert("Por favor, selecciona primero un puesto de trabajo.");
             return;
         }
 
@@ -266,132 +489,99 @@
         const curp = document.getElementById('postCurp').value.trim().toUpperCase();
         
         if (curp.length !== 18) {
-            alert("La clave única de registro de población (CURP) debe tener obligatoriamente 18 caracteres.");
-            return;
-        }
-        if (telefono.length !== 10) {
-            alert("El número telefónico debe constar de exactamente 10 dígitos numéricos.");
+            alert("Por favor, ingresa una CURP válida de 18 caracteres.");
             return;
         }
 
         const datosExtraidos = extraerDatosCurp(curp);
-        const timestampId = "folio-" + Date.now();
+        const timestampId = "post-" + Date.now();
         
         const payloadPostulante = {
             id: timestampId,
+            nombre: nombre,
             nombreCompleto: nombre,
             telefono: telefono,
             curp: curp,
             edad: datosExtraidos.edad,
+            sexo: datosExtraidos.sexo,
             genero: datosExtraidos.sexo,
+            empresa: empresaId,
             empresaDestino: empresaId,
-            puesto: datosVacanteGlobal.vacanteNombre || 'Operador',
+            vacante: datosVacanteGlobal.vacanteNombre || 'Desconocida',
+            puesto: datosVacanteGlobal.vacanteNombre || 'Desconocida',
             fechaRegistro: new Date().toLocaleString()
         };
 
         try {
-            // Guardar en la rama 'postulantes' en Firebase
             await set(ref(db, `postulantes/${timestampId}`), payloadPostulante);
-            
-            // Incrementar de forma atómica el total de postulantes registrados
             await update(ref(db, 'postulantes_count'), { total: increment(1) });
 
-            alert("✅ ¡Tus datos se registraron correctamente!\n\nGenerando acuse en PDF y redirigiéndote al WhatsApp del reclutador para agendar tu entrevista...");
+            alert(`¡Postulación procesada! Los datos se han guardado con éxito.\nEdad detectada: ${datosExtraidos.edad} años.\nSexo: ${datosExtraidos.sexo}.\n\nDescargando tu acuse y abriendo WhatsApp...`);
 
-            // --- 1. GENERACIÓN DEL ARCHIVO PDF DE ACUSE ---
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Encabezado Corporativo
-            doc.setFillColor(15, 42, 74); 
-            doc.rect(0, 0, 210, 40, 'F');
-            
-            doc.setTextColor(56, 189, 248); 
-            doc.setFont("Helvetica", "bold");
-            doc.setFontSize(22);
-            doc.text("WORKFORCE CONNECT", 15, 26);
-            
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(10);
-            doc.setFont("Helvetica", "normal");
-            doc.text("COMPROBANTE DE POSTULACIÓN OFICIAL", 125, 25);
-
-            // Bloque 1: Datos Personales
-            doc.setTextColor(33, 33, 33);
-            doc.setFontSize(14);
-            doc.setFont("Helvetica", "bold");
-            doc.text("Datos Generales del Candidato", 15, 55);
+            doc.setFillColor(15, 42, 74); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(56, 189, 248); doc.setFont("Helvetica", "bold"); doc.setFontSize(22); doc.text("WORKFORCE CONNECT", 15, 26);
+            doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.setFont("Helvetica", "normal"); doc.text("COMPROBANTE DE POSTULACIÓN OFICIAL", 125, 25);
+            doc.setTextColor(33, 33, 33); doc.setFontSize(14); doc.setFont("Helvetica", "bold"); doc.text("Detalles de la Solicitud", 15, 55);
             doc.setLineWidth(0.5); doc.setDrawColor(210, 210, 210); doc.line(15, 58, 195, 58);
 
-            doc.setFontSize(11); doc.setFont("Helvetica", "normal");
-            doc.text(`Folio Interno: ${timestampId}`, 15, 67);
-            doc.text(`Nombre Completo: ${nombre}`, 15, 75);
-            doc.text(`CURP Validada: ${curp}`, 15, 83);
-            doc.text(`Teléfono: ${telefono}`, 15, 91);
-            doc.text(`Edad calculada: ${datosExtraidos.edad} años (${datosExtraidos.sexo})`, 15, 99);
-
-            // Bloque 2: Información Vacante
-            doc.setFont("Helvetica", "bold"); doc.setFontSize(14);
-            doc.text("Información del Puesto Solicitado", 15, 115);
-            doc.line(15, 118, 195, 118);
-
-            doc.setFontSize(11); doc.setFont("Helvetica", "normal");
-            doc.text(`Empresa: ${datosEmpresaGlobal.nombre}`, 15, 127);
-            doc.text(`Puesto: ${datosVacanteGlobal.vacanteNombre}`, 15, 135);
-            doc.text(`Sueldo Base Ofrecido: ${datosVacanteGlobal.salario || 'No especificado'}`, 15, 143);
-            doc.text(`Horario/Turno: ${datosVacanteGlobal.turnos || 'A convenir'}`, 15, 151);
-            doc.text(`Ubicación de Trabajo: ${datosEmpresaGlobal.ubicacion}`, 15, 159);
-
-            // Pie de página institucional
-            doc.setFillColor(241, 245, 249);
-            doc.rect(15, 175, 180, 25, 'F');
-            doc.setTextColor(15, 42, 74); doc.setFont("Helvetica", "bold"); doc.setFontSize(9);
-            doc.text("Nota de seguridad institucional:", 20, 182);
-            doc.setFont("Helvetica", "normal");
-            doc.text("Conserva este acuse digital. Tu perfil ya se encuentra respaldado y blindado en el sistema.", 20, 188);
-            doc.text("Presenta este folio digital ante el reclutador al iniciar tu proceso de validación presencial.", 20, 194);
-
-            doc.save(`Comprobante_${nombre.replace(/\s+/g, '_')}.pdf`);
-
-            // --- 2. INTEGRACIÓN: ENVÍO DE DATOS POR WHATSAPP AL RECLUTADOR ---
-            const telefonoReclutador = "526461974763";
+            doc.setFontSize(11);
+            let y = 68;
             
-            const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante desde el sitio oficial.\n\n` +
+            const datosImpresion = [
+                { label: "Folio Único:", val: timestampId },
+                { label: "Puesto Solicitado:", val: payloadPostulante.vacante },
+                { label: "Código Empresa:", val: payloadPostulante.empresa.toUpperCase() },
+                { label: "Candidato:", val: payloadPostulante.nombre },
+                { label: "CURP Validada:", val: payloadPostulante.curp },
+                { label: "Teléfono:", val: payloadPostulante.telefono },
+                { label: "Edad calculada:", val: `${payloadPostulante.edad} años` },
+                { label: "Sexo detectado:", val: payloadPostulante.sexo },
+                { label: "Fecha de Registro:", val: payloadPostulante.fechaRegistro }
+            ];
+
+            datosImpresion.forEach(item => {
+                doc.setFont("Helvetica", "bold"); doc.text(item.label, 15, y);
+                doc.setFont("Helvetica", "normal"); doc.text(String(item.val), 60, y);
+                y += 10;
+            });
+
+            y += 10;
+            doc.setFillColor(241, 245, 249); doc.rect(15, y, 180, 25, 'F');
+            doc.setTextColor(15, 42, 74); doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.text("Nota importante para el candidato:", 20, y + 8);
+            doc.setFont("Helvetica", "normal");
+            doc.text("Conserva este acuse digital. Tu perfil ya se encuentra guardado en el sistema de base de datos.", 20, y + 14);
+            doc.text("Un reclutador se comunicará contigo al teléfono provisto en caso de cubrir con el perfil.", 20, y + 19);
+
+            doc.save(`Comprobante-${payloadPostulante.curp}.pdf`);
+            
+            // --- ENVÍO DE DATOS POR WHATSAPP AL RECLUTADOR ---
+            const telefonoReclutador = "526461974763";
+            const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante.\n\n` +
                                     `*📌 Detalles de mi Postulación:*\n` +
-                                    `• *Folio Único:* ${timestampId}\n` +
-                                    `• *Puesto:* ${datosVacanteGlobal.vacanteNombre}\n` +
-                                    `• *Empresa:* ${datosEmpresaGlobal.nombre}\n\n` +
-                                    `*👤 Mis Datos del Formulario:*\n` +
-                                    `• *Nombre:* ${nombre}\n` +
-                                    `• *Teléfono:* ${telefono}\n` +
-                                    `• *CURP:* ${curp}\n` +
-                                    `• *Edad:* ${datosExtraidos.edad} años\n` +
-                                    `• *Sexo:* ${datosExtraidos.sexo}\n\n` +
-                                    `_Nota: Ya descargué mi acuse digital en formato PDF. Quedo a la espera de sus indicaciones para agendar mi entrevista._`;
+                                    `• *Folio:* ${timestampId}\n` +
+                                    `• *Puesto:* ${payloadPostulante.vacante}\n` +
+                                    `• *Empresa:* ${payloadPostulante.empresa.toUpperCase()}\n\n` +
+                                    `*👤 Mis Datos de Contacto:*\n` +
+                                    `• *Nombre:* ${payloadPostulante.nombre}\n` +
+                                    `• *Teléfono:* ${payloadPostulante.telefono}\n` +
+                                    `• *CURP:* ${payloadPostulante.curp}\n` +
+                                    `• *Edad:* ${payloadPostulante.edad} años\n` +
+                                    `• *Sexo:* ${payloadPostulante.sexo}\n\n` +
+                                    `Ya descargué mi acuse en formato PDF. Quedo atento a su respuesta.`;
 
-            // Reseteamos el formulario limpio
             document.getElementById('formPostulacion').reset();
-
-            // Redirección inmediata sin perder el PDF
-            const urlWhatsApp = `https://api.whatsapp.com/send?phone=${telefonoReclutador}&text=${encodeURIComponent(mensajeWhatsApp)}`;
-            window.location.href = urlWhatsApp;
-
+            window.location.href = `https://wa.me/${telefonoReclutador}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+            
         } catch (err) {
             console.error(err);
-            alert("❌ Excepción en la base de datos de registro: " + err.message);
+            alert("❌ Ocurrió un error al guardar la postulación: " + err.message);
         }
     };
 
-    function mostrarErrorPantalla(msg) {
-        document.getElementById('mainContainer').innerHTML = `
-            <div class="error-container">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h2>Inconveniente de Acceso</h2>
-                <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 25px;">${msg}</p>
-                <a href="index.html" class="back-link" style="margin-bottom:0;"><i class="fas fa-arrow-left"></i> Regresar al Inicio</a>
-            </div>
-        `;
-    }
+    window.onload = cargarDetallesVacante;
 </script>
 </body>
 </html>
