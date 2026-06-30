@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
-    <!-- LIBRERÍAS CLÁSICAS COMPATIBLES -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
@@ -147,7 +146,6 @@
         .chevron-icon { color: var(--wf-accent-blue); font-size: 1.3rem; transition: transform 0.3s ease; }
         .vacante-item-card:hover .chevron-icon { transform: translateX(5px); }
         
-        /* BANNER MEJORADO CON DEGRADADO REFINADO */
         .banner-container { 
             width: 100%; 
             margin-bottom: 25px; 
@@ -218,7 +216,6 @@
             <i class="fas fa-arrow-left"></i> Volver a la Lista de Vacantes
         </button>
 
-        <!-- CONTENEDOR DE BANNER -->
         <div class="banner-container" id="vacanteBannerBox">
             <img id="vacanteBanner" src="" alt="Banner Publicitario Corporativo">
         </div>
@@ -259,7 +256,6 @@
             <p class="texto-bloque" id="vacanteNotas">Sin notas adicionales.</p>
         </div>
 
-        <!-- FORMULARIO PULIDO -->
         <div class="links-section">
             <h3 style="color: var(--white); margin-bottom: 20px; font-size: 1.3rem; border-bottom: 2px solid rgba(56, 189, 248, 0.15); padding-bottom: 10px;">
                 <i class="fas fa-user-pen"></i> Formulario de Postulación Oficial
@@ -315,17 +311,6 @@
     let datosVacanteGlobal = null;
     let vacanteKeyDetectada = "";
     const fallbackTelefonoReclutador = "526461974763";
-
-    // MAPEO DE IMÁGENES CORREGIDO CON RUTAS ABSOLUTAS DE GITHUB PAGES
-    const catalogoBannersPorEmpresa = {
-        "isisa": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/isisa.jpg",
-        "hutchison": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/hutchison.jpg",
-        "pando": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/pando.jpg",
-        "encasa": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/encasa.jpg",
-        "rener": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/rener.jpg",
-        "aspen": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/aspen.jpg",
-        "default": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/default.jpg"
-    };
 
     async function cargarDetallesVacante() {
         if (!empresaId) {
@@ -416,18 +401,28 @@
         document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
         document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
 
-        // ASIGNACIÓN INTELIGENTE DE BANNER CON RUTAS ABSOLUTAS EN CASO DE FALLBACK
+        // LÓGICA DE ASIGNACIÓN 100% DINÁMICA DE LA OPCIÓN B
         let imagenFinalBanner = "";
+        
+        // 1. Validar si Firebase contiene una URL personalizada de banner para esta vacante
         if (data.bannerUrl && data.bannerUrl.trim() !== "") {
             imagenFinalBanner = data.bannerUrl.trim();
         } else {
+            // 2. Si Firebase no lo tiene, deduce la URL de la raíz de tu GitHub Pages automáticamente
             const idEmpresaLimpio = empresaId.toLowerCase().trim();
-            imagenFinalBanner = catalogoBannersPorEmpresa[idEmpresaLimpio] || catalogoBannersPorEmpresa["default"];
+            imagenFinalBanner = `https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/imagen-${idEmpresaLimpio}.jpg`;
         }
         
-        document.getElementById('vacanteBanner').src = imagenFinalBanner;
-        document.getElementById('vacanteBannerBox').style.display = 'block';
+        const imgElement = document.getElementById('vacanteBanner');
+        imgElement.src = imagenFinalBanner;
+        
+        // 3. Fallback definitivo en caso de que la imagen deducida de GitHub arroje error 404
+        imgElement.onerror = function() {
+            imgElement.src = "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/imagen-logo.jpg";
+            imgElement.onerror = null; // Evitar bucle infinito si la por defecto fallara
+        };
 
+        document.getElementById('vacanteBannerBox').style.display = 'block';
         document.getElementById('menuVacantesBox').style.display = 'none';
         document.getElementById('content').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -510,7 +505,7 @@
             await db.ref(`postulantes/${timestampId}`).set(payload);
             await db.ref('postulantes_count').update({ total: firebase.database.ServerValue.increment(1) });
 
-            // GENERACIÓN DE PDF PREMIUM CORPORATIVO
+            // GENERACIÓN DE ACUSE EN PDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
@@ -576,7 +571,7 @@
 
             doc.save(`Acuse_${payload.curp}.pdf`);
             
-            // PLANTILLA DE MENSAJE FORMAL WHATSAPP
+            // WHATSAPP API REDIRECT
             const mensajeWhatsApp = `*WORKFORCE CONNECT SOLUTION — SOLICITUD DE ENTREVISTA*\n\n` +
                                     `Estimado área de Atracción de Talento,\n\n` +
                                     `Por medio de la presente, presento mi postulación formal para la vacante activa del sistema:\n\n` +
