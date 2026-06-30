@@ -10,17 +10,17 @@
     <style>
         /* NUEVA IDENTIDAD CORPORATIVA UNIFICADA - WORKFORCE CONNECT SOLUTION */
         :root {
-            --wf-accent-blue: #38bdf8;         /* Azul brillante / Cyan institucional */
-            --wf-accent-hover: #0ea5e9;        /* Variación hover del azul brillante */
-            --wf-accent-glow: rgba(56, 189, 248, 0.35); /* Resplandor tecnológico */
-            --secondary-blue: #0f1a2c;         /* Azul contenedor secundario */
-            --secondary-blue-dark: #070f1e;    /* Azul noche profundo corporativo */
+            --wf-accent-blue: #38bdf8;         
+            --wf-accent-hover: #0ea5e9;        
+            --wf-accent-glow: rgba(56, 189, 248, 0.35); 
+            --secondary-blue: #0f1a2c;         
+            --secondary-blue-dark: #070f1e;    
             
-            --bg-page: #040814;                /* Fondo base ultra oscuro de la página */          
-            --container-bg: #0b1426;           /* Cuerpo del contenedor principal */     
-            --card-bg: rgba(22, 36, 59, 0.55); /* Tarjetas del contenido */          
-            --bg-form: #0d1a30;                /* Bloque de formularios y enlaces */          
-            --input-bg: #142443;               /* Cajas de texto de los inputs */         
+            --bg-page: #040814;                         
+            --container-bg: #0b1426;                
+            --card-bg: rgba(22, 36, 59, 0.55);           
+            --bg-form: #0d1a30;                         
+            --input-bg: #142443;                        
             
             --white: #ffffff;
             --text-light: #f1f5f9;       
@@ -194,7 +194,6 @@
             font-weight: 600;
         }
 
-        /* DISEÑO DE LA TARJETA DE TRANSPORTE DINÁMICO */
         .card-transporte {
             background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(15, 26, 44, 0.6) 100%);
             border: 1px solid rgba(56, 189, 248, 0.3);
@@ -318,11 +317,10 @@
     </button>
 
     <div id="loading">
-        <i class="fas fa-spinner fa-spin"></i> Cargando información de la vacante...
+        <i class="fas fa-spinner fa-spin"></i> Sincronizando espacio de trabajo...
     </div>
 
     <div id="contenidoVacante" style="display: none;">
-        <!-- Header con Información de la Empresa -->
         <div class="empresa-header">
             <h1 id="txtNombreEmpresa">Empresa</h1>
             <div class="location">
@@ -330,12 +328,10 @@
             </div>
         </div>
 
-        <!-- Banner Publicitario Dinámico -->
         <div class="banner-container" id="bannerContenedor">
             <img src="" id="imgBannerVacante" alt="Banner de la Vacante">
         </div>
 
-        <!-- Bloque Principal de la Vacante -->
         <div class="card">
             <h3 class="vacante-titulo-principal">
                 <i class="fas fa-briefcase"></i> <span id="txtTituloVacante">Puesto de Trabajo</span>
@@ -361,7 +357,6 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE RUTAS Y TRANSPORTE DINÁMICO DESDE EL SERVIDOR -->
         <div class="card card-transporte" id="bloqueTransporte" style="display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(56, 189, 248, 0.2); padding-bottom: 10px; margin-bottom: 15px;">
                 <h3 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
@@ -373,24 +368,21 @@
                 <i class="fas fa-route"></i>
                 <div>
                     <strong style="color: var(--wf-accent-blue); font-size: 0.85rem; display: block; text-transform: uppercase;">Circuito / Ruta Asignada:</strong>
-                    <span id="txtRutaTransporte" style="color: var(--white); font-weight: 600; font-size: 1.05rem;">Cargando coordenadas...</span>
+                    <span id="txtRutaTransporte" style="color: var(--white); font-weight: 600; font-size: 1.05rem;">Buscando...</span>
                 </div>
             </div>
         </div>
 
-        <!-- Bloque de Requisitos -->
         <div class="card">
             <h3><i class="fas fa-list-check"></i> Requisitos del Puesto</h3>
             <p class="texto-bloque" id="txtRequisitos">No especificados.</p>
         </div>
 
-        <!-- Bloque de Beneficios -->
         <div class="card">
             <h3><i class="fas fa-gift"></i> Ofrecimientos y Beneficios</h3>
             <p class="texto-bloque" id="txtBeneficios">No especificados.</p>
         </div>
 
-        <!-- Formulario Express de Registro y Selección de Reclutador -->
         <div class="links-section">
             <h3 style="color: var(--white); margin-bottom: 20px; font-size: 1.3rem; border-bottom: 2px solid rgba(56, 189, 248, 0.15); padding-bottom: 10px;">
                 <i class="fas fa-user-pen"></i> Postulación Express
@@ -429,13 +421,12 @@
                     </div>
                 </div>
 
-                <!-- Listado Automático de Personal de Reclutamiento -->
                 <div class="form-group" style="margin-top: 5px;">
                     <label for="selReclutador" style="color: var(--wf-accent-blue); font-weight: bold;">
                         <i class="fas fa-headset"></i> Selecciona al Asesor / Reclutador que te Atiende:
                     </label>
                     <select id="selReclutador" required>
-                        <option value="">Cargando catálogo de reclutadores autorizados...</option>
+                        <option value="">Cargando asesores autorizados...</option>
                     </select>
                 </div>
 
@@ -449,7 +440,6 @@
     </div>
 </div>
 
-<!-- SDK de Firebase Modules con Mecanismo de Contingencia Inteligente -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, get, child, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -474,33 +464,33 @@
     };
 
     document.addEventListener("DOMContentLoaded", async () => {
-        await Promise.all([
-            evaluarYAsignarVacante(),
-            cargarCatalogoReclutadores()
-        ]);
+        // Ejecutar las peticiones de forma controlada
+        await evaluarYAsignarVacante();
+        await cargarCatalogoReclutadores();
     });
 
-    // SISTEMA LOGÍSTICO AUTO-EJECUTABLE PARA APERTURAS DIRECTAS
+    // RESOLUCIÓN CRÍTICA: Asegura que las variables globales tengan datos válidos ANTES de renderizar
     async function evaluarYAsignarVacante() {
         const dbRef = ref(db);
 
-        if (!idEmpresaUrl || !idVacanteUrl) {
+        // Si los parámetros de la URL están ausentes o vacíos
+        if (!idEmpresaUrl || !idVacanteUrl || idEmpresaUrl.trim() === "" || idVacanteUrl.trim() === "") {
             try {
                 const snapTodasVacantes = await get(child(dbRef, "vacantes_por_empresa"));
-                
                 if (snapTodasVacantes.exists()) {
                     const datosEmpresas = snapTodasVacantes.val();
+                    // Forzar asignación global directa
                     idEmpresaUrl = Object.keys(datosEmpresas)[0];
                     const vacantesDeEsaEmpresa = datosEmpresas[idEmpresaUrl];
                     idVacanteUrl = Object.keys(vacantesDeEsaEmpresa)[0];
-                    
-                    console.log(`[Auto-Carga] Detectada vacante activa en servidor: ${idVacanteUrl}`);
+                    console.log(`[Auto-Mapeo Exitoso] ID Empresa: ${idEmpresaUrl} | ID Vacante: ${idVacanteUrl}`);
                 }
             } catch (e) {
-                console.warn("No se pudo escanear el servidor para auto-carga:", e);
+                console.warn("Fallo el mapeo en vivo de Firebase:", e);
             }
         }
 
+        // Una vez evaluados los parámetros, ejecutar la carga de datos sin frenar el flujo
         await cargarDatosVacante();
     }
 
@@ -509,6 +499,7 @@
             const dbRef = ref(db);
             let datosCargadosCorrectamente = false;
 
+            // Intentar leer desde Firebase si los IDs son válidos
             if (idEmpresaUrl && idVacanteUrl) {
                 const snapEmpresa = await get(child(dbRef, `empresas_principales/${idEmpresaUrl}`));
                 const snapVacante = await get(child(dbRef, `vacantes_por_empresa/${idEmpresaUrl}/${idVacanteUrl}`));
@@ -520,9 +511,9 @@
                 }
             }
 
-            // ENTORNO DE RESPALDO INTEGRADO (MOCK DATA DE ALTA CALIDAD)
+            // ENTORNO MAQUETA COMPLETO: Si falló la conexión o la URL está vacía, se autodeclaran aquí
             if (!datosCargadosCorrectamente) {
-                console.log("[Fallback] Inicializando entorno visual de demostración.");
+                console.log("[Contingencia Activa] Generando interfaz visual de respaldo.");
                 infoEmpresaGlobal = {
                     nombreComercial: "Workforce Connect Solutions",
                     ubicacion: "Zona Industrial Central"
@@ -540,20 +531,19 @@
                 };
             }
 
-            // Renderizado en componentes de interfaz
-            document.getElementById("txtNombreEmpresa").innerText = infoEmpresaGlobal.nombreComercial;
-            document.getElementById("txtUbicacionEmpresa").innerText = infoEmpresaGlobal.ubicacion;
+            // Renderizar de inmediato en el DOM
+            document.getElementById("txtNombreEmpresa").innerText = infoEmpresaGlobal.nombreComercial || "Empresa Registrada";
+            document.getElementById("txtUbicacionEmpresa").innerText = infoEmpresaGlobal.ubicacion || "Ubicación General";
             
-            document.getElementById("txtTituloVacante").innerText = infoVacanteGlobal.nombreVacante;
+            document.getElementById("txtTituloVacante").innerText = infoVacanteGlobal.nombreVacante || "Puesto General";
             document.getElementById("txtSueldo").innerText = infoVacanteGlobal.salarioSemanal ? `$${infoVacanteGlobal.salarioSemanal}` : "A convenir";
-            document.getElementById("txtTurnos").innerText = infoVacanteGlobal.turnos;
-            document.getElementById("txtEdadReq").innerText = infoVacanteGlobal.edadRequisito;
-            document.getElementById("txtLugarDestino").innerText = infoVacanteGlobal.lugarDestino;
+            document.getElementById("txtTurnos").innerText = infoVacanteGlobal.turnos || "No especificado";
+            document.getElementById("txtEdadReq").innerText = infoVacanteGlobal.edadRequisito || "18+";
+            document.getElementById("txtLugarDestino").innerText = infoVacanteGlobal.lugarDestino || "Planta Central";
             
-            document.getElementById("txtRequisitos").innerText = infoVacanteGlobal.requisitos;
-            document.getElementById("txtBeneficios").innerText = infoVacanteGlobal.beneficios;
+            document.getElementById("txtRequisitos").innerText = infoVacanteGlobal.requisitos || "Documentación básica.";
+            document.getElementById("txtBeneficios").innerText = infoVacanteGlobal.beneficios || "Prestaciones de Ley.";
 
-            // Manejo y despliegue del bloque de transporte
             if (infoVacanteGlobal.ofreceTransporte === true || infoVacanteGlobal.rutaTransporte) {
                 const rutaTexto = infoVacanteGlobal.rutaTransporte || `Disponible hacia: ${infoVacanteGlobal.lugarDestino}`;
                 document.getElementById("txtRutaTransporte").innerText = rutaTexto;
@@ -570,12 +560,15 @@
                 document.getElementById("bannerContenedor").style.display = "none";
             }
 
+            // APAGADO DEL CARGADOR Y ACTIVACIÓN DE INTERFAZ
             document.getElementById("loading").style.display = "none";
             document.getElementById("contenidoVacante").style.display = "block";
 
         } catch (error) {
-            console.error("Error crítico en renderizado:", error);
-            document.getElementById("loading").innerHTML = "❌ Error al sincronizar el espacio de trabajo.";
+            console.error("Error en renderizado general:", error);
+            // Si ocurre un error catastrófico, apagar el loader y forzar la muestra del contenido para no trabar al usuario
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("contenidoVacante").style.display = "block";
         }
     }
 
@@ -633,14 +626,17 @@
             telefonoDestinoWhatsApp = "52" + telefonoDestinoWhatsApp;
         }
 
-        const transportInfo = infoVacanteGlobal.rutaTransporte || (infoVacanteGlobal.ofreceTransporte ? "Sí (Ruta General)" : "No Especificado");
+        // Validaciones preventivas de datos antes del armado de payload
+        const nombreVacanteFinal = infoVacanteGlobal && infoVacanteGlobal.nombreVacante ? infoVacanteGlobal.nombreVacante : "PUESTO GENERAL";
+        const lugarDestinoFinal = infoVacanteGlobal && infoVacanteGlobal.lugarDestino ? infoVacanteGlobal.lugarDestino : "No asignado";
+        const transportInfo = infoVacanteGlobal && (infoVacanteGlobal.rutaTransporte || (infoVacanteGlobal.ofreceTransporte ? "Sí (Ruta General)" : "No Especificado")) || "No Especificado";
         const idEmpresaFinal = idEmpresaUrl || "DEMO-CORP";
 
         const payloadPostulante = {
             folio: timestampId,
-            vacante: infoVacanteGlobal.nombreVacante ? infoVacanteGlobal.nombreVacante.toUpperCase() : "PUESTO GENERAL",
+            vacante: nombreVacanteFinal.toUpperCase(),
             empresa: idEmpresaFinal.toUpperCase(),
-            destinoPlanta: infoVacanteGlobal.lugarDestino || "No asignado",
+            destinoPlanta: lugarDestinoFinal,
             rutaTransporte: transportInfo,
             nombre: document.getElementById("txtNombre").value.trim(),
             telefono: inputTel,
@@ -654,7 +650,6 @@
         try {
             await set(ref(db, `postulantes_registrados/${timestampId}`), payloadPostulante);
 
-            // Generación integrada del PDF de Acuse de recibo
             try {
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
@@ -706,7 +701,6 @@
                 console.error("Error generando el acuse PDF:", pdfError);
             }
 
-            // Estructuración del mensaje dinámico para la API de WhatsApp
             const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante.\n\n` +
                                     `*📌 Detalles de mi Postulación:*\n` +
                                     `• *Folio:* ${payloadPostulante.folio}\n` +
