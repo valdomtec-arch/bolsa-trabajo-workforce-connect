@@ -1144,7 +1144,7 @@ window.procesarDocumentoTransporteConGemini = async function() {
   lector.readAsDataURL(file);
 };
 
-// --- LÓGICA OPTIMIZADA DE LA PESTAÑA 5: GESTIÓN DE RECLUTADORES Y PERSONAL AUTORIZADO ---
+// --- LÓGICA CORREGIDA Y OPTIMIZADA DE LA PESTAÑA 5 ---
 window.limpiarFormularioPersonal = function() {
   document.getElementById('perId').value = '';
   document.getElementById('perId').disabled = false;
@@ -1156,17 +1156,17 @@ window.limpiarFormularioPersonal = function() {
 window.agregarOActualizarPersonal = async function() {
   const id = sanitizarId(document.getElementById('perId').value);
   const nombre = document.getElementById('perNombreCompleto').value.trim();
-  const telefono = document.getElementById('perTelefono').value.trim();
+  const telefonoInput = document.getElementById('perTelefono').value.trim();
   const puesto = document.getElementById('perPuesto').value;
 
-  if (!id || !nombre || !telefono) {
+  if (!id || !nombre || !telefonoInput) {
     return alert('⚠️ Por favor completa todos los campos (ID, Nombre y Apellidos, Teléfono).');
   }
 
   const payload = {
     id: id,
     nombreCompleto: nombre,
-    telefono: telefono,
+    telefono: telefonoInput,
     puesto: puesto,
     fechaRegistro: cachePersonalGlobal[id]?.fechaRegistro || new Date().toISOString()
   };
@@ -1185,8 +1185,13 @@ window.cargarPersonalParaEditar = function(id) {
   if (!p) return;
   document.getElementById('perId').value = p.id || id;
   document.getElementById('perId').disabled = true;
-  document.getElementById('perNombreCompleto').value = p.nombreCompleto || '';
-  document.getElementById('perTelefono').value = p.telefono || '';
+  document.getElementById('perNombreCompleto').value = p.nombreCompleto || p.nombre || '';
+  
+  let telfTexto = "";
+  if (p.telefono) {
+    telfTexto = (typeof p.telefono === 'object') ? (p.telefono.valor || p.telefono.numero || JSON.stringify(p.telefono)) : p.telefono;
+  }
+  document.getElementById('perTelefono').value = telfTexto;
   document.getElementById('perPuesto').value = p.puesto || 'Administrador';
   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 };
@@ -1217,10 +1222,20 @@ onValue(ref(db, 'reclutadores_autorizados'), snap => {
   
   Object.keys(cachePersonalGlobal).forEach(id => {
     const p = cachePersonalGlobal[id];
+    
+    let telfMostrar = "—";
+    if (p.telefono) {
+      if (typeof p.telefono === 'object') {
+        telfMostrar = p.telefono.valor || p.telefono.numero || JSON.stringify(p.telefono);
+      } else {
+        telfMostrar = p.telefono;
+      }
+    }
+
     tbody.innerHTML += `<tr>
       <td><code>${id}</code></td>
       <td><strong>${p.nombreCompleto || p.nombre || 'Sin Nombre'}</strong></td>
-      <td><span style="font-family:monospace; color:var(--text-light);">${p.telefono || '—'}</span></td>
+      <td><span style="font-family:monospace; color:var(--text-light);">${telfMostrar}</span></td>
       <td><span style="color:var(--primary-orange); font-weight:600;">${p.puesto || 'Administrador'}</span></td>
       <td>
         <div style="display:flex; gap:6px; justify-content:center;">
