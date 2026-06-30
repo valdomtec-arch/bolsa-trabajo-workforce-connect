@@ -26,1112 +26,870 @@
 body { 
 background-color: var(--bg-page); 
 color: var(--text-light); 
-font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-padding: 20px 10px;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
 margin: 0; 
-line-height: 1.5;
+padding: 20px; 
 } 
 .admin-container { 
-max-width: 1300px; 
+max-width: 1200px; 
 margin: 0 auto; 
-background: var(--container-bg); 
-padding: 25px; 
-border-radius: 16px; 
+background-color: var(--container-bg); 
+padding: 30px; 
+border-radius: 12px; 
+box-shadow: 0 8px 32px rgba(0,0,0,0.5); 
 border: 1px solid var(--border-color); 
-box-shadow: 0 10px 40px rgba(0,0,0,.4);
 } 
-h1 { color: var(--white); text-align: center; margin-bottom: 25px; font-size: 1.6rem; } 
+h1 { 
+text-align: center; 
+color: var(--primary-orange); 
+margin-bottom: 30px; 
+text-transform: uppercase; 
+letter-spacing: 1px; 
+font-size: 1.8rem; 
+border-bottom: 2px solid var(--border-color); 
+padding-bottom: 15px; 
+} 
 .tabs-menu { 
 display: flex; 
-flex-wrap: wrap;
-gap: 8px; 
+flex-wrap: wrap; 
+gap: 10px; 
 margin-bottom: 25px; 
 border-bottom: 2px solid var(--border-color); 
-padding-bottom: 10px; 
+padding-bottom: 15px; 
 } 
 .tab-btn { 
-background: #0d1724; 
+background-color: var(--card-bg); 
 color: var(--text-muted); 
 border: 1px solid var(--border-color); 
-padding: 12px 18px; 
+padding: 12px 20px; 
 border-radius: 8px; 
 cursor: pointer; 
-font-weight: 700; 
-font-size: 0.9rem; 
-transition: all .25s ease;
+font-weight: 600; 
+font-size: 0.95rem; 
+transition: all 0.3s ease; 
 display: flex; 
 align-items: center; 
 gap: 8px; 
-flex: 1 1 auto;
-justify-content: center;
 } 
-.tab-btn:hover { color: var(--white); border-color: var(--primary-orange); transform: translateY(-1px); } 
-.tab-btn.active { 
-background: var(--primary-orange); 
-color: white; 
+.tab-btn:hover { 
+background-color: var(--secondary-blue); 
+color: var(--white); 
 border-color: var(--primary-orange); 
-box-shadow: 0 4px 12px rgba(255,102,0,0.3);
 } 
-.tab-content { display: none; animation: fade .3s ease; } 
-.tab-content.active { display: block; } 
-@keyframes fade { from{opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
-
+.tab-btn.active { 
+background-color: var(--primary-orange); 
+color: var(--white); 
+border-color: var(--primary-orange); 
+box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3); 
+} 
+.tab-content { 
+display: none; 
+animation: fadeIn 0.4s ease forwards; 
+} 
+.tab-content.active { 
+display: block; 
+} 
+@keyframes fadeIn { 
+from { opacity: 0; transform: translateY(5px); } 
+to { opacity: 1; transform: translateY(0); } 
+} 
 .form-admin { 
-background: var(--card-bg); 
-padding: 22px; 
-border-radius: 12px; 
+background-color: var(--card-bg); 
+padding: 25px; 
+border-radius: 10px; 
+margin-bottom: 30px; 
 border: 1px solid var(--border-color); 
-margin-bottom: 25px; 
-display: grid; 
-grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
-gap: 16px; 
 } 
-.form-group { display: flex; flex-direction: column; } 
-.form-group label { margin-bottom: 6px; font-weight: 600; font-size: 0.88rem; color: var(--text-muted); } 
-.form-group:focus-within label { color: var(--primary-orange); }
-.form-group input, .form-group select, .form-group textarea { 
-padding: 11px 14px; 
-background: #1d2e47; 
-border: 1px solid var(--border-color); 
-border-radius: 8px; 
-color: white; 
-font-size: 0.92rem;
-outline: none;
-transition: all .2s;
-}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary-orange); background: #223754; }
-.form-group textarea { resize: vertical; min-height: 80px; font-family: inherit; } 
-.full-width { grid-column: 1 / -1; } 
-button { font-family: inherit; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all .2s ease; }
-
-.btn-add { 
-background: var(--primary-orange); 
-color: white; 
-border: none; 
-padding: 12px; 
-border-radius: 8px; 
-font-weight: 700; 
-font-size: 1rem; 
-width: 100%;
-}
-.btn-add:hover { background: #e05500; transform: translateY(-1px); } 
-
-.btn-update-final { 
-background: var(--blue-update); 
-color: white; 
-border: none; 
-padding: 12px; 
-border-radius: 8px; 
-font-weight: 700; 
-font-size: 1rem; 
-width: 100%;
-} 
-.btn-update-final:hover { background: #0369a1; transform: translateY(-1px); } 
-
-.dual-buttons-layout { 
-grid-column: 1 / -1; 
-display: grid; 
-grid-template-columns: repeat(3, 1fr); 
-gap: 12px; 
-margin-top: 8px; 
-} 
-@media (max-width:600px){ .dual-buttons-layout{grid-template-columns:1fr;} }
-
-.final-actions-grid {
-  grid-column: 1 / -1; 
-  display: grid; 
-  grid-template-columns: 1fr 1fr; 
-  gap: 16px; 
-  margin-top: 12px;
-}
-@media (max-width: 480px) {
-  .final-actions-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.tab2-grid-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
-@media (min-width: 992px) {
-  .tab2-grid-layout {
-    grid-template-columns: 460px 1fr;
-    align-items: start;
-  }
-}
-.sticky-column {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 15px;
-}
-
-.accordion-toggle-btn {
-  width: 100%;
-  background: #251842;
-  border: 1px solid var(--purple-ia);
-  color: #c084fc;
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: 0.95rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-.accordion-toggle-btn:hover { background: #311f59; }
-.accordion-content {
-  display: none;
-  animation: fade .25s ease;
-}
-.accordion-content.open { display: block; }
-
-.preview-card-view {
-  background: #0b2019;
-  border: 1px solid var(--green-success);
-  padding: 14px;
-  border-radius: 10px;
-  margin-bottom: 12px;
-}
-.preview-grid-mini {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 8px;
-  font-size: 0.8rem;
-  margin-top: 10px;
-}
-.preview-mini-item {
-  background: #112d24;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-.preview-mini-item strong { color: #34d399; display: block; margin-bottom: 2px; text-transform: uppercase; font-size: 0.7rem; }
-
-.ia-box { 
-background: rgba(139, 92, 246, 0.04); 
-border: 1px dashed var(--purple-ia); 
-padding: 16px; 
-border-radius: 12px; 
-grid-column: 1 / -1; 
-margin-bottom: 6px; 
-}
-.btn-ia { 
-background: var(--purple-ia); 
-color: white; 
-border: none; 
-padding: 10px 18px; 
-font-weight: 700; 
-border-radius: 6px; 
-margin-top: 10px; 
-} 
-.btn-ia:hover { background: #7c3aed; transform: translateY(-1px); } 
-.file-input-wrapper { 
-position: relative;
-display: inline-block; 
-margin-top: 5px; 
-}
-.file-input-wrapper input[type="file"] { 
-position: absolute; 
-inset:0;
-opacity: 0; 
-width: 100%; height: 100%; 
-cursor: pointer; 
-} 
-.btn-file-custom { 
-background: #0284c7; color: white; padding: 10px 18px; 
-font-weight: 700; border-radius: 6px; display: inline-block; transition: all .25s; 
-} 
-.btn-file-custom:hover { background: #0369a1; } 
-
 .section-divider { 
-grid-column: 1 / -1; 
-border-bottom: 1px dashed var(--border-color); 
-padding: 8px 0;
+font-size: 1.1rem; 
 color: var(--primary-orange); 
+font-weight: 700; 
+margin-bottom: 20px; 
+text-transform: uppercase; 
+letter-spacing: 0.5px; 
+border-left: 4px solid var(--primary-orange); 
+padding-left: 10px; 
+} 
+.form-group { 
+margin-bottom: 18px; 
+} 
+.form-group label { 
+display: block; 
+margin-bottom: 8px; 
+color: var(--text-light); 
+font-weight: 600; 
 font-size: 0.9rem; 
+} 
+.form-group input, .form-group select, .form-group textarea { 
+width: 100%; 
+padding: 12px; 
+background-color: var(--container-bg); 
+border: 1px solid var(--border-color); 
+color: var(--white); 
+border-radius: 6px; 
+font-size: 0.95rem; 
+outline: none; 
+transition: border-color 0.3s; 
+} 
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { 
+border-color: var(--primary-orange); 
+} 
+.dual-buttons-layout { 
+display: flex; 
+gap: 15px; 
+margin-top: 25px; 
+} 
+.btn-add, .btn-edit-mode, .btn-delete-mode { 
+flex: 1; 
+padding: 14px; 
+border: none; 
+border-radius: 6px; 
+font-weight: 700; 
+cursor: pointer; 
+font-size: 0.95rem; 
+display: flex; 
+align-items: center; 
+justify-content: center; 
+gap: 8px; 
+transition: transform 0.2s, box-shadow 0.2s; 
+} 
+.btn-add { 
+background-color: var(--green-success); 
+color: var(--white); 
+} 
+.btn-add:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); } 
+.btn-edit-mode { background-color: var(--blue-update); color: var(--white); } 
+.btn-edit-mode:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); } 
+.btn-delete-mode { background-color: var(--red-danger); color: var(--white); } 
+.btn-delete-mode:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); } 
+.empresas-table { 
+width: 100%; 
+border-collapse: collapse; 
+margin-top: 15px; 
+background-color: var(--card-bg); 
+border-radius: 8px; 
+overflow: hidden; 
+border: 1px solid var(--border-color); 
+} 
+.empresas-table th, .empresas-table td { 
+padding: 14px; 
+text-align: left; 
+border-bottom: 1px solid var(--border-color); 
+font-size: 0.9rem; 
+} 
+.empresas-table th { 
+background-color: var(--secondary-blue); 
+color: var(--primary-orange); 
 font-weight: 700; 
 text-transform: uppercase; 
-letter-spacing:.3px;
-margin: 6px 0;
-}
-.sub-section-title {
-  grid-column: 1 / -1;
-  font-size: 0.82rem;
-  color: #38bdf8;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 8px;
-  border-left: 3px solid #0284c7;
-  padding-left: 8px;
-}
-
-.search-container { background: #0d1724; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 15px; display: flex; gap: 10px; align-items: center; }
-.search-container input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 0.95rem; }
-
-.empresas-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin-top: 4px; font-size:.9rem; } 
-.empresas-table th { padding: 12px 10px; text-align: left; color: var(--primary-orange); background: #0d1724; font-weight: 600; border-bottom: 2px solid var(--border-color); } 
-.empresas-table td { padding: 12px 10px; background: var(--card-bg); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); } 
-.empresas-table tr td:first-child { border-left: 1px solid var(--border-color); border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
-.empresas-table tr td:last-child { border-right: 1px solid var(--border-color); border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
-.empresas-table tr:hover td { background: #1e314b; }
-.empresas-table td img { width: 42px; height: 42px; object-fit: contain; border-radius: 6px; background: white; padding: 2px;} 
-
-.selector-puestos-verde { 
-background: #112d24; 
-border: 1px solid var(--green-success); 
-color: #34d399; 
-padding: 10px 12px; 
-border-radius: 6px; 
-width: 100%; 
-font-weight: bold; 
-margin-bottom: 10px; 
-font-size: .95rem; 
-}
-.manager-box { 
-background: rgba(239, 68, 68, 0.05); 
-border: 1px dashed var(--red-danger); 
-padding: 16px; 
-border-radius: 12px; 
-grid-column: 1 / -1; 
-margin-bottom: 12px;
-}
-.actions-layout { 
-display: flex; 
-gap: 10px; 
-margin-top: 10px; 
-flex-wrap: wrap; 
+font-size: 0.85rem; 
+letter-spacing: 0.5px; 
 } 
-.btn-edit-mode { 
-background: #f59e0b; 
-color: #111; 
-border: none; 
-padding: 8px 14px; 
-font-weight: 700; 
-border-radius: 6px; 
-display: flex; 
-align-items: center; 
-gap: 6px; 
+.empresas-table tr:last-child td { border-bottom: none; } 
+.empresas-table tr:hover { background-color: rgba(24, 39, 60, 0.8); } 
+.actions-layout { display: flex; gap: 8px; } 
+.file-upload-wrapper { 
+position: relative; 
+margin-bottom: 15px; 
 } 
-.btn-edit-mode:hover { background: #d97706; } 
-.btn-delete-mode { 
-background: var(--red-danger); 
-color: white; 
-border: none; 
-padding: 8px 14px; 
-font-weight: 700; 
+.file-upload-btn { 
+display: block; 
+background-color: var(--secondary-blue); 
+color: var(--white); 
+padding: 12px; 
+text-align: center; 
 border-radius: 6px; 
-display: flex; 
-align-items: center; 
-gap: 6px; 
+border: 1px dashed var(--primary-orange); 
+cursor: pointer; 
+font-weight: 600; 
+transition: background 0.3s; 
 } 
-.btn-delete-mode:hover { background: #dc2626; } 
-pre.json-view { background:#061c15; color:#34d399; border:1px solid var(--green-success); padding:10px; border-radius:8px; font-size:.82rem; overflow:auto; max-height:120px; white-space:pre-wrap; display:none; }
-
-.metrics-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 25px; }
-.metric-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; text-align: center; }
-.metric-val { font-size: 2.2rem; font-weight: bold; color: var(--primary-orange); margin-bottom: 4px; }
-.metric-lbl { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
-
-.postulante-edit-container {
-  display: none; 
-  background: #161630;
-  border: 1px dashed var(--purple-ia);
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 25px;
-  animation: fade .3s ease;
-}
-.postulante-edit-container.open { display: block; }
+.file-upload-btn:hover { background-color: #14355e; } 
+.file-upload-wrapper input[type="file"] { 
+position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; 
+} 
+.json-preview-box { 
+background-color: #040811; 
+padding: 15px; 
+border-radius: 6px; 
+border: 1px solid var(--border-color); 
+font-family: 'Courier New', Courier, monospace; 
+font-size: 0.85rem; 
+color: #3ade84; 
+overflow-x: auto; 
+white-space: pre-wrap; 
+max-height: 250px; 
+} 
+@media (max-width: 768px) { 
+.tabs-menu { flex-direction: column; } 
+.tab-btn { width: 100%; } 
+.dual-buttons-layout { flex-direction: column; } 
+.actions-layout { flex-direction: column; } 
+} 
 </style> 
 </head> 
 <body> 
 
 <div class="admin-container"> 
-<h1><i class="fas fa-sliders-h"></i> Panel de Administración Global</h1> 
+  <h1>Panel de Control Centralizado - Bolsa de Trabajo</h1> 
 
-<div class="ia-box" style="margin-bottom: 15px; background: rgba(255, 102, 0, 0.03); border-color: var(--border-color);">
-  <label style="color:var(--primary-orange);font-weight:bold;display:block;margin-bottom:5px;"><i class="fas fa-key"></i> Configuración de API Key (Gemini)</label>
-  <input type="password" id="geminiApiKeyInput" placeholder="Pega aquí tu clave API de Gemini..." style="width:100%; padding:10px 14px; background:#1d2e47; border:1px solid var(--border-color); border-radius:8px; color:white; outline:none;">
-</div>
-
-<div class="tabs-menu"> 
-<button class="tab-btn active" data-tab="tabPrincipal"><i class="fas fa-building"></i> 1. Registrar Empresa</button> 
-<button class="tab-btn" data-tab="tabSecundarias"><i class="fas fa-briefcase"></i> 2. Control de Vacantes Masivo</button>
-<button class="tab-btn" data-tab="tabRegistros"><i class="fas fa-chart-line"></i> 3. Registros y Postulantes</button>
-<button class="tab-btn" data-tab="tabTransporte"><i class="fas fa-route"></i> 4. Centro de Transporte</button>
-</div> 
-
-<div id="tabPrincipal" class="tab-content active"> 
-  <div class="form-admin"> 
-    <div class="section-divider">Alta / Edición de Empresa Base</div> 
-    <div class="form-group"><label>ID de la Empresa:</label><input type="text" id="admId" placeholder="Ej: katcon, taehwa" maxlength="40"></div> 
-    <div class="form-group"><label>Nombre Comercial:</label><input type="text" id="admNombre" placeholder="Ej: Katcon S.A."></div> 
-    <div class="form-group"><label>Ubicación Base:</label><input type="text" id="admUbicacion" placeholder="Ej: Jalisco"></div> 
-    <div class="form-group full-width"><label>Hipervínculo / Repositorio:</label><input type="url" id="admLink" placeholder="https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/"></div> 
-    <div class="form-group"><label>URL Logo:</label><input type="url" id="admImagen" placeholder="https://..."></div> 
-    <div class="form-group"><label>Etiquetas:</label><input type="text" id="admTags" placeholder="automotriz, 24h"></div>
-    
-    <div class="dual-buttons-layout">
-        <button class="btn-add" onclick="agregarEmpresaPrincipal()"><i class="fas fa-save"></i> Guardar Empresa</button>
-        <button class="btn-edit-mode" style="background:#64748b; color:white; justify-content:center;" onclick="limpiarFormularioEmpresas()"><i class="fas fa-broom"></i> Limpiar</button>
-        <button class="btn-delete-mode" style="justify-content:center;" onclick="eliminarEmpresaPorInput()"><i class="fas fa-trash-alt"></i> Borrar ID</button>
-    </div>
+  <div class="tabs-menu"> 
+    <button class="tab-btn active" data-tab="tabEmpresas"><i class="fas fa-building"></i> 1. Módulo de Empresas</button> 
+    <button class="tab-btn" data-tab="tabVacantes"><i class="fas fa-briefcase"></i> 2. Control de Vacantes Masivo</button> 
+    <button class="tab-btn" data-tab="tabCandidatos"><i class="fas fa-users"></i> 3. Registro de Candidatos</button> 
+    <button class="tab-btn" data-tab="tabTransporte"><i class="fas fa-route"></i> 4. Centro de Transporte</button> 
+    <button class="tab-btn" data-tab="tabReclutadores"><i class="fas fa-user-tie"></i> 5. Control de Reclutadores</button> 
   </div> 
 
-  <h2 style="font-size:1.15rem;"><i class="fas fa-folder"></i> Directorio de Empresas</h2> 
-  <div class="search-container">
-    <i class="fas fa-search" style="color: var(--text-muted);"></i>
-    <input type="text" id="tablaBuscador" placeholder="Filtrar empresas al instante..." oninput="filtrarEmpresas()">
-  </div>
-  <div style="overflow-x: auto;"> 
-    <table class="empresas-table"> 
-      <thead><tr><th>Logo</th><th>ID Clave</th><th>Empresa</th><th>Ubicación</th><th>Acciones</th></tr></thead> 
-      <tbody id="adminTablaEmpresas"></tbody> 
-    </table> 
+  <div id="tabEmpresas" class="tab-content active"> 
+    <div class="form-admin"> 
+      <div class="section-divider" id="tituloFormEmpresa">Dar de Alta Nueva Empresa Matriz</div> 
+      <input type="hidden" id="empIdOculto"> 
+      <div class="form-group"> 
+        <label>Nombre Comercial de la Empresa:</label> 
+        <input type="text" id="empNombre" placeholder="Ej: Prime Wheel"> 
+      </div> 
+      <div class="form-group"> 
+        <label>Ubicación / Municipio:</label> 
+        <input type="text" id="empUbicacion" placeholder="Ej: Ensenada, El Sauzal"> 
+      </div> 
+      <div class="form-group"> 
+        <label>Enlace de la Bolsa Oficial (Redirección Externa):</label> 
+        <input type="url" id="empLink" placeholder="Ej: https://bolsa.tuempresa.com"> 
+      </div> 
+      <div class="form-group"> 
+        <label>URL de la Imagen Corporativa / Logo (Opcional):</label> 
+        <input type="url" id="empImagen" placeholder="Ej: https://tusitio.com/logo.jpg"> 
+      </div> 
+      <div class="form-group"> 
+        <label>Etiquetas de Búsqueda / Tags (Separadas por comas):</label> 
+        <input type="text" id="empTags" placeholder="Ej: chofer, manufactura, maquila, ensenada"> 
+      </div> 
+      <div class="dual-buttons-layout"> 
+        <button class="btn-add" id="btnGuardarEmpresa" onclick="guardarEmpresa()"><i class="fas fa-save"></i> Guardar Empresa</button> 
+        <button class="btn-edit-mode" style="background:#64748b; color:white; justify-content:center;" onclick="limpiarFormularioEmpresa()"><i class="fas fa-eraser"></i> Limpiar</button> 
+      </div> 
+    </div> 
+    <h2><i class="fas fa-list"></i> Empresas Registradas en el Sistema</h2> 
+    <div style="overflow-x: auto;"> 
+      <table class="empresas-table"> 
+        <thead> 
+          <tr> 
+            <th>Empresa</th> 
+            <th>Ubicación</th> 
+            <th>Enlace Externo</th> 
+            <th>Acciones</th> 
+          </tr> 
+        </thead> 
+        <tbody id="tablaEmpresasBody"></tbody> 
+      </table> 
+    </div> 
   </div> 
-</div> 
 
-<div id="tabSecundarias" class="tab-content"> 
-  <div class="tab2-grid-layout">
-    
-    <div class="sticky-column">
-      <div class="form-admin" style="grid-template-columns: 1fr; margin-bottom: 0;">
-        <div class="section-divider" style="margin-top:0;">Configuración de Destino</div> 
-        <div class="form-group">
-          <label>Selecciona Empresa:</label>
-          <select id="secEmpresaSelect" class="empresa-dropdown-compartido" onchange="escucharVacantesExistentes(this.value)">
-            <option value="">-- Elige una Empresa --</option>
-          </select>
-        </div>
+  <div id="tabVacantes" class="tab-content"> 
+    <div class="form-admin"> 
+      <div class="section-divider" id="tituloFormVacante">Configuración de Vacante Específica</div> 
+      <input type="hidden" id="vacIdOculto"> 
+      <div class="form-group"> 
+        <label>Seleccionar Empresa Asociada:</label> 
+        <select id="vacEmpresaSelect"></select> 
+      </div> 
+      <div class="form-group"> 
+        <label>ID Único del Puesto / Código de Vacante:</label> 
+        <input type="text" id="vacPuestoId" placeholder="Ej: operador-produccion-t1"> 
+      </div> 
+      <div class="form-group"> 
+        <label>Nombre de la Vacante (Título Visible):</label> 
+        <input type="text" id="vacNombre" placeholder="Ej: Operador de Producción Nocturno"> 
+      </div> 
+      <div class="form-group"> 
+        <label>Teléfono Directo del Reclutador Responsable (WhatsApp 12 dígitos):</label> 
+        <input type="text" id="vacTelefonoRec" placeholder="Ej: 526461974763"> 
+      </div> 
+      <div class="form-group"> 
+        <label>Requisitos del Puesto (Uno por línea):</label> 
+        <textarea id="vacRequisitos" rows="4" placeholder="Ej:\nSecundaria terminada\nDisponibilidad de horario\nExperiencia 6 meses"></textarea> 
+      </div> 
+      <div class="form-group"> 
+        <label>Ofrecimientos y Prestaciones (Uno por línea):</label> 
+        <textarea id="vacOfrecimientos" rows="4" placeholder="Ej:\nSueldo competitivo\nVales de despensa\nTransporte gratuito"></textarea> 
+      </div> 
+      <div class="dual-buttons-layout"> 
+        <button class="btn-add" id="btnGuardarVacante" onclick="guardarVacante()"><i class="fas fa-save"></i> Guardar Vacante</button> 
+        <button class="btn-edit-mode" style="background:#64748b; color:white; justify-content:center;" onclick="limpiarFormularioVacante()"><i class="fas fa-eraser"></i> Limpiar</button> 
+      </div> 
+    </div> 
+    <h2><i class="fas fa-briefcase"></i> Lista General de Vacantes por Empresa</h2> 
+    <div style="overflow-x: auto;"> 
+      <table class="empresas-table"> 
+        <thead> 
+          <tr> 
+            <th>Empresa</th> 
+            <th>ID Puesto</th> 
+            <th>Vacante</th> 
+            <th>Tel. Reclutador</th> 
+            <th>Acciones</th> 
+          </tr> 
+        </thead> 
+        <tbody id="tablaVacantesBody"></tbody> 
+      </table> 
+    </div> 
+  </div> 
 
-        <div class="manager-box" id="boxGestionVacantes" style="display:none; margin-bottom:5px;">
-          <label style="color:var(--red-danger);font-weight:bold;display:block;margin-bottom:6px;"><i class="fas fa-folder-minus"></i> Modificar o Eliminar Vacantes</label>
-          <select id="selectorVacantesEnFirebase" style="width:100%;padding:10px 12px;background:#221317;border:1px solid var(--red-danger);color:#fca5a5;border-radius:6px; outline:none;"></select>
-          <div class="actions-layout">
-            <button class="btn-edit-mode" style="padding:6px 10px; font-size:0.85rem;" onclick="cargarVacanteParaEditar()"><i class="fas fa-edit"></i> Cargar</button>
-            <button class="btn-delete-mode" style="padding:6px 10px; font-size:0.85rem;" onclick="eliminarVacanteWeb()"><i class="fas fa-trash-alt"></i> Borrar</button>
-            <button type="button" class="btn-edit-mode" style="background:#64748b;color:#fff; padding:6px 10px; font-size:0.85rem;" onclick="limpiarFormularioVacantes()"><i class="fas fa-eraser"></i> Limpiar</button>
-          </div>
-        </div>
+  <div id="tabCandidatos" class="tab-content"> 
+    <h2><i class="fas fa-user-check"></i> Historial de Candidatos Postulados</h2> 
+    <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 0.9rem;">Lista en tiempo real de registros procesados a través del formulario público.</p> 
+    <div style="overflow-x: auto;"> 
+      <table class="empresas-table"> 
+        <thead> 
+          <tr> 
+            <th>Fecha</th> 
+            <th>Nombre</th> 
+            <th>CURP</th> 
+            <th>Teléfono</th> 
+            <th>Edad</th> 
+            <th>Empresa / Vacante</th> 
+          </tr> 
+        </thead> 
+        <tbody id="tablaCandidatosBody"></tbody> 
+      </table> 
+    </div> 
+  </div> 
+
+  <div id="tabTransporte" class="tab-content"> 
+    <div class="form-admin"> 
+      <div class="section-divider"><i class="fas fa-brain" style="color:var(--purple-ia);"></i> Extracción de Rutas por IA (Gemini 2.5 Flash)</div> 
+      <div class="form-group"> 
+        <label>1. Selecciona la Empresa Destino:</label> 
+        <select id="transporteEmpresaSelect"></select> 
+      </div> 
+      <div class="form-group"> 
+        <label>2. Adjunta Imagen o Documento de Rutas (Formatos Admitidos: PNG, JPG, PDF, TXT):</label> 
+        <div class="file-upload-wrapper"> 
+          <span class="file-upload-btn" id="lblArchivoTransporteSeleccionado">Ningún archivo seleccionado</span> 
+          <input type="file" id="fileTransporteInput" accept=".png, .jpg, .jpeg, .pdf, .txt" onchange="actualizarNombreArchivoTransporte(this)"> 
+        </div> 
+      </div> 
+      <div class="form-group"> 
+        <label>3. Introduce tu Google AI Studio API Key:</label> 
+        <input type="password" id="apiKeyGeminiInput" placeholder="AIzaSy..."> 
+      </div> 
+      <button class="btn-add" id="btnProcesarTransporte" style="background-color: var(--purple-ia); width:100%; margin-top:10px;" onclick="procesarTransporteConIA()"> 
+        <i class="fas fa-brain"></i> Convertir Archivo a JSON y Guardar en Firebase 
+      </button> 
+    </div> 
+    <div id="boxPreviewTransporte" style="display:none; margin-top:20px;"> 
+      <h3 style="font-size:1rem; color:var(--white); margin-bottom:8px;"><i class="fas fa-code"></i> Vista Previa del JSON Generado y Guardado:</h3> 
+      <pre class="json-preview-box" id="jsonTransportePreview"></pre> 
+    </div> 
+  </div>
+
+  <div id="tabReclutadores" class="tab-content">
+    <div class="form-admin">
+      <div class="section-divider" id="tituloFormReclutador">Alta de Reclutador Oficial</div>
+      
+      <input type="hidden" id="recIdOculto">
+
+      <div class="form-group">
+        <label>Nombre y Apellidos:</label>
+        <input type="text" id="recNombre" placeholder="Ej: Carlos Mendoza">
+      </div>
+      
+      <div class="form-group">
+        <label>Teléfono (WhatsApp - 10 dígitos sin +):</label>
+        <input type="text" id="recTelefono" placeholder="Ej: 6461974763">
+      </div>
+      
+      <div class="form-group">
+        <label>Función asignada:</label>
+        <input type="text" id="recFuncion" value="reclutador" readonly style="background: #050b14; color: var(--text-muted); border-color: transparent;">
       </div>
 
-      <button class="accordion-toggle-btn" style="margin-top:15px;" onclick="toggleAccordionIa()">
-        <span><i class="fas fa-wand-magic-sparkles"></i> Extractor Inteligente IA</span>
-        <i class="fas fa-chevron-down" id="accordionArrow"></i>
-      </button>
-
-      <div id="accordionIaContent" class="accordion-content">
-        <div class="ia-box" style="margin-bottom:0;">
-          <label style="color:var(--purple-ia);font-weight:bold;display:block;margin-bottom:8px;"><i class="fas fa-bolt"></i> TEXTO COMPLETO O WHATSAPP (TXT -> JSON)</label>
-          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
-            <div class="file-input-wrapper">
-              <div class="btn-file-custom" style="padding:8px 14px; font-size:0.85rem;"><i class="fas fa-file-alt"></i> Subir .txt masivo</div>
-              <input type="file" id="archivoTxtInput" accept=".txt,text/plain" onchange="procesarTxtWhatsAppV6()">
-            </div>
-            <span id="nombreArchivoCargado" style="font-size:.8rem;color:var(--primary-orange);font-weight:600;word-break:break-all;">Ninguno</span>
-          </div>
-
-          <div id="contenedorResultadoVerde" style="display:none;margin-top:10px;">
-            <label style="color:#34d399; font-weight:bold; font-size:0.85rem; display:block; margin-bottom:5px;"><i class="fas fa-list-check"></i> Vacantes Detectadas por IA:</label>
-            <select id="selectorVacantesDetectadas" class="selector-puestos-verde" onchange="cambiarVacanteVerdeSeleccionada()"></select>
-            
-            <div class="preview-card-view">
-              <span style="font-size:0.9rem; font-weight:bold; color:white; display:block;" id="lblPreviewNombre">Nombre Vacante</span>
-              <div class="preview-grid-mini">
-                <div class="preview-mini-item"><strong>Salario</strong><span id="lblPreviewSalario">—</span></div>
-                <div class="preview-mini-item"><strong>Edad</strong><span id="lblPreviewEdad">—</span></div>
-                <div class="preview-mini-item"><strong>Lugar</strong><span id="lblPreviewLugar">—</span></div>
-                <div class="preview-mini-item"><strong>Turnos</strong><span id="lblPreviewTurnos">—</span></div>
-              </div>
-            </div>
-
-            <pre id="codigoJsonVerde" class="json-view"></pre>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:5px;">
-              <button class="btn-ia" onclick="transferirAlEspacioMorado()" style="background:var(--purple-ia);margin-top:0; font-size:0.8rem; padding:8px;"><i class="fas fa-arrow-down"></i> Copiar abajo</button>
-              <button class="btn-ia" onclick="subirTodasLasVacantesVerdesALote()" style="background:var(--green-success);margin-top:0; font-size:0.8rem; padding:8px;"><i class="fas fa-cloud-upload-alt"></i> Guardar Lote</button>
-            </div>
-          </div>
-
-          <textarea id="iaTextoPegar" placeholder="Pega aquí el JSON o texto bruto de WhatsApp..." style="width:100%;min-height:90px;margin-top:10px;border-color:var(--purple-ia);background:#1a1033;color:#e9d5ff;border-radius:6px;padding:10px;outline:none;font-size:0.85rem;"></textarea>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn-ia" id="btnInterpretarIa" style="width:100%;" onclick="procesarTextoBrutoTxt()"><i class="fas fa-wand-magic-sparkles"></i> Autorellenar Formulario</button>
-          </div>
-        </div>
+      <div class="dual-buttons-layout">
+        <button class="btn-add" id="btnGuardarReclutador" onclick="guardarReclutador()"><i class="fas fa-save"></i> Guardar Reclutador</button>
+        <button class="btn-edit-mode" style="background:#64748b; color:white; justify-content:center;" onclick="limpiarFormularioReclutadores()"><i class="fas fa-eraser"></i> Cancelar / Limpiar</button>
       </div>
     </div>
 
-    <div>
-      <div class="form-admin" style="margin-bottom:0;">
-        <div class="section-divider" style="margin-top:0;">Formulario de Registro de Vacante</div>
-        
-        <div class="sub-section-title"><i class="fas fa-fingerprint"></i> Enlaces e Identificación</div>
-        <div class="form-group"><label>ID Clave Puesto:</label><input type="text" id="secPuestoId" placeholder="Ej: ayudante-general"></div>
-        <div class="form-group"><label>Estatus de Publicación:</label><select id="secEstatus"><option value="disponible">✅ Activa (Visible)</option><option value="no_disponible">❌ Pausada (Oculta)</option></select></div>
-        <div class="form-group"><label>WhatsApp Reclutador (12 dígitos sin +):</label><input type="text" id="secTelefonoReclutador" placeholder="Ej: 526461974763"></div>
-        <div class="form-group full-width"><label>URL Banner Publicitario (Imagen):</label><input type="url" id="secBannerUrl" placeholder="https://..."></div>
-        
-        <div class="sub-section-title"><i class="fas fa-user-graduate"></i> Requisitos del Perfil</div>
-        <div class="form-group"><label>Nombre Oficial Vacante:</label><input type="text" id="secVacanteNombre" placeholder="Ej: Montacarguista HP"></div>
-        <div class="form-group"><label>Rango Edad Solicitado:</label><input type="text" id="secEdad" placeholder="Ej: 18 a 45 años"></div>
-        <div class="form-group"><label>Género / Sexo:</label><select id="secSexo"><option>Indistinto</option><option>Masculino</option><option>Femenino</option></select></div>
-        <div class="form-group"><label>Experiencia Mínima:</label><input type="text" id="secExperiencia" placeholder="Ej: 6 meses"></div>
-        <div class="form-group"><label>Escolaridad Mínima:</label><input type="text" id="secEscolaridad" placeholder="Ej: Secundaria"></div>
-        
-        <div class="sub-section-title"><i class="fas fa-hand-holding-dollar"></i> Condiciones de Trabajo</div>
-        <div class="form-group"><label>Salario Neto Ofrecido:</label><input type="text" id="secSalario" placeholder="Ej: $8,500 mensual"></div>
-        <div class="form-group"><label>Zona / Ubicación Laboral:</label><input type="text" id="secLugarOrigen" placeholder="Ej: El Salto, Jal."></div>
-        <div class="form-group"><label>Turnos / Horarios:</label><input type="text" id="secTurnos" placeholder="Ej: Rolados de 8 hrs"></div>
-        
-        <div class="sub-section-title"><i class="fas fa-align-left"></i> Descripción Detallada</div>
-        <div class="form-group full-width"><label>🛠️ Actividades Principales:</label><textarea id="secActividades" placeholder="Escribe las principales tareas del puesto..."></textarea></div>
-        <div class="form-group full-width"><label>🎁 Prestaciones y Beneficios:</label><textarea id="secBeneficios" placeholder="Ley, Seguro, Vales, Comedor, etc..."></textarea></div>
-        <div class="form-group full-width"><label>⚠️ Notas Generales / Internas:</label><textarea id="secInfoGeneral" placeholder="Información extra o datos de contacto..."></textarea></div>
-
-        <div class="final-actions-grid">
-          <button type="button" class="btn-add" onclick="guardarComoNuevaVacante()"><i class="fas fa-cloud-upload-alt"></i> Publicar Vacante</button>
-          <button type="button" class="btn-update-final" onclick="guardarActualizacionVacante()"><i class="fas fa-sync-alt"></i> Guardar Cambios</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<div id="tabRegistros" class="tab-content">
-  <div class="metrics-layout">
-    <div class="metric-card">
-      <div class="metric-val" id="contadorVisitas">0</div>
-      <div class="metric-lbl"><i class="fas fa-eye"></i> TOTAL VISITAS EN EL SITE</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-val" id="contadorPostulantes" style="color:var(--purple-ia);">0</div>
-      <div class="metric-lbl"><i class="fas fa-user-check"></i> TOTAL POSTULANTES REGISTRADOS</div>
+    <h2><i class="fas fa-address-book"></i> Directorio de Reclutadores Activos</h2>
+    <div style="overflow-x: auto;">
+      <table class="empresas-table">
+        <thead>
+          <tr>
+            <th>Nombre y Apellidos</th>
+            <th>Teléfono / WhatsApp</th>
+            <th>Función</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tablaReclutadoresBody"></tbody>
+      </table>
     </div>
   </div>
-
-  <div id="formularioEdicionPostulanteBox" class="postulante-edit-container">
-    <div class="section-divider" style="color: var(--purple-ia); border-bottom-color: var(--purple-ia); margin-top:0;">
-      <i class="fas fa-user-edit"></i> Formulario de Edición de Postulante
-    </div>
-    <input type="hidden" id="editPostulanteId">
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom:15px;">
-      <div class="form-group"><label>Nombre Completo:</label><input type="text" id="editPostNombre"></div>
-      <div class="form-group"><label>Edad:</label><input type="text" id="editPostEdad"></div>
-      <div class="form-group"><label>Sexo / Género:</label><input type="text" id="editPostSexo"></div>
-      <div class="form-group"><label>CURP:</label><input type="text" id="editPostCurp"></div>
-      <div class="form-group"><label>Empresa de Interés:</label><input type="text" id="editPostEmpresa"></div>
-      <div class="form-group"><label>Vacante Solicitada:</label><input type="text" id="editPostVacante"></div>
-    </div>
-    
-    <div class="final-actions-grid" style="margin-top:0;">
-      <button type="button" class="btn-update-final" style="background: var(--purple-ia);" onclick="guardarCambiosPostulante()"><i class="fas fa-save"></i> Guardar Cambios</button>
-      <button type="button" class="btn-edit-mode" style="background: #475569; color: white; justify-content: center;" onclick="cerrarFormularioPostulante()"><i class="fas fa-times"></i> Cancelar</button>
-    </div>
-  </div>
-
-  <h2 style="font-size:1.15rem; color:var(--purple-ia);"><i class="fas fa-users"></i> Directorio de Postulantes Registrados</h2>
-  <div class="search-container" style="border-color: var(--purple-ia);">
-    <i class="fas fa-search" style="color: var(--text-muted);"></i>
-    <input type="text" id="buscadorPostulantes" placeholder="Buscar por nombre, edad, sexo, CURP, empresa o vacante..." oninput="filtrarPostulantes()">
-  </div>
-
-  <div style="overflow-x: auto;">
-    <table class="empresas-table" style="font-size: 0.85rem;">
-      <thead>
-        <tr style="background:#0d1724;">
-          <th style="color:var(--purple-ia);">Nombre</th>
-          <th style="color:var(--purple-ia);">Edad</th>
-          <th style="color:var(--purple-ia);">Sexo</th>
-          <th style="color:var(--purple-ia);">CURP</th>
-          <th style="color:var(--purple-ia);">Empresa</th>
-          <th style="color:var(--purple-ia);">Vacante Interés</th>
-          <th style="color:var(--purple-ia); text-align:center;">Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="tablaPostulantesBody"></tbody>
-    </table>
-  </div>
-</div>
-
-<div id="tabTransporte" class="tab-content">
-  <div class="form-admin" style="grid-template-columns: 1fr;">
-    <div class="section-divider" style="margin-top:0;">Asignación de Logística y Transporte por Empresa</div>
-    
-    <div class="form-group" style="margin-bottom:15px;">
-      <label>1. Selecciona la Empresa Destino:</label>
-      <select id="transporteEmpresaSelect" style="width:100%;">
-        <option value="">-- Elige una Empresa --</option>
-      </select>
-    </div>
-
-    <div class="ia-box" style="background: rgba(16, 185, 129, 0.03); border: 1px dashed var(--green-success); padding:20px;">
-      <label style="color:var(--green-success); font-weight:bold; display:block; margin-bottom:8px;">
-        <i class="fas fa-file-import"></i> 2. Cargar Documento de Logística o Rutas (.pdf, .jpg, .png, .txt, .docx)
-      </label>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0; margin-bottom:12px;">
-        Sube el croquis, lista de horarios en Word/PDF, imagen de paradas o mensajes informativos. La IA de Gemini creará el JSON de transporte automáticamente.
-      </p>
-
-      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-        <div class="file-input-wrapper">
-          <div class="btn-file-custom" style="background:var(--green-success);"><i class="fas fa-upload"></i> Seleccionar Archivo</div>
-          <input type="file" id="archivoTransporteInput" accept=".pdf,.jpg,.jpeg,.png,.txt,.docx" onchange="actualizarLabelArchivoTransporte()">
-        </div>
-        <span id="lblArchivoTransporteSeleccionado" style="font-size:0.9rem; color:var(--primary-orange); font-weight:bold;">Ningún archivo seleccionado</span>
-      </div>
-
-      <button type="button" class="btn-ia" id="btnProcesarTransporte" style="background:var(--blue-update); width:100%; margin-top:15px; font-size:1rem; padding:12px;" onclick="procesarDocumentoTransporteConGemini()">
-        <i class="fas fa-brain"></i> Convertir Archivo a JSON y Guardar en Firebase
-      </button>
-    </div>
-
-    <div id="boxPreviewTransporte" style="display:none; margin-top:15px; background:#0a1524; border:1px solid var(--blue-update); padding:15px; border-radius:10px;">
-      <h3 style="color:var(--blue-update); margin-top:0; font-size:1.1rem;"><i class="fas fa-clipboard-check"></i> JSON Generado y Almacenado Exitosamente:</h3>
-      <pre id="jsonTransportePreview" style="background:#040a12; color:#38bdf8; padding:12px; border-radius:6px; font-size:0.85rem; max-height:250px; overflow:auto; border:1px solid var(--border-color); white-space:pre-wrap;"></pre>
-    </div>
-  </div>
-</div>
 
 </div> 
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-import { GoogleGenAI, Type } from "https://esm.run/@google/genai";
+<script type="module"> 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"; 
+import { getDatabase, ref, set, push, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"; 
+import { GoogleGenAI } from "https://esm.run/@google/genai"; 
 
-const firebaseConfig = { databaseURL: "https://bolsa-de-trabajo-workforce-default-rtdb.firebaseio.com/" };
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const firebaseConfig = { 
+  databaseURL: "https://bolsa-de-trabajo-workforce-default-rtdb.firebaseio.com/" 
+}; 
 
-let empresasData = {};
-let vacantesProcesadasGlobal = [];
-let baseVacantesActualesEnFirebase = {};
-let cachePostulantesGlobal = {}; 
+const app = initializeApp(firebaseConfig); 
+const db = getDatabase(app); 
 
-const apiKeyInput = document.getElementById('geminiApiKeyInput');
-if(localStorage.getItem('gemini_api_key')) apiKeyInput.value = localStorage.getItem('gemini_api_key');
-apiKeyInput.addEventListener('input', (e) => localStorage.setItem('gemini_api_key', e.target.value.trim()));
+let cacheEmpresas = {}; 
 
-document.querySelectorAll('.tabs-menu .tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tabs-menu .tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
-  });
-});
+// GESTIÓN DE PESTAÑAS 
+const tabButtons = document.querySelectorAll('.tab-btn'); 
+const tabContents = document.querySelectorAll('.tab-content'); 
 
-window.toggleAccordionIa = function() {
-  const content = document.getElementById('accordionIaContent');
-  const arrow = document.getElementById('accordionArrow');
-  content.classList.toggle('open');
-  if(content.classList.contains('open')) {
-    arrow.className = "fas fa-chevron-up";
-  } else {
-    arrow.className = "fas fa-chevron-down";
-  }
-};
+tabButtons.forEach(btn => { 
+  btn.addEventListener('click', () => { 
+    tabButtons.forEach(b => b.classList.remove('active')); 
+    tabContents.forEach(c => c.classList.remove('active')); 
+    btn.classList.add('active'); 
+    const targetTab = btn.getAttribute('data-tab'); 
+    document.getElementById(targetTab).classList.add('active'); 
+  }); 
+}); 
 
-window.limpiarFormularioEmpresas = function() {
-  ['admId','admNombre','admUbicacion','admLink','admImagen','admTags'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
-  document.getElementById('admId').value = '';
-  document.getElementById('admLink').value = 'https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/';
-  document.getElementById('admId').disabled = false;
-};
+// --- MÓDULO 1: EMPRESAS (CRUD) --- 
+window.guardarEmpresa = async function() { 
+  const id = document.getElementById('empIdOculto').value.trim(); 
+  const nombre = document.getElementById('empNombre').value.trim(); 
+  const ubicacion = document.getElementById('empUbicacion').value.trim(); 
+  const link = document.getElementById('empLink').value.trim(); 
+  const imagen = document.getElementById('empImagen').value.trim(); 
+  const tags = document.getElementById('empTags').value.trim(); 
 
-window.cargarEmpresaParaEditar = function(id) {
-  const e = empresasData[id];
-  if(!e) return;
-  document.getElementById('admId').value = e.id;
-  document.getElementById('admId').disabled = true; 
-  document.getElementById('admNombre').value = e.nombre;
-  document.getElementById('admUbicacion').value = e.ubicacion || '';
-  document.getElementById('admLink').value = e.link || '';
-  document.getElementById('admImagen').value = e.imagen || '';
-  document.getElementById('admTags').value = e.tags || '';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};
+  if (!nombre || !ubicacion) return alert('Por favor ingresa al menos Nombre y Ubicación.'); 
 
-window.eliminarEmpresa = async function(id) {
-  if(confirm(`⚠️ ¿Seguro que deseas eliminar la empresa con ID: "${id}"?`)) {
-    try {
-      await remove(ref(db, `empresas/${id}`));
-      alert('✅ Eliminada correctamente');
-    } catch(e) { alert('❌ Error: ' + e.message); }
-  }
-};
+  const payload = { nombre, ubicacion, link, imagen: imagen || "imagen-logo.jpg", tags }; 
 
-window.eliminarEmpresaPorInput = async function() {
-  const id = document.getElementById('admId').value.trim();
-  if(!id) return alert('⚠️ Escribe el ID de la empresa en el formulario.');
-  await eliminarEmpresa(id);
-  limpiarFormularioEmpresas();
-};
+  try { 
+    if (id) { 
+      await set(ref(db, `empresas/${id}`), payload); 
+      alert('Empresa actualizada con éxito.'); 
+    } else { 
+      const nuevaRef = push(ref(db, 'empresas')); 
+      await set(nuevaRef, payload); 
+      alert('Empresa registrada con éxito.'); 
+    } 
+    limpiarFormularioEmpresa(); 
+  } catch (e) { alert('Error: ' + e.message); } 
+}; 
 
-window.agregarEmpresaPrincipal = async function(){
-  const id = sanitizarId(document.getElementById('admId').value);
-  const nombre = document.getElementById('admNombre').value.trim();
-  if(!id||!nombre) return alert('⚠️ ID y nombre obligatorios');
-  const payload = {
-    id, nombre,
-    ubicacion: document.getElementById('admUbicacion').value.trim(),
-    link: document.getElementById('admLink').value.trim(),
-    imagen: document.getElementById('admImagen').value.trim(),
-    tags: document.getElementById('admTags').value.trim(),
-    actualizado: new Date().toISOString()
-  };
-  try{
-    await set(ref(db,`empresas/${id}`), payload);
-    alert('✅ Empresa guardada');
-    limpiarFormularioEmpresas();
-  }catch(e){ alert('❌ Error: '+e.message); }
-};
+window.eliminarEmpresa = async function(id) { 
+  if (confirm('¿Seguro que deseas eliminar esta empresa y sus vacantes vinculadas?')) { 
+    try { 
+      await remove(ref(db, `empresas/${id}`)); 
+      await remove(ref(db, `vacantes_detalles/${id}`)); 
+      alert('Empresa eliminada.'); 
+    } catch(e) { alert(e.message); } 
+  } 
+}; 
 
-window.filtrarEmpresas = function() {
-  const bus = document.getElementById('tablaBuscador').value.toLowerCase().trim();
-  document.querySelectorAll('#adminTablaEmpresas tr').forEach(tr => {
-    tr.style.display = tr.innerText.toLowerCase().includes(bus) ? '' : 'none';
-  });
-};
-
-onValue(ref(db,'empresas'), snap=>{
-  const tb = document.getElementById('adminTablaEmpresas');
-  const selSec = document.getElementById('secEmpresaSelect');
-  const selTrans = document.getElementById('transporteEmpresaSelect');
+window.cargarEmpresaParaEditar = function(id, nombre, ubicacion, link, imagen, tags) { 
+  document.getElementById('empIdOculto').value = id; 
+  document.getElementById('empNombre').value = nombre; 
+  document.getElementById('empUbicacion').value = ubicacion; 
+  document.getElementById('empLink').value = (link !== "undefined" && link !== "null") ? link : ""; 
+  document.getElementById('empImagen').value = (imagen !== "undefined" && imagen !== "null") ? imagen : ""; 
+  document.getElementById('empTags').value = (tags !== "undefined" && tags !== "null") ? tags : ""; 
   
-  tb.innerHTML='';
-  selSec.innerHTML='<option value="">-- Elige una Empresa --</option>';
-  selTrans.innerHTML='<option value="">-- Elige una Empresa --</option>';
+  document.getElementById('tituloFormEmpresa').innerText = "✏️ Modificando Empresa Seleccionada"; 
+  document.getElementById('btnGuardarEmpresa').innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Empresa'; 
+}; 
+
+window.limpiarFormularioEmpresa = function() { 
+  document.getElementById('empIdOculto').value = ''; 
+  document.getElementById('empNombre').value = ''; 
+  document.getElementById('empUbicacion').value = ''; 
+  document.getElementById('empLink').value = ''; 
+  document.getElementById('empImagen').value = ''; 
+  document.getElementById('empTags').value = ''; 
+  document.getElementById('tituloFormEmpresa').innerText = "Dar de Alta Nueva Empresa Matriz"; 
+  document.getElementById('btnGuardarEmpresa').innerHTML = '<i class="fas fa-save"></i> Guardar Empresa'; 
+}; 
+
+// ESCUCHA EN TIEMPO REAL - EMPRESAS 
+onValue(ref(db, 'empresas'), (snap) => { 
+  const tbody = document.getElementById('tablaEmpresasBody'); 
+  const selectVac = document.getElementById('vacEmpresaSelect'); 
+  const selectTrans = document.getElementById('transporteEmpresaSelect'); 
   
-  empresasData = snap.val()||{};
-  
-  Object.values(empresasData).forEach(e=>{
-    tb.innerHTML += `<tr>
-      <td><img src="${e.imagen||'https://cdn-icons-png.flaticon.com/512/1041/1041916.png'}" alt=""></td>
-      <td><code>${e.id}</code></td>
-      <td><strong>${e.nombre}</strong></td>
-      <td>${e.ubicacion||''}</td>
-      <td>
-         <div style="display:flex; gap:6px;">
-           <button class="btn-edit-mode" style="padding:4px 8px;" onclick="cargarEmpresaParaEditar('${e.id}')"><i class="fas fa-edit"></i></button>
-           <button class="btn-delete-mode" style="padding:4px 8px;" onclick="eliminarEmpresa('${e.id}')"><i class="fas fa-trash"></i></button>
-         </div>
-      </td>
-    </tr>`;
-    selSec.innerHTML += `<option value="${e.id}">${e.nombre}</option>`;
-    selTrans.innerHTML += `<option value="${e.id}">${e.nombre}</option>`;
-  });
-});
+  tbody.innerHTML = ''; 
+  selectVac.innerHTML = ''; 
+  selectTrans.innerHTML = ''; 
+  cacheEmpresas = snap.val() || {}; 
 
-const IA_V6 = {
-  esquemaBols: {
-    type: Type.ARRAY, description: "Lista de vacantes.",
-    items: {
-      type: Type.OBJECT,
-      properties: {
-        vacanteNombre: { type: Type.STRING }, salario: { type: Type.STRING }, edad: { type: Type.STRING },
-        lugarOrigen: { type: Type.STRING }, turnos: { type: Type.STRING }, sexo: { type: Type.STRING },
-        experiencia: { type: Type.STRING }, escolaridad: { type: Type.STRING }, actividades: { type: Type.STRING },
-        beneficios: { type: Type.STRING }, informacionGeneral: { type: Type.STRING }, telefonoReclutador: { type: Type.STRING }
-      }, required: ["vacanteNombre", "salario", "edad", "lugarOrigen", "turnos", "sexo", "experiencia", "escolaridad", "actividades", "beneficios", "informacionGeneral", "telefonoReclutador"]
-    }
-  },
-  async llamarInterprete(texto) {
-    const key = localStorage.getItem('gemini_api_key') || apiKeyInput.value.trim();
-    if (!key) { alert("⚠️ Ingresa tu API Key arriba."); throw new Error("Falta Key"); }
-    const response = await new GoogleGenAI({ apiKey: key }).models.generateContent({
-      model: "gemini-2.5-flash", contents: `Extrae cada puesto del texto:\n${texto}`,
-      config: { responseMimeType: "application/json", responseSchema: this.esquemaBols }
-    });
-    return JSON.parse(response.text);
+  if (Object.keys(cacheEmpresas).length === 0) { 
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay empresas dadas de alta.</td></tr>'; 
+    return; 
+  } 
+
+  for (let id in cacheEmpresas) { 
+    const emp = cacheEmpresas[id]; 
+    
+    selectVac.innerHTML += `<option value="${id}">${emp.nombre}</option>`; 
+    selectTrans.innerHTML += `<option value="${id}">${emp.nombre}</option>`; 
+
+    const tr = document.createElement('tr'); 
+    tr.innerHTML = ` 
+      <td style="font-weight:bold; color:var(--white);">${emp.nombre}</td> 
+      <td>${emp.ubicacion}</td> 
+      <td><a href="${emp.link || '#'}" target="_blank" style="color:var(--primary-orange); text-decoration:none;">${emp.link ? 'Ver Enlace' : 'No asignado'}</a></td> 
+      <td> 
+        <div class="actions-layout"> 
+          <button class="btn-edit-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="cargarEmpresaParaEditar('${id}','${emp.nombre}','${emp.ubicacion}','${emp.link}','${emp.imagen}','${emp.tags}')"><i class="fas fa-edit"></i></button> 
+          <button class="btn-delete-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="eliminarEmpresa('${id}')"><i class="fas fa-trash"></i></button> 
+        </div> 
+      </td> 
+    `; 
+    tbody.appendChild(tr); 
+  } 
+}); 
+
+// --- MÓDULO 2: CONTROL DE VACANTES MASIVO (CRUD) --- 
+window.guardarVacante = async function() { 
+  const empId = document.getElementById('vacEmpresaSelect').value; 
+  const puestoId = document.getElementById('vacPuestoId').value.trim().toLowerCase().replace(/\s+/g, '-'); 
+  const vacanteNombre = document.getElementById('vacNombre').value.trim(); 
+  const telefonoReclutador = document.getElementById('vacTelefonoRec').value.trim(); 
+  const requisitos = document.getElementById('vacRequisitos').value.trim().split('\n').filter(r => r.length > 0); 
+  const ofrecimientos = document.getElementById('vacOfrecimientos').value.trim().split('\n').filter(o => o.length > 0); 
+
+  if (!empId || !puestoId || !vacanteNombre) return alert('Por favor define la Empresa, ID de puesto y Nombre.'); 
+
+  const payload = { puestoId, vacanteNombre, telefonoReclutador, requisitos, ofrecimientos }; 
+
+  try { 
+    await set(ref(db, `vacantes_detalles/${empId}/${puestoId}`), payload); 
+    alert('Vacante almacenada/actualizada con éxito.'); 
+    limpiarFormularioVacante(); 
+  } catch(e) { alert(e.message); } 
+}; 
+
+window.eliminarVacante = async function(empId, puestoId) { 
+  if (confirm('¿Deseas deshabilitar y eliminar esta vacante?')) { 
+    try { 
+      await remove(ref(db, `vacantes_detalles/${empId}/${puestoId}`)); 
+      alert('Vacante borrada.'); 
+    } catch(e) { alert(e.message); } 
+  } 
+}; 
+
+window.cargarVacanteParaEditar = function(empId, puestoId, nombre, tel, reqString, ofreString) { 
+  document.getElementById('vacEmpresaSelect').value = empId; 
+  document.getElementById('vacPuestoId').value = puestoId; 
+  document.getElementById('vacNombre').value = nombre; 
+  document.getElementById('vacTelefonoRec').value = (tel !== "undefined") ? tel : ""; 
+  document.getElementById('vacRequisitos').value = decodeURIComponent(reqString); 
+  document.getElementById('vacOfrecimientos').value = decodeURIComponent(ofreString); 
+
+  document.getElementById('tituloFormVacante').innerText = "✏️ Editando Vacante Activa"; 
+  document.getElementById('btnGuardarVacante').innerHTML = '<i class="fas fa-sync-alt"></i> Guardar Cambios'; 
+}; 
+
+window.limpiarFormularioVacante = function() { 
+  document.getElementById('vacPuestoId').value = ''; 
+  document.getElementById('vacNombre').value = ''; 
+  document.getElementById('vacTelefonoRec').value = ''; 
+  document.getElementById('vacRequisitos').value = ''; 
+  document.getElementById('vacOfrecimientos').value = ''; 
+  document.getElementById('tituloFormVacante').innerText = "Configuración de Vacante Específica"; 
+  document.getElementById('btnGuardarVacante').innerHTML = '<i class="fas fa-save"></i> Guardar Vacante'; 
+}; 
+
+// ESCUCHA EN TIEMPO REAL - VACANTES 
+onValue(ref(db, 'vacantes_detalles'), (snap) => { 
+  const tbody = document.getElementById('tablaVacantesBody'); 
+  tbody.innerHTML = ''; 
+  const data = snap.val() || {}; 
+
+  if (Object.keys(data).length === 0) { 
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No hay vacantes configuradas.</td></tr>'; 
+    return; 
+  } 
+
+  for (let empId in data) { 
+    const empNombre = cacheEmpresas[empId] ? cacheEmpresas[empId].nombre : 'Desconocida'; 
+    const puestos = data[empId]; 
+    for (let puestoId in puestos) { 
+      const vac = puestos[puestoId]; 
+      
+      const reqString = vac.requisitos ? vac.requisitos.join('\n') : ''; 
+      const ofreString = vac.ofrecimientos ? vac.ofrecimientos.join('\n') : ''; 
+
+      const tr = document.createElement('tr'); 
+      tr.innerHTML = ` 
+        <td><span style="color:var(--primary-orange); font-weight:bold;">${empNombre}</span></td> 
+        <td><code>${vac.puestoId}</code></td> 
+        <td style="color:var(--white); font-weight:600;">${vac.vacanteNombre}</td> 
+        <td>${vac.telefonoReclutador || 'Por defecto'}</td> 
+        <td> 
+          <div class="actions-layout"> 
+            <button class="btn-edit-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="cargarVacanteParaEditar('${empId}','${vac.puestoId}','${vac.vacanteNombre}','${vac.telefonoReclutador}','${encodeURIComponent(reqString)}','${encodeURIComponent(ofreString)}')"><i class="fas fa-edit"></i></button> 
+            <button class="btn-delete-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="eliminarVacante('${empId}','${vac.puestoId}')"><i class="fas fa-trash"></i></button> 
+          </div> 
+        </td> 
+      `; 
+      tbody.appendChild(tr); 
+    } 
+  } 
+}); 
+
+// --- MÓDULO 3: HISTORIAL DE CANDIDATOS --- 
+onValue(ref(db, 'candidatos'), (snap) => { 
+  const tbody = document.getElementById('tablaCandidatosBody'); 
+  tbody.innerHTML = ''; 
+  const data = snap.val() || {}; 
+
+  if (Object.keys(data).length === 0) { 
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay registros de candidatos capturados aún.</td></tr>'; 
+    return; 
+  } 
+
+  // Mostrar ordenando de los más recientes a los más antiguos
+  const listaOrdenada = Object.values(data).reverse(); 
+
+  listaOrdenada.forEach(c => { 
+    const tr = document.createElement('tr'); 
+    tr.innerHTML = ` 
+      <td style="color:var(--text-muted); font-size:0.82rem;">${c.fechaRegistro || 'N/A'}</td> 
+      <td style="font-weight:bold; color:var(--white);">${c.nombre}</td> 
+      <td style="font-family:monospace;">${c.curp}</td> 
+      <td><a href="https://wa.me/${c.telefono}" target="_blank" style="color:var(--green-whatsapp); text-decoration:none; font-weight:bold;"><i class="fab fa-whatsapp"></i> ${c.telefono}</a></td> 
+      <td>${c.edad} años</td> 
+      <td><span style="color:var(--primary-orange); font-weight:600;">${c.empresa}</span><br><small style="color:var(--text-muted);">${c.vacante}</small></td> 
+    `; 
+    tbody.appendChild(tr); 
+  }); 
+}); 
+
+// --- MÓDULO 4: CENTRO DE TRANSPORTE E INTELIGENCIA ARTIFICIAL --- 
+window.actualizarNombreArchivoTransporte = function(input) { 
+  const lbl = document.getElementById('lblArchivoTransporteSeleccionado'); 
+  lbl.textContent = input.files.length > 0 ? input.files[0].name : "Ningún archivo seleccionado"; 
+}; 
+
+window.procesarTransporteConIA = async function() { 
+  const empId = document.getElementById('transporteEmpresaSelect').value; 
+  const fileInput = document.getElementById('fileTransporteInput'); 
+  const key = document.getElementById('apiKeyGeminiInput').value.trim(); 
+  const btn = document.getElementById('btnProcesarTransporte'); 
+
+  if (!empId) return alert('Por favor, selecciona una empresa matriz primero.'); 
+  if (fileInput.files.length === 0) return alert('Debes adjuntar un archivo o imagen con la información de las rutas.'); 
+  if (!key) return alert('Es obligatorio introducir una clave API Key válida de Google AI Studio.'); 
+
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gemini procesando datos lógicos, por favor espera...'; 
+  btn.disabled = true; 
+
+  const archivo = fileInput.files[0]; 
+  const lector = new FileReader(); 
+
+  lector.onload = async function(e) { 
+    try { 
+      const base64Completo = e.target.result; 
+      const base64Data = base64Completo.split(',')[1]; 
+      const mimeType = base64Completo.split(',')[0].split(':')[1].split(';')[0]; 
+
+      const esquemaTransporte = { 
+        type: "object", 
+        properties: { 
+          empresaId: { type: "string" }, 
+          totalRutasContabilizadas: { type: "integer" }, 
+          rutas: { 
+            type: "array", 
+            items: { 
+              type: "object", 
+              properties: { 
+                nombreRuta: { type: "string" }, 
+                turno: { type: "string" }, 
+                puntosDeAbordaje: { 
+                  type: "array", 
+                  items: { type: "string" } 
+                } 
+              }, 
+              required: ["nombreRuta", "turno", "puntosDeAbordaje"] 
+            } 
+          } 
+        }, 
+        required: ["empresaId", "totalRutasContabilizadas", "rutas"] 
+      }; 
+
+      const prompt = ` 
+        Eres un ingeniero analista de logística experto. Tu tarea consiste en extraer de forma sumamente precisa 
+        todas las rutas de transporte de personal reflejadas en este archivo adjunto. 
+        Mapea el identificador de la empresa como: "${empId}". 
+        Devuelve el resultado estrictamente apegado al esquema JSON provisto, estructurando los nombres de las rutas, 
+        el turno correspondiente y la lista secuencial ordenada de paradas/puntos de abordaje. No inventes datos. 
+        Si un dato no es legible, omítelo de manera estructurada. 
+      `; 
+
+      const ai = new GoogleGenAI({ apiKey: key }); 
+      const response = await ai.models.generateContent({ 
+        model: "gemini-2.5-flash", 
+        contents: [ 
+          { 
+            inlineData: { 
+              data: base64Data, 
+              mimeType: mimeType 
+            } 
+          }, 
+          prompt 
+        ], 
+        config: { 
+          responseMimeType: "application/json", 
+          responseSchema: esquemaTransporte 
+        } 
+      }); 
+
+      const jsonResultado = JSON.parse(response.text.trim()); 
+      jsonResultado.actualizadoLogistica = new Date().toISOString(); 
+
+      await set(ref(db, `rutas_transporte/${empId}`), jsonResultado); 
+
+      document.getElementById('jsonTransportePreview').textContent = JSON.stringify(jsonResultado, null, 2); 
+      document.getElementById('boxPreviewTransporte').style.display = 'block'; 
+      
+      alert('🚀 ¡Éxito! Las rutas de transporte se extrajeron y guardaron dinámicamente para la empresa.'); 
+      
+      fileInput.value = ''; 
+      document.getElementById('lblArchivoTransporteSeleccionado').textContent = "Ningún archivo seleccionado"; 
+
+    } catch (error) { 
+      console.error(error); 
+      alert('❌ Error al procesar el archivo: ' + error.message); 
+    } finally { 
+      btn.innerHTML = '<i class="fas fa-brain"></i> Convertir Archivo a JSON y Guardar en Firebase'; 
+      btn.disabled = false; 
+    } 
+  }; 
+
+  lector.readAsDataURL(archivo); 
+}; 
+
+// --- MÓDULO 5: CONTROL Y CRUD DE RECLUTADORES ---
+
+window.guardarReclutador = async function() {
+  const idOculto = document.getElementById('recIdOculto').value.trim();
+  const nombre = document.getElementById('recNombre').value.trim();
+  const telefono = document.getElementById('recTelefono').value.trim();
+  const funcion = document.getElementById('recFuncion').value.trim();
+
+  if (!nombre || !telefono) {
+    alert("⚠️ Por favor, completa todos los campos requeridos (Nombre y Teléfono).");
+    return;
   }
-};
 
-window.escucharVacantesExistentes = function(empresaId){
-  const box = document.getElementById('boxGestionVacantes');
-  const sel = document.getElementById('selectorVacantesEnFirebase');
-  if(!empresaId){ box.style.display='none'; sel.innerHTML=''; return; }
-  onValue(ref(db,`vacantes_detalles/${empresaId}`), snap=>{
-    sel.innerHTML='<option value="">-- Selecciona vacante --</option>';
-    baseVacantesActualesEnFirebase = snap.val() || {};
-    Object.keys(baseVacantesActualesEnFirebase).forEach(k=> {
-      if(k && k!=='undefined') sel.innerHTML += `<option value="${k}">[${k}] ${baseVacantesActualesEnFirebase[k].vacanteNombre}</option>`;
-    });
-    box.style.display='block';
-  }, {onlyOnce:true});
-};
-
-window.cargarVacanteParaEditar = function(){
-  const k = document.getElementById('selectorVacantesEnFirebase').value;
-  if(!k || !baseVacantesActualesEnFirebase[k]) return alert('Selecciona una vacante');
-  const v = baseVacantesActualesEnFirebase[k];
-  ['secPuestoId','secEstatus','secVacanteNombre','secSalario','secEdad','secLugarOrigen','secTurnos','secSexo','secExperiencia','secEscolaridad','secBannerUrl','secActividades','secBeneficios','secInfoGeneral','secTelefonoReclutador'].forEach(id=>{
-    const c = id.replace('sec','').charAt(0).toLowerCase()+id.replace('sec','').slice(1);
-    const element = document.getElementById(id);
-    if(element) element.value = v[c] || '';
-  });
-  document.getElementById('secPuestoId').value = k;
-};
-
-window.eliminarVacanteWeb = function(){
-  const e = document.getElementById('secEmpresaSelect').value;
-  const k = document.getElementById('selectorVacantesEnFirebase').value;
-  if(!e||!k) return alert('Faltan datos');
-  if(confirm(`¿Eliminar la vacante permanentemente?`)) {
-    remove(ref(db,`vacantes_detalles/${e}/${k}`)).then(()=>{ alert('Eliminada.'); limpiarFormularioVacantes(); escucharVacantesExistentes(e); });
+  // Validación básica del teléfono para guardarlo limpio
+  if(isNaN(telefono) || telefono.length < 10) {
+    alert("⚠️ El número de teléfono debe ser puramente numérico y contener al menos 10 dígitos.");
+    return;
   }
-};
 
-window.limpiarFormularioVacantes = function(){
-  ['secPuestoId','secVacanteNombre','secSalario','secEdad','secLugarOrigen','secTurnos','secExperiencia','secEscolaridad','secBannerUrl','secActividades','secBeneficios','secInfoGeneral','secTelefonoReclutador'].forEach(id=>{
-     const el = document.getElementById(id);
-     if(el) el.value='';
-  });
-};
-
-window.procesarTxtWhatsAppV6 = async function(){
-  const input = document.getElementById('archivoTxtInput');
-  if(!input.files.length) return;
-  document.getElementById('nombreArchivoCargado').textContent = input.files[0].name;
-  const lector = new FileReader();
-  lector.onload = async ev=>{
-    try {
-      const btn = document.getElementById('btnInterpretarIa');
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Extrayendo de Archivo...';
-      vacantesProcesadasGlobal = await IA_V6.llamarInterprete(ev.target.result);
-      const sel = document.getElementById('selectorVacantesDetectadas');
-      sel.innerHTML = "";
-      vacantesProcesadasGlobal.forEach((p, idx) => sel.innerHTML += `<option value="${idx}">Puesto [${idx+1}]: ${p.vacanteNombre}</option>`);
-      cambiarVacanteVerdeSeleccionada();
-      document.getElementById('contenedorResultadoVerde').style.display='block';
-    } catch(err) { alert(err.message); } finally { document.getElementById('btnInterpretarIa').innerHTML = 'Autorellenar Formulario'; }
-  };
-  lector.readAsText(input.files[0],'UTF-8');
-};
-
-window.cambiarVacanteVerdeSeleccionada = function(){
-  const i = document.getElementById('selectorVacantesDetectadas').value;
-  const data = vacantesProcesadasGlobal[i];
-  if(data) {
-    document.getElementById('codigoJsonVerde').textContent = JSON.stringify(data,null,2);
-    document.getElementById('lblPreviewNombre').textContent = data.vacanteNombre || 'Sin nombre';
-    document.getElementById('lblPreviewSalario').textContent = data.salario || '—';
-    document.getElementById('lblPreviewEdad').textContent = data.edad || '—';
-    document.getElementById('lblPreviewLugar').textContent = data.lugarOrigen || '—';
-    document.getElementById('lblPreviewTurnos').textContent = data.turnos || '—';
-  }
-};
-
-window.transferirAlEspacioMorado = function(){ document.getElementById('iaTextoPegar').value = document.getElementById('codigoJsonVerde').textContent; };
-
-window.subirTodasLasVacantesVerdesALote = async function() {
-  const eDestino = document.getElementById('secEmpresaSelect').value;
-  if (!eDestino) return alert('⚠️ Selecciona una empresa destino');
-  if(confirm(`¿Subir todas las vacantes en lote?`)) {
-    try {
-      for (const p of vacantesProcesadasGlobal) {
-        const pId = sanitizarId(p.vacanteNombre.toLowerCase().split(' ')[0] + "-" + Math.floor(Math.random()*1000));
-        await set(ref(db, `vacantes_detalles/${eDestino}/${pId}`), {
-          puestoId: pId, estatus:"disponible", vacanteNombre: p.vacanteNombre||'Sin nombre', salario: p.salario||'No especificado',
-          edad: p.edad||'Indistinto', lugarOrigen: p.lugarOrigen||'No especificado', turnos: p.turnos||'No especificado', sexo: p.sexo||'Indistinto',
-          experiencia: p.experiencia||'No especificada', escolaridad: p.escolaridad||'No especificada', bannerUrl:"",
-          actividades: p.actividades||'', beneficios: p.beneficios||'', informacionGeneral: p.informacionGeneral||'', 
-          telefonoReclutador: p.telefonoReclutador||'526461974763', actualizado: new Date().toISOString()
-        });
-      }
-      alert('🚀 Lote masivo subido correctamente.');
-      document.getElementById('contenedorResultadoVerde').style.display = 'none';
-      escucharVacantesExistentes(eDestino);
-    } catch(err) { alert(err.message); }
-  }
-};
-
-window.procesarTextoBrutoTxt = async function(){
-  const raw = document.getElementById('iaTextoPegar').value.trim();
-  if(!raw) return alert('Campo vacío');
   try {
-    let d = raw.startsWith('{') ? JSON.parse(raw) : (await IA_V6.llamarInterprete(raw))[0];
-    document.getElementById('secVacanteNombre').value = d.vacanteNombre||'';
-    document.getElementById('secSalario').value = d.salario||'';
-    document.getElementById('secEdad').value = d.edad||'';
-    document.getElementById('secLugarOrigen').value = d.lugarOrigen||'';
-    document.getElementById('secTurnos').value = d.turnos||'';
-    document.getElementById('secExperiencia').value = d.experiencia||'';
-    document.getElementById('secEscolaridad').value = d.escolaridad||'';
-    document.getElementById('secActividades').value = d.actividades||'';
-    document.getElementById('secBeneficios').value = d.beneficios||'';
-    document.getElementById('secInfoGeneral').value = d.informacionGeneral||'';
-    document.getElementById('secTelefonoReclutador').value = d.telefonoReclutador||'526461974763';
-    if(d.sexo) document.getElementById('secSexo').value = d.sexo;
-    if(d.vacanteNombre) document.getElementById('secPuestoId').value = sanitizarId(d.vacanteNombre.toLowerCase().split(' ')[0]);
-  } catch(e) { alert('Error al procesar: '+e.message); }
+    if (idOculto) {
+      await set(ref(db, `reclutadores/${idOculto}`), {
+        nombre: nombre,
+        telefono: telefono,
+        funcion: funcion
+      });
+      alert("✅ Reclutador actualizado con éxito.");
+    } else {
+      const nuevaRef = push(ref(db, 'reclutadores'));
+      await set(nuevaRef, {
+        nombre: nombre,
+        telefono: telefono,
+        funcion: funcion
+      });
+      alert("🚀 ¡Nuevo reclutador registrado con éxito!");
+    }
+    limpiarFormularioReclutadores();
+  } catch (error) {
+    console.error("Error al guardar reclutador:", error);
+    alert("❌ Error al guardar datos en Firebase: " + error.message);
+  }
 };
 
-function leerVacanteForm(){
-  return {
-    puestoId: sanitizarId(document.getElementById('secPuestoId').value), estatus: document.getElementById('secEstatus').value,
-    vacanteNombre: document.getElementById('secVacanteNombre').value.trim(), salario: document.getElementById('secSalario').value.trim(),
-    edad: document.getElementById('secEdad').value.trim(), lugarOrigen: document.getElementById('secLugarOrigen').value.trim(),
-    turnos: document.getElementById('secTurnos').value.trim(), sexo: document.getElementById('secSexo').value,
-    experiencia: document.getElementById('secExperiencia').value.trim(), escolaridad: document.getElementById('secEscolaridad').value.trim(),
-    bannerUrl: document.getElementById('secBannerUrl').value.trim(), actividades: document.getElementById('secActividades').value.trim(),
-    beneficios: document.getElementById('secBeneficios').value.trim(), informacionGeneral: document.getElementById('secInfoGeneral').value.trim(),
-    telefonoReclutador: document.getElementById('secTelefonoReclutador').value.trim() || '526461974763',
-    actualizado: new Date().toISOString()
-  };
+window.cargarReclutadorParaEditar = function(id, nombre, telefono) {
+  document.getElementById('recIdOculto').value = id;
+  document.getElementById('recNombre').value = nombre;
+  document.getElementById('recTelefono').value = telefono;
+  
+  document.getElementById('tituloFormReclutador').innerText = "✏️ Editando Reclutador Seleccionado";
+  document.getElementById('btnGuardarReclutador').innerHTML = `<i class="fas fa-sync-alt"></i> Actualizar Cambios`;
+  document.getElementById('recNombre').focus();
+};
+
+window.eliminarReclutador = async function(id) {
+  if (!confirm("⚠️ ¿Estás seguro de que deseas eliminar este reclutador? Esta acción no se puede deshacer.")) return;
+
+  try {
+    await remove(ref(db, `reclutadores/${id}`));
+    alert("🗑️ Reclutador eliminado correctamente.");
+    limpiarFormularioReclutadores();
+  } catch (error) {
+    console.error("Error al eliminar reclutador:", error);
+    alert("❌ Error al eliminar: " + error.message);
+  }
+};
+
+window.limpiarFormularioReclutadores = function() {
+  document.getElementById('recIdOculto').value = '';
+  document.getElementById('recNombre').value = '';
+  document.getElementById('recTelefono').value = '';
+  
+  document.getElementById('tituloFormReclutador').innerText = "Alta de Reclutador Oficial";
+  document.getElementById('btnGuardarReclutador').innerHTML = `<i class="fas fa-save"></i> Guardar Reclutador`;
+};
+
+// FUNCIÓN PARA ESCUCHAR CAMBIOS EN RECLUTADORES
+function escucharReclutadores() {
+  const reclutadoresRef = ref(db, 'reclutadores');
+  onValue(reclutadoresRef, (snapshot) => {
+    const tbody = document.getElementById('tablaReclutadoresBody');
+    tbody.innerHTML = ''; 
+
+    if (!snapshot.exists()) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No hay reclutadores registrados.</td></tr>`;
+      return;
+    }
+
+    const data = snapshot.val();
+    for (let id in data) {
+      const rec = data[id];
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td style="font-weight:bold; color:var(--white);">${rec.nombre}</td>
+        <td><i class="fab fa-whatsapp" style="color:var(--green-whatsapp);"></i> ${rec.telefono}</td>
+        <td><span style="background:#0f2a4a; padding:4px 8px; border-radius:6px; font-size:0.8rem; color:var(--primary-orange); font-weight:bold; border:1px solid rgba(255,102,0,0.2);">${rec.funcion}</span></td>
+        <td>
+          <div class="actions-layout" style="margin-top:0;">
+            <button class="btn-edit-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="cargarReclutadorParaEditar('${id}', '${rec.nombre}', '${rec.telefono}')">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn-delete-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="eliminarReclutador('${id}')">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
+  });
 }
 
-window.guardarComoNuevaVacante = async function(){
-  const emp = document.getElementById('secEmpresaSelect').value; const d = leerVacanteForm();
-  if(!emp || !d.puestoId) return alert('Empresa e ID requeridos');
-  set(ref(db,`vacantes_detalles/${emp}/${d.puestoId}`), d).then(()=>{ alert('Nueva vacante agregada.'); escucharVacantesExistentes(emp); });
-};
+// Inicializar escucha automática de Reclutadores
+escucharReclutadores();
 
-window.guardarActualizacionVacante = async function(){
-  const emp = document.getElementById('secEmpresaSelect').value; const d = leerVacanteForm();
-  set(ref(db,`vacantes_detalles/${emp}/${d.puestoId}`), d).then(()=>{ alert('Vacante actualizada.'); escucharVacantesExistentes(emp); });
-};
-
-onValue(ref(db, 'visitas'), snap => {
-  const datosVisitas = snap.val();
-  let numeroRealVisitas = 0;
-  if (datosVisitas !== null && datosVisitas !== undefined) {
-    if (typeof datosVisitas === 'object') {
-      numeroRealVisitas = datosVisitas.contador || datosVisitas.valor || datosVisitas.total || datosVisitas.count || Object.values(datosVisitas)[0] || 0;
-    } else {
-      numeroRealVisitas = datosVisitas;
-    }
-  }
-  document.getElementById('contadorVisitas').innerText = numeroRealVisitas;
-});
-
-onValue(ref(db, 'postulantes'), snap => {
-  const body = document.getElementById('tablaPostulantesBody');
-  body.innerHTML = '';
-  cachePostulantesGlobal = snap.val() || {};
-  const llaves = Object.keys(cachePostulantesGlobal);
-  document.getElementById('contadorPostulantes').innerText = llaves.length;
-  
-  llaves.forEach(key => {
-    const p = cachePostulantesGlobal[key];
-    body.innerHTML += `<tr>
-      <td><strong>${p.nombre || p.nombreCompleto || 'No especificado'}</strong></td>
-      <td>${p.edad || '—'}</td>
-      <td>${p.sexo || p.genero || '—'}</td>
-      <td><code>${p.curp || '—'}</code></td>
-      <td><span style="color:var(--primary-orange); font-weight:600;">${p.empresa || p.empresaDestino || '—'}</span></td>
-      <td><span style="color:var(--blue-update); font-weight:600;">${p.vacante || p.puesto || '—'}</span></td>
-      <td>
-         <div style="display:flex; gap:6px; justify-content:center;">
-           <button class="btn-edit-mode" style="padding:4px 8px; background:var(--purple-ia); color:white;" onclick="abrirEditarPostulante('${key}')"><i class="fas fa-edit"></i></button>
-           <button class="btn-delete-mode" style="padding:4px 8px;" onclick="eliminarPostulante('${key}')"><i class="fas fa-trash-alt"></i></button>
-         </div>
-      </td>
-    </tr>`;
-  });
-});
-
-window.abrirEditarPostulante = function(key) {
-  const p = cachePostulantesGlobal[key];
-  if(!p) return;
-  document.getElementById('editPostulanteId').value = key;
-  document.getElementById('editPostNombre').value = p.nombre || p.nombreCompleto || '';
-  document.getElementById('editPostEdad').value = p.edad || '';
-  document.getElementById('editPostSexo').value = p.sexo || p.genero || '';
-  document.getElementById('editPostCurp').value = p.curp || '';
-  document.getElementById('editPostEmpresa').value = p.empresa || p.empresaDestino || '';
-  document.getElementById('editPostVacante').value = p.vacante || p.puesto || '';
-  
-  const box = document.getElementById('formularioEdicionPostulanteBox');
-  box.classList.add('open');
-  box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-};
-
-window.cerrarFormularioPostulante = function() {
-  document.getElementById('formularioEdicionPostulanteBox').classList.remove('open');
-};
-
-window.guardarChangesPostulante = async function() {
-  const key = document.getElementById('editPostulanteId').value;
-  if(!key) return;
-  
-  const payload = {
-    nombre: document.getElementById('editPostNombre').value.trim(),
-    nombreCompleto: document.getElementById('editPostNombre').value.trim(),
-    edad: document.getElementById('editPostEdad').value.trim(),
-    sexo: document.getElementById('editPostSexo').value.trim(),
-    genero: document.getElementById('editPostSexo').value.trim(),
-    curp: document.getElementById('editPostCurp').value.trim(),
-    empresa: document.getElementById('editPostEmpresa').value.trim(),
-    empresaDestino: document.getElementById('editPostEmpresa').value.trim(),
-    vacante: document.getElementById('editPostVacante').value.trim(),
-    puesto: document.getElementById('editPostVacante').value.trim()
-  };
-  
-  try {
-    await set(ref(db, `postulantes/${key}`), payload);
-    alert('✅ Postulante actualizado con éxito.');
-    cerrarFormularioPostulante();
-  } catch(e) {
-    alert('❌ Error al actualizar: ' + e.message);
-  }
-};
-window.guardarCambiosPostulante = window.guardarChangesPostulante;
-
-window.eliminarPostulante = async function(key) {
-  if (confirm('⚠️ ¿Estás seguro de que deseas eliminar permanentemente a este postulante del registro?')) {
-    try {
-      await remove(ref(db, `postulantes/${key}`));
-      alert('✅ Postulante eliminado.');
-      cerrarFormularioPostulante();
-    } catch(e) {
-      alert('❌ Error al eliminar: ' + e.message);
-    }
-  }
-};
-
-window.filtrarPostulantes = function() {
-  const text = document.getElementById('buscadorPostulantes').value.toLowerCase().trim();
-  document.querySelectorAll('#tablaPostulantesBody tr').forEach(tr => {
-    tr.style.display = tr.innerText.toLowerCase().includes(text) ? '' : 'none';
-  });
-};
-
-function sanitizarId(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[.#$\[\]\/\s]/g,'-').replace(/-+/g,'-').slice(0,50); }
-
-// --- LÓGICA EXCLUSIVA DEL CENTRO DE TRANSPORTE DINÁMICO (TAB 4) ---
-window.actualizarLabelArchivoTransporte = function() {
-  const input = document.getElementById('archivoTransporteInput');
-  const lbl = document.getElementById('lblArchivoTransporteSeleccionado');
-  if (input.files.length > 0) {
-    lbl.textContent = input.files[0].name;
-  } else {
-    lbl.textContent = "Ningún archivo seleccionado";
-  }
-};
-
-const esquemaTransporte = {
-  type: Type.OBJECT,
-  description: "Información estructurada de rutas de transporte público y privado para la empresa.",
-  properties: {
-    transporte_privado_empresa: {
-      type: Type.OBJECT,
-      properties: {
-        ofrece: { type: Type.BOOLEAN, description: "¿La empresa ofrece transporte privado/de personal?" },
-        detalles: { type: Type.STRING, description: "Descripción general de los turnos o condiciones del transporte privado." },
-        puntos_recoleccion: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              nombre: { type: Type.STRING, description: "Punto o cruce de recolección" },
-              horario: { type: Type.STRING, description: "Hora aproximada de paso (Ej: 06:15 AM)" }
-            },
-            required: ["nombre", "horario"]
-          }
-        }
-      },
-      required: ["ofrece", "detalles", "puntos_recoleccion"]
-    },
-    transporte_publico_sugerido: {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          rutaNombre: { type: Type.STRING, description: "Nombre de la ruta de camión, metro o colectivo" },
-          instrucciones: { type: Type.STRING, description: "Indicaciones de dónde tomarlo y dónde bajarse para llegar" },
-          costoAproximado: { type: Type.STRING, description: "Precio estimado del pasaje" }
-        },
-        required: ["rutaNombre", "instrucciones", "costoAproximado"]
-      }
-    }
-  },
-  required: ["transporte_privado_empresa", "transporte_publico_sugerido"]
-};
-
-window.procesarDocumentoTransporteConGemini = async function() {
-  const empId = document.getElementById('transporteEmpresaSelect').value;
-  const fileInput = document.getElementById('archivoTransporteInput');
-  const key = localStorage.getItem('gemini_api_key') || apiKeyInput.value.trim();
-  
-  if (!empId) return alert('⚠️ Por favor, selecciona una empresa antes de continuar.');
-  if (!fileInput.files.length) return alert('⚠️ Selecciona un archivo (.pdf, .jpg, .png, .txt, .docx) para procesar.');
-  if (!key) return alert('⚠️ Ingresa tu API Key de Gemini en la parte superior del panel.');
-
-  const file = fileInput.files[0];
-  const btn = document.getElementById('btnProcesarTransporte');
-  
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Leyendo y Analizando con Gemini...';
-  btn.disabled = true;
-
-  const lector = new FileReader();
-  
-  let mimeType = file.type;
-  if (!mimeType) {
-    if (file.name.endsWith('.docx')) mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-    if (file.name.endsWith('.txt')) mimeType = 'text/plain';
-  }
-
-  lector.onload = async (e) => {
-    try {
-      const base64Data = e.target.result.split(',')[1] || e.target.result;
-      
-      const prompt = `
-        Analiza detalladamente este documento. Contiene información clave sobre las alternativas de transporte, rutas de camión, 
-        puntos de recogida de transporte de personal, horarios y costos para llegar a la empresa seleccionada.
-        Extrae todos los datos posibles de manera precisa y estructurada.
-      `;
-
-      const ai = new GoogleGenAI({ apiKey: key });
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: [
-          {
-            inlineData: {
-              data: base64Data,
-              mimeType: mimeType
-            }
-          },
-          prompt
-        ],
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: esquemaTransporte
-        }
-      });
-
-      const jsonResultado = JSON.parse(response.text.trim());
-      jsonResultado.actualizadoLogistica = new Date().toISOString();
-
-      await set(ref(db, `rutas_transporte/${empId}`), jsonResultado);
-
-      document.getElementById('jsonTransportePreview').textContent = JSON.stringify(jsonResultado, null, 2);
-      document.getElementById('boxPreviewTransporte').style.display = 'block';
-      
-      alert('🚀 ¡Éxito! Las rutas de transporte se extrajeron y guardaron dinámicamente para la empresa.');
-      
-      fileInput.value = '';
-      document.getElementById('lblArchivoTransporteSeleccionado').textContent = "Ningún archivo seleccionado";
-
-    } catch (error) {
-      console.error(error);
-      alert('❌ Error al procesar el archivo: ' + error.message);
-    } finally {
-      btn.innerHTML = '<i class="fas fa-brain"></i> Convertir Archivo a JSON y Guardar en Firebase';
-      btn.disabled = false;
-    }
-  };
-
-  lector.readAsDataURL(file);
-};
-</script>
-</body>
+</script> 
+</body> 
 </html>
