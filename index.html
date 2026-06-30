@@ -19,7 +19,7 @@
             --border-color: #243854;
             --blue-accent: #38bdf8;
             --orange-title: #f97316;
-            --purple-ia: #8b5cf6; /* Nuevo color distintivo para la IA */
+            --purple-ia: #8b5cf6; /* Color distintivo y elegante para la sección IA */
         }
         * { box-sizing: border-box; }
         body {
@@ -36,6 +36,7 @@
             border-radius: 12px;
             border: 1px solid var(--border-color);
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            position: relative;
         }
         #loading {
             text-align: center;
@@ -60,7 +61,7 @@
             gap: 6px;
         }
         
-        /* --- ESTILOS DEL CARRUSEL --- */
+        /* --- ESTILOS ORIGINALES DEL CARRUSEL --- */
         .carousel-container {
             position: relative;
             width: 100%;
@@ -114,7 +115,7 @@
             display: block;
         }
 
-        /* --- NUEVOS ESTILOS: BUSCADOR CON IA --- */
+        /* --- BUSCADOR CON IA (DISEÑO INTEGRADO ADAPTADO) --- */
         .ia-search-box {
             background: rgba(139, 92, 246, 0.05);
             border: 1px dashed var(--purple-ia);
@@ -142,9 +143,7 @@
             outline: none;
             width: 100%;
         }
-        .ia-search-input-group input:focus {
-            border-color: var(--purple-ia);
-        }
+        .ia-search-input-group input:focus { border-color: var(--purple-ia); }
         .btn-ia-search {
             background: var(--purple-ia);
             color: white;
@@ -156,9 +155,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s;
         }
-        .btn-ia-search:hover { background: #7c3aed; }
         .btn-clear-filter {
             background: #334155;
             color: white;
@@ -171,7 +168,7 @@
             display: none;
         }
 
-        /* --- MENÚ INTERMEDIO DE SELECCIÓN --- */
+        /* --- MENÚ INTERMEDIO SELECCIÓN DE PUESTOS / EMPRESAS --- */
         .menu-titulo {
             font-size: 1.1rem;
             color: var(--white);
@@ -184,6 +181,8 @@
             flex-direction: column;
             gap: 12px;
         }
+        
+        /* BOTÓN DE PUESTO PRESERVANDO LA ESENCIA ORIGINAL */
         .btn-puesto {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -210,7 +209,7 @@
             font-weight: normal;
         }
 
-        /* --- DETALLES DE LA VACANTE --- */
+        /* --- DETALLES DE LA VACANTE (VISTA ORIGINAL) --- */
         .btn-regresar {
             background: none;
             border: none;
@@ -279,7 +278,7 @@
         .detalle-item span { font-size: 0.95rem; color: var(--text-light); }
         .texto-bloque { white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6; margin: 0; color: #cbd5e1; }
         
-        /* --- FORMULARIO Y BOTONES --- */
+        /* --- FORMULARIOS Y BOTONES --- */
         .btn {
             background-color: var(--secondary-teal);
             color: var(--white);
@@ -312,6 +311,32 @@
             transition: border-color 0.2s;
         }
         input:focus { border-color: var(--primary-blue); }
+
+        /* --- ACCESO ADMINISTRATIVO (NUEVO FORMULARIO INTEGRADO ABAJO) --- */
+        .admin-trigger-zone {
+            margin-top: 40px;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 20px;
+            text-align: center;
+        }
+        .btn-link-admin {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-decoration: underline;
+        }
+        .btn-link-admin:hover { color: var(--primary-blue); }
+        .admin-login-card {
+            background: #09111e;
+            border: 1px solid #e11d48; /* Borde sutil rojo/alerta */
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -320,7 +345,7 @@
     <div id="loading"><i class="fas fa-spinner fa-spin"></i> Cargando información del servidor...</div>
     
     <div id="empresaHeaderBox" class="empresa-header" style="display: none;">
-        <h1 id="mainEmpresaNombre">Nombre de la Empresa</h1>
+        <h1 id="mainEmpresaNombre">Portal de Vacantes</h1>
         <div class="location"><i class="fa-solid fa-location-dot"></i> <span id="mainEmpresaLugar">—</span></div>
     </div>
 
@@ -336,23 +361,22 @@
         <img id="vacanteBanner" src="" alt="Banner Puesto">
     </div>
 
-    <!-- --- CAJA DEL BUSCADOR INTELIGENTE IA --- -->
     <div class="ia-search-box" id="iaSearchBox" style="display: none;">
-        <label><i class="fas fa-wand-magic-sparkles"></i> Buscador Inteligente Asistido por IA</label>
+        <label id="lblIaSearch"><i class="fas fa-wand-magic-sparkles"></i> Buscador Predictivo (Asistente IA)</label>
         <div class="ia-search-input-group">
-            <input type="text" id="iaSearchInput" placeholder="Ej: Tengo 18 años, busco ganar más de $9000 y no tengo experiencia...">
-            <button class="btn-ia-search" id="btnIaSearch" onclick="buscarVacantesConIa()"><i class="fas fa-search"></i></button>
+            <input type="text" id="iaSearchInput" placeholder="Describe qué buscas (ej: Turno matutino, sin experiencia)...">
+            <button class="btn-ia-search" id="btnIaSearch" onclick="buscarConIa()"><i class="fas fa-search"></i></button>
         </div>
-        <button class="btn-clear-filter" id="btnClearFilter" onclick="reestablecerFiltroCompleto()"><i class="fas fa-times"></i> Mostrar todas las vacantes</button>
+        <button class="btn-clear-filter" id="btnClearFilter" onclick="reestablecerFiltroCompleto()"><i class="fas fa-times"></i> Mostrar todo el listado original</button>
     </div>
 
     <div id="menuVacantesBox" style="display: none;">
-        <div class="menu-titulo" id="lblMenuTitulo">Selecciona la vacante de tu interés:</div>
+        <div class="menu-titulo" id="lblMenuTitulo">Opciones Disponibles:</div>
         <div id="listaVacantesDinamica" class="vacantes-lista"></div>
     </div>
 
     <div id="content" style="display:none;">
-        <button id="btnVolverMenu" class="btn-regresar" onclick="regresarAlMenu()"><i class="fa-solid fa-arrow-left"></i> Volver a las vacantes</button>
+        <button id="btnVolverMenu" class="btn-regresar" onclick="regresarAlMenu()"><i class="fa-solid fa-arrow-left"></i> Volver al listado</button>
         
         <h1 id="vacanteTitulo" style="color: var(--white); font-size: 1.6rem; margin-bottom: 15px; text-transform: uppercase;">Título de la Vacante</h1>
         
@@ -405,12 +429,24 @@
             </form>
         </div>
     </div>
+
+    <div class="admin-trigger-zone">
+        <button class="btn-link-admin" onclick="toggleAdminLogin()"><i class="fas fa-lock"></i> Acceso exclusivo para Administradores / Reclutadores</button>
+        
+        <div class="admin-login-card" id="adminLoginCard">
+            <h4 style="margin: 0 0 10px 0; color: #f43f5e;"><i class="fas fa-shield-halved"></i> Autenticación de Administrador</h4>
+            <div class="form-group">
+                <label style="color: var(--text-light);">Código de Acceso:</label>
+                <input type="password" id="txtAdminPass" placeholder="Introduce la contraseña maestra">
+            </div>
+            <button class="btn" style="background-color: #e11d48; padding: 8px;" onclick="verificarYEntrarAdmin()">Ingresar al Panel Administrativo</button>
+        </div>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, get, set, update, increment, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    // Importación dinámica de la SDK GenAI oficial mediante ESM
     import { GoogleGenAI, Type } from "https://esm.run/@google/genai";
 
     const firebaseConfig = {
@@ -421,18 +457,17 @@
     const db = getDatabase(app);
 
     const urlParams = new URLSearchParams(window.location.search);
-    const empresaId = urlParams.get('empresa');
+    let empresaId = urlParams.get('empresa');
 
-    let todasLasVacantesEmpresa = {};
+    let modoGlobal = "EMPRESA"; 
+    let todasLasVacantesEstructuradas = {}; 
     let datosVacanteGlobal = null;
     let vacanteKeyDetectada = "";
-    let tieneMultiplesVacantes = false;
     let slideIndex = 0;
 
-    // Recuperamos la clave de Gemini de forma segura desde el ecosistema local compartido[cite: 3]
     const GEMINI_KEY = localStorage.getItem('gemini_api_key') || "";
 
-    // Lógica del Carrusel
+    // Lógica e interactividad del Carrusel original
     window.cambiarSlide = function(n) {
         const slides = document.getElementsByClassName("carousel-slide");
         if (slides.length === 0) return;
@@ -451,77 +486,119 @@
         }
     }
 
-    async function cargarDetallesVacante() {
-        if (!empresaId) {
-            document.getElementById('loading').innerHTML = "❌ Parámetro de empresa no especificado.<br><small>Ejemplo: ?empresa=nombre_empresa</small>";
-            return;
-        }
+    // Desplegar/Ocultar login de administrador
+    window.toggleAdminLogin = function() {
+        const card = document.getElementById('adminLoginCard');
+        card.style.display = card.style.display === 'block' ? 'none' : 'block';
+    }
 
+    // Validación segura de credenciales para redirigir a admin.html
+    window.verificarYEntrarAdmin = function() {
+        const pass = document.getElementById('txtAdminPass').value.trim();
+        if(pass === "admin123" || pass === "valdomtec") { // Reemplaza por tu clave preferida
+            window.location.href = "admin.html";
+        } else {
+            alert("❌ Código de acceso incorrecto.");
+        }
+    }
+
+    async function inicializarPortal() {
+        document.getElementById('empresaCarouselBox').style.display = 'block';
+        iniciarCarrusel();
+
+        if (empresaId) {
+            modoGlobal = "EMPRESA";
+            await cargarVacantesDeEmpresa(empresaId);
+        } else {
+            modoGlobal = "CATALOGO_GENERAL";
+            await cargarCatalogoDeEmpresas();
+        }
+    }
+
+    async function cargarVacantesDeEmpresa(idEmp) {
         try {
-            const lasVacantesRef = ref(db, `vacantes_detalles/${empresaId}`);
+            const lasVacantesRef = ref(db, `vacantes_detalles/${idEmp}`);
             const snapshot = await get(lasVacantesRef);
             
             if (snapshot.exists()) {
                 const dataRaw = snapshot.val();
                 
                 if (dataRaw.vacanteNombre || dataRaw.salario) {
-                    todasLasVacantesEmpresa = {};
+                    todasLasVacantesEstructuradas = {};
                     const llaveUnica = dataRaw.vacanteNombre.replace(/\s+/g, '_').toLowerCase() || "puesto_unico";
-                    todasLasVacantesEmpresa[llaveUnica] = dataRaw;
+                    todasLasVacantesEstructuradas[llaveUnica] = dataRaw;
                 } else {
-                    todasLasVacantesEmpresa = dataRaw;
+                    todasLasVacantesEstructuradas = dataRaw;
                 }
 
-                const keys = Object.keys(todasLasVacantesEmpresa).filter(k => k !== 'undefined' && k !== '');
-                
+                const keys = Object.keys(todasLasVacantesEstructuradas).filter(k => k !== 'undefined' && k !== '');
                 if (keys.length === 0) {
                     document.getElementById('loading').innerText = "❌ No hay vacantes activas para esta empresa.";
                     return;
                 }
 
-                const primerVacante = todasLasVacantesEmpresa[keys[0]];
-                document.getElementById('mainEmpresaNombre').innerText = primerVacante.empresaNombre || empresaId.toUpperCase();
+                const primerVacante = todasLasVacantesEstructuradas[keys[0]];
+                document.getElementById('mainEmpresaNombre').innerText = primerVacante.empresaNombre || idEmp.toUpperCase();
                 document.getElementById('mainEmpresaLugar').innerText = primerVacante.lugarOrigen || 'Ubicación no especificada';
                 document.getElementById('empresaHeaderBox').style.display = 'block';
-
-                document.getElementById('empresaCarouselBox').style.display = 'block';
-                iniciarCarrusel();
-
                 document.getElementById('loading').style.display = 'none';
 
-                // Mostrar el buscador inteligente solo si hay API KEY válida y más de una vacante para comparar[cite: 3]
                 if(GEMINI_KEY && keys.length > 1) {
                     document.getElementById('iaSearchBox').style.display = 'block';
                 }
 
                 renderizarListaVacantes(keys);
+                document.getElementById('menuVacantesBox').style.display = 'block';
 
-                if (keys.length > 1) {
-                    tieneMultiplesVacantes = true;
-                    document.getElementById('btnVolverMenu').style.display = 'inline-flex';
-                    document.getElementById('menuVacantesBox').style.display = 'block';
-                } else {
-                    tieneMultiplesVacantes = false;
+                if (keys.length === 1) {
                     document.getElementById('btnVolverMenu').style.display = 'none';
                     seleccionarPuesto(keys[0]);
+                } else {
+                    document.getElementById('btnVolverMenu').style.display = 'inline-flex';
                 }
-
             } else {
                 document.getElementById('loading').innerText = "❌ La empresa especificada no cuenta con registros vigentes.";
             }
         } catch (error) {
             console.error(error);
-            document.getElementById('loading').innerText = "❌ Error de conexión con el servidor.";
+            document.getElementById('loading').innerText = "❌ Error al conectar con el servidor.";
         }
     }
 
-    // Encapsulado de render para permitir re-filtrados con IA
+    async function cargarCatalogoDeEmpresas() {
+        try {
+            const todasRef = ref(db, 'vacantes_detalles');
+            const snapshot = await get(todasRef);
+
+            if (snapshot.exists()) {
+                todasLasVacantesEstructuradas = snapshot.val();
+                document.getElementById('mainEmpresaNombre').innerText = "Portal de Trabajo Conectado";
+                document.getElementById('mainEmpresaLugar').innerText = "Selecciona una Empresa para ver vacantes";
+                document.getElementById('empresaHeaderBox').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+
+                if(GEMINI_KEY) {
+                    document.getElementById('iaSearchBox').style.display = 'block';
+                }
+
+                renderizarListaEmpresas(Object.keys(todasLasVacantesEstructuradas));
+                document.getElementById('menuVacantesBox').style.display = 'block';
+            } else {
+                document.getElementById('loading').innerText = "❌ No hay empresas ni vacantes registradas.";
+            }
+        } catch (e) {
+            console.error(e);
+            document.getElementById('loading').innerText = "❌ Error al cargar el catálogo global.";
+        }
+    }
+
     function renderizarListaVacantes(keys) {
         const listaContenedor = document.getElementById('listaVacantesDinamica');
         listaContenedor.innerHTML = '';
+        document.getElementById('lblMenuTitulo').innerText = "Selecciona el puesto de tu interés:";
         
         keys.forEach(key => {
-            const vac = todasLasVacantesEmpresa[key];
+            const vac = todasLasVacantesEstructuradas[key];
             if(!vac) return;
             const btn = document.createElement('button');
             btn.className = 'btn-puesto';
@@ -534,51 +611,99 @@
         });
     }
 
-    // --- LÓGICA FILTRADO PREDICTIVO GEMINI ---
-    window.buscarVacantesConIa = async function() {
+    function renderizarListaEmpresas(empresaKeys) {
+        const listaContenedor = document.getElementById('listaVacantesDinamica');
+        listaContenedor.innerHTML = '';
+        document.getElementById('lblMenuTitulo').innerText = "Empresas con convocatorias abiertas:";
+
+        empresaKeys.forEach(empKey => {
+            const vacantesDeEstaEmpresa = todasLasVacantesEstructuradas[empKey];
+            let nombreMostrar = empKey.toUpperCase();
+            let totalVacantes = 0;
+
+            if (vacantesDeEstaEmpresa.vacanteNombre) {
+                nombreMostrar = vacantesDeEstaEmpresa.empresaNombre || nombreMostrar;
+                totalVacantes = 1;
+            } else {
+                const subKeys = Object.keys(vacantesDeEstaEmpresa);
+                if(subKeys.length > 0) {
+                    nombreMostrar = vacantesDeEstaEmpresa[subKeys[0]].empresaNombre || nombreMostrar;
+                    totalVacantes = subKeys.length;
+                }
+            }
+
+            const btn = document.createElement('button');
+            btn.className = 'btn-puesto';
+            btn.onclick = () => { window.location.search = `?empresa=${empKey}`; };
+            btn.innerHTML = `
+                <span><i class="fa-solid fa-building"></i> ${nombreMostrar}</span>
+                <span class="salario-tag" style="color:var(--blue-accent)">${totalVacantes} Puesto(s) <i class="fa-solid fa-chevron-right"></i></span>
+            `;
+            listaContenedor.appendChild(btn);
+        });
+    }
+
+    window.buscarConIa = async function() {
         const query = document.getElementById('iaSearchInput').value.trim();
         const btn = document.getElementById('btnIaSearch');
-        if(!query) return alert("Por favor escribe qué tipo de puesto o condiciones buscas.");
+        if(!query) return alert("Por favor escribe tu criterio.");
 
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
         btn.disabled = true;
 
         try {
-            // Mapeamos un set de datos compacto para pasárselo al prompt de Gemini[cite: 3]
-            const catalogoResumido = Object.keys(todasLasVacantesEmpresa).map(k => ({
-                idClave: k,
-                nombre: todasLasVacantesEmpresa[k].vacanteNombre,
-                salario: todasLasVacantesEmpresa[k].salario,
-                detalles: `${todasLasVacantesEmpresa[k].edad} ${todasLasVacantesEmpresa[k].sexo} ${todasLasVacantesEmpresa[k].turnos} ${todasLasVacantesEmpresa[k].actividades}`
-            }));
-
             const ai = new GoogleGenAI({ apiKey: GEMINI_KEY });
-            const response = await ai.models.generateContent({
-                model: "gemini-2.5-flash",
-                contents: `Basándote estrictamente en este arreglo de vacantes: ${JSON.stringify(catalogoResumido)}. Analiza el perfil, necesidades o lenguaje informal del candidato: "${query}" y extrae únicamente un arreglo JSON con las cadenas de texto correspondientes al "idClave" de las vacantes que hagan buen match. Si ninguna coincide o cumple los filtros mínimos requeridos, devuelve un arreglo completamente vacío.`,
-                config: {
-                    responseMimeType: "application/json",
-                    responseSchema: {
-                        type: Type.ARRAY,
-                        items: { type: Type.STRING }
-                    }
+
+            if (modoGlobal === "EMPRESA") {
+                const catalogoResumido = Object.keys(todasLasVacantesEstructuradas).map(k => ({
+                    idClave: k,
+                    nombre: todasLasVacantesEstructuradas[k].vacanteNombre,
+                    salario: todasLasVacantesEstructuradas[k].salario,
+                    detalles: `${todasLasVacantesEstructuradas[k].edad} ${todasLasVacantesEstructuradas[k].sexo} ${todasLasVacantesEstructuradas[k].actividades}`
+                }));
+
+                const response = await ai.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: `Filtra este listado: ${JSON.stringify(catalogoResumido)} según: "${query}". Devuelve un arreglo JSON con las cadenas de "idClave".`,
+                    config: { responseMimeType: "application/json", responseSchema: { type: Type.ARRAY, items: { type: Type.STRING } } }
+                });
+
+                const llavesFiltradas = JSON.parse(response.text.trim());
+                if(llavesFiltradas.length === 0) {
+                    document.getElementById('lblMenuTitulo').innerHTML = "❌ <span style='color:var(--orange-title)'>Sin matches exactos.</span>";
+                    renderizarListaVacantes([]);
+                } else {
+                    document.getElementById('lblMenuTitulo').innerHTML = "✨ Sugerencias Asistidas:";
+                    renderizarListaVacantes(llavesFiltradas);
                 }
-            });
-
-            const llavesFiltradas = JSON.parse(response.text.trim());
-
-            if(llavesFiltradas.length === 0) {
-                document.getElementById('lblMenuTitulo').innerHTML = "❌ <span style='color:var(--orange-title)'>Ninguna vacante coincide exactamente con tu perfil de búsqueda.</span>";
-                renderizarListaVacantes([]);
             } else {
-                document.getElementById('lblMenuTitulo').innerHTML = "✨ <span style='color:#c084fc'>Puestos sugeridos por nuestro Asistente Inteligente:</span>";
-                renderizarListaVacantes(llavesFiltradas);
+                const catalogoEmpresasResumido = Object.keys(todasLasVacantesEstructuradas).map(empKey => {
+                    const nodo = todasLasVacantesEstructuradas[empKey];
+                    let infoTexto = "";
+                    if (nodo.vacanteNombre) { infoTexto += ` ${nodo.vacanteNombre} ${nodo.actividades}`; }
+                    else { Object.keys(nodo).forEach(k => { infoTexto += ` ${nodo[k].vacanteNombre} ${nodo[k].actividades}`; }); }
+                    return { idEmpresa: empKey, historialPuestos: infoTexto };
+                });
+
+                const response = await ai.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: `Qué empresas de: ${JSON.stringify(catalogoEmpresasResumido)} se asocian con: "${query}". Regresa arreglo JSON de "idEmpresa".`,
+                    config: { responseMimeType: "application/json", responseSchema: { type: Type.ARRAY, items: { type: Type.STRING } } }
+                });
+
+                const empresasFiltradas = JSON.parse(response.text.trim());
+                if(empresasFiltradas.length === 0) {
+                    document.getElementById('lblMenuTitulo').innerHTML = "❌ <span style='color:var(--orange-title)'>No se hallaron empresas asociadas.</span>";
+                    renderizarListaEmpresas([]);
+                } else {
+                    document.getElementById('lblMenuTitulo').innerHTML = "✨ Empresas Sugeridas:";
+                    renderizarListaEmpresas(empresasFiltradas);
+                }
             }
             document.getElementById('btnClearFilter').style.display = 'inline-block';
 
         } catch (err) {
             console.error(err);
-            alert("No se pudo procesar la búsqueda por IA: " + err.message);
         } finally {
             btn.innerHTML = '<i class="fas fa-search"></i>';
             btn.disabled = false;
@@ -587,15 +712,17 @@
 
     window.reestablecerFiltroCompleto = function() {
         document.getElementById('iaSearchInput').value = "";
-        document.getElementById('lblMenuTitulo').innerText = "Selecciona la vacante de tu interés:";
         document.getElementById('btnClearFilter').style.display = 'none';
-        const keys = Object.keys(todasLasVacantesEmpresa).filter(k => k !== 'undefined' && k !== '');
-        renderizarListaVacantes(keys);
+        if (modoGlobal === "EMPRESA") {
+            renderizarListaVacantes(Object.keys(todasLasVacantesEstructuradas).filter(k => k !== 'undefined' && k !== ''));
+        } else {
+            renderizarListaEmpresas(Object.keys(todasLasVacantesEstructuradas));
+        }
     };
 
     async function seleccionarPuesto(key) {
         vacanteKeyDetectada = key;
-        const data = todasLasVacantesEmpresa[key];
+        let data = todasLasVacantesEstructuradas[key];
         datosVacanteGlobal = data;
 
         document.getElementById('menuVacantesBox').style.display = 'none';
@@ -610,18 +737,17 @@
             document.getElementById('empresaCarouselBox').style.display = 'block';
         }
 
-        const pathVisita = `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}/visitas`;
-        if (!sessionStorage.getItem(`visita_${empresaId}_${vacanteKeyDetectada}`)) {
+        const idEmpRef = empresaId || data.empresaDestino || "general";
+        const pathVisita = `vacantes_detalles/${idEmpRef}/${vacanteKeyDetectada}/visitas`;
+        if (!sessionStorage.getItem(`visita_${idEmpRef}_${vacanteKeyDetectada}`)) {
             try {
-                await runTransaction(ref(db, pathVisita), (currentValue) => {
-                    return (currentValue || 0) + 1;
-                });
-                sessionStorage.setItem(`visita_${empresaId}_${vacanteKeyDetectada}`, 'true');
-            } catch(e) { console.log("Visita omitida"); }
+                await runTransaction(ref(db, pathVisita), (currentValue) => { return (currentValue || 0) + 1; });
+                sessionStorage.setItem(`visita_${idEmpRef}_${vacanteKeyDetectada}`, 'true');
+            } catch(e) { console.log("Visita registrada"); }
         }
 
         document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
-        document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
+        document.getElementById('vacanteEmpresa').innerText = idEmpRef.toUpperCase();
         document.getElementById('vacanteVisitas').innerText = data.visitas ? (data.visitas + 1) : 1;
         
         document.getElementById('detSalario').innerText = data.salario || 'No especificado';
@@ -645,15 +771,13 @@
         document.getElementById('vacanteBannerBox').style.display = 'none';
         document.getElementById('empresaCarouselBox').style.display = 'block';
         document.getElementById('menuVacantesBox').style.display = 'block';
-        if(GEMINI_KEY && Object.keys(todasLasVacantesEmpresa).length > 1) {
-            document.getElementById('iaSearchBox').style.display = 'block';
-        }
+        if(GEMINI_KEY) document.getElementById('iaSearchBox').style.display = 'block';
+        reestablecerFiltroCompleto();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function extraerDatosCurp(curp) {
         if (!curp || curp.length < 11) return { edad: "Indistinto", sexo: "Indistinto" };
-        
         const letraSexo = curp.charAt(10).toUpperCase();
         let sexo = "Indistinto";
         if (letraSexo === 'H') sexo = "Masculino";
@@ -664,25 +788,16 @@
         const dia = parseInt(curp.substr(8, 2), 10);
         
         const digitoSiglo = curp.charAt(16);
-        if (isNaN(parseInt(digitoSiglo, 10))) {
-            anio += 2000;
-        } else {
-            anio += (anio > 30) ? 1900 : 2000; 
-        }
+        if (isNaN(parseInt(digitoSiglo, 10))) anio += 2000;
+        else anio += (anio > 30) ? 1900 : 2000; 
 
         const fechaNacimiento = new Date(anio, mes - 1, dia);
         const fechaActual = new Date(); 
-        
         let edadCalculada = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
         const m = fechaActual.getMonth() - fechaNacimiento.getMonth();
-        if (m < 0 || (m === 0 && fechaActual.getDate() < fechaNacimiento.getDate())) {
-            edadCalculada--;
-        }
+        if (m < 0 || (m === 0 && fechaActual.getDate() < fechaNacimiento.getDate())) edadCalculada--;
 
-        return {
-            edad: isNaN(edadCalculada) ? "Indistinto" : String(edadCalculada),
-            sexo: sexo
-        };
+        return { edad: isNaN(edadCalculada) ? "Indistinto" : String(edadCalculada), sexo: sexo };
     }
 
     window.enviarPostulacion = async function(e) {
@@ -695,12 +810,13 @@
         
         const curpRegex = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/;
         if (!curpRegex.test(curp)) {
-            alert("❌ El formato de la CURP es incorrecto. Por favor verifícalo.");
+            alert("❌ El formato de la CURP es incorrecto.");
             return;
         }
 
         const datosExtraidos = extraerDatosCurp(curp);
         const timestampId = "post-" + Date.now();
+        const idEmpDestino = empresaId || datosVacanteGlobal.empresaDestino || "general";
         
         const payloadPostulante = {
             id: timestampId,
@@ -711,8 +827,8 @@
             edad: datosExtraidos.edad,
             sexo: datosExtraidos.sexo,
             genero: datosExtraidos.sexo,
-            empresa: empresaId,
-            empresaDestino: empresaId,
+            empresa: idEmpDestino,
+            empresaDestino: idEmpDestino,
             vacante: datosVacanteGlobal.vacanteNombre || 'Desconocida',
             puesto: datosVacanteGlobal.vacanteNombre || 'Desconocida',
             fechaRegistro: new Date().toLocaleString()
@@ -722,71 +838,35 @@
             await set(ref(db, `postulantes/${timestampId}`), payloadPostulante);
             await update(ref(db, 'postulantes_count'), { total: increment(1) });
 
-            alert("¡Postulación exitosa! Guardando datos y generando comprobante digital...");
+            alert("¡Postulación exitosa! Generando PDF...");
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
             doc.setFillColor(15, 42, 74); doc.rect(0, 0, 210, 40, 'F');
             doc.setTextColor(56, 189, 248); doc.setFont("Helvetica", "bold"); doc.setFontSize(22); doc.text("WORKFORCE CONNECT", 15, 26);
-            doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.setFont("Helvetica", "normal"); doc.text("COMPROBANTE DE POSTULACIÓN OFICIAL", 125, 25);
-            doc.setTextColor(33, 33, 33); doc.setFontSize(14); doc.setFont("Helvetica", "bold"); doc.text("Detalles del Registro", 15, 55);
-            doc.setLineWidth(0.5); doc.setDrawColor(210, 210, 210); doc.line(15, 58, 195, 58);
-
-            doc.setFontSize(11);
-            let y = 68;
+            doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.text("COMPROBANTE DE POSTULACIÓN OFICIAL", 125, 25);
             
-            const datosImpresion = [
-                { label: "Folio de Postulación:", val: timestampId },
-                { label: "Puesto Solicitado:", val: payloadPostulante.vacante },
-                { label: "Empresa Destino:", val: payloadPostulante.empresa.toUpperCase() },
-                { label: "Nombre Candidato:", val: payloadPostulante.nombre },
-                { label: "CURP:", val: payloadPostulante.curp },
-                { label: "Teléfono:", val: payloadPostulante.telefono },
-                { label: "Edad calculada:", val: `${payloadPostulante.edad} años` },
-                { label: "Sexo detectado:", val: payloadPostulante.sexo },
-                { label: "Fecha:", val: payloadPostulante.fechaRegistro }
-            ];
-
-            datosImpresion.forEach(item => {
-                doc.setFont("Helvetica", "bold"); doc.text(item.label, 15, y);
-                doc.setFont("Helvetica", "normal"); doc.text(String(item.val), 60, y);
-                y += 10;
-            });
-
-            y += 10;
-            doc.setFillColor(241, 245, 249); doc.rect(15, y, 180, 25, 'F');
-            doc.setTextColor(15, 42, 74); doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.text("Nota informativa:", 20, y + 8);
-            doc.setFont("Helvetica", "normal");
-            doc.text("Guarda este archivo en tu dispositivo. Tu postulación ya se encuentra en nuestra base de datos.", 20, y + 14);
+            let y = 68;
+            doc.setFontSize(12); doc.setTextColor(33,33,33);
+            doc.text(`Folio: ${timestampId}`, 15, y); y+=10;
+            doc.text(`Puesto: ${payloadPostulante.vacante}`, 15, y); y+=10;
+            doc.text(`Nombre: ${payloadPostulante.nombre}`, 15, y); y+=10;
+            doc.text(`CURP: ${payloadPostulante.curp}`, 15, y);
 
             doc.save(`Comprobante-${payloadPostulante.curp}.pdf`);
             
             const telefonoReclutador = datosVacanteGlobal.telefonoReclutador ? datosVacanteGlobal.telefonoReclutador.trim() : "526461974763";
-            
-            const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante.\n\n` +
-                                    `*📌 Detalles de mi Postulación:*\n` +
-                                    `• *Folio:* ${timestampId}\n` +
-                                    `• *Puesto:* ${payloadPostulante.vacante}\n` +
-                                    `• *Empresa:* ${payloadPostulante.empresa.toUpperCase()}\n\n` +
-                                    `*👤 Mis Datos de Contacto:*\n` +
-                                    `• *Nombre:* ${payloadPostulante.nombre}\n` +
-                                    `• *Teléfono:* ${payloadPostulante.telefono}\n` +
-                                    `• *CURP:* ${payloadPostulante.curp}\n` +
-                                    `• *Edad:* ${payloadPostulante.edad} años\n` +
-                                    `• *Sexo:* ${payloadPostulante.sexo}\n\n` +
-                                    `Ya descargué mi acuse en formato PDF. Quedo atento a su respuesta.`;
+            const mensajeWhatsApp = `¡Hola! Me acabo de postular.\n*Folio:* ${timestampId}\n*Puesto:* ${payloadPostulante.vacante}`;
 
             document.getElementById('formPostulacion').reset();
             window.location.href = `https://wa.me/${telefonoReclutador}?text=${encodeURIComponent(mensajeWhatsApp)}`;
             
         } catch (err) {
-            console.error(err);
-            alert("❌ Ocurrió un error al guardar la postulación: " + err.message);
+            alert("❌ Error: " + err.message);
         }
     };
 
-    window.onload = cargarDetallesVacante;
+    window.onload = inicializarPortal;
 </script>
 </body>
 </html>
