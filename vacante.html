@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bolsa de Trabajo - Detalles de la Vacante</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <!-- LIBRERÍAS CLÁSICAS COMPATIBLES -->
@@ -449,7 +449,6 @@
         document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
         document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
 
-        // LÓGICA DE ASIGNACIÓN BANNER (OPCIÓN B)
         let imagenFinalBanner = "";
         if (data.bannerUrl && data.bannerUrl.trim() !== "") {
             imagenFinalBanner = data.bannerUrl.trim();
@@ -466,64 +465,68 @@
             imgElement.onerror = null;
         };
 
-        // CONSULTAR LOGÍSTICA DE TRANSPORTE CON FILTRADO EN TIEMPO REAL
+        // ==========================================
+        // INTEGRACIÓN DE RUTAS CON BUSCADOR INTELIGENTE
+        // ==========================================
         const selectPuntos = document.getElementById('selPuntoRecoleccion');
         const bloqueTrans = document.getElementById('bloqueTransporte');
         const txtDetallesTrans = document.getElementById('txtDetallesTransporte');
         
-        selectPuntos.innerHTML = '<option value="">— Cargando rutas disponibles... —</option>';
-        bloqueTrans.style.display = 'none';
-        selectPuntos.required = false;
+        if (selectPuntos && bloqueTrans && txtDetallesTrans) {
+            selectPuntos.innerHTML = '<option value="">— Cargando rutas disponibles... —</option>';
+            bloqueTrans.style.display = 'none';
+            selectPuntos.required = false;
 
-        db.ref(`rutas_transporte/${empresaId}`).once('value', function(snapRuta) {
-            if (snapRuta.exists()) {
-                const dataRuta = snapRuta.val();
-                const infoTransporte = dataRuta.transporte_privado_empresa || dataRuta.transporte_privado;
-                
-                if (infoTransporte && infoTransporte.ofrece === true) {
-                    txtDetallesTrans.innerText = infoTransporte.detalles || "La empresa cuenta con circuito de transporte disponible para sus colaboradores.";
+            db.ref(`rutas_transporte/${empresaId}`).once('value', function(snapRuta) {
+                if (snapRuta.exists()) {
+                    const dataRuta = snapRuta.val();
+                    const infoTransporte = dataRuta.transporte_privado_empresa || dataRuta.transporte_privado;
                     
-                    const puntos = infoTransporte.puntos_recoleccion;
-                    if (puntos && Array.isArray(puntos)) {
-                        const puntosLimpios = puntos.filter(p => p && p.trim() !== "");
+                    if (infoTransporte && infoTransporte.ofrece === true) {
+                        txtDetallesTrans.innerText = infoTransporte.detalles || "La empresa cuenta con circuito de transporte disponible para sus colaboradores.";
+                        
+                        const puntos = infoTransporte.puntos_recoleccion;
+                        if (puntos && Array.isArray(puntos)) {
+                            const puntosLimpios = puntos.filter(p => p && p.trim() !== "");
 
-                        function renderizarOpciones(listaFiltrada) {
-                            selectPuntos.innerHTML = '<option value="">— Selecciona la parada/referencia más cercana a tu casa —</option>';
-                            listaFiltrada.forEach((punto) => {
-                                const opt = document.createElement('option');
-                                opt.value = punto;
-                                opt.textContent = punto.toUpperCase(); 
-                                selectPuntos.appendChild(opt);
-                            });
+                            function renderizarOpciones(listaFiltrada) {
+                                selectPuntos.innerHTML = '<option value="">— Selecciona la parada/referencia más cercana a tu casa —</option>';
+                                listaFiltrada.forEach((punto) => {
+                                    const opt = document.createElement('option');
+                                    opt.value = punto;
+                                    opt.textContent = punto.toUpperCase(); 
+                                    selectPuntos.appendChild(opt);
+                                });
+                            }
+
+                            if (!document.getElementById('buscarRutaInput')) {
+                                const contenedorBuscador = document.createElement('div');
+                                contenedorBuscador.style.marginBottom = '12px';
+                                contenedorBuscador.innerHTML = `
+                                    <input type="text" id="buscarRutaInput" placeholder="🔍 Escribe tu colonia o avenida para buscar parada..." 
+                                           style="width:100%; padding: 12px 15px; font-size: 0.9rem; background-color: var(--input-bg); border: 2px dashed rgba(56, 189, 248, 0.3); color: var(--white); border-radius: 10px; margin-bottom: 8px;">
+                                `;
+                                selectPuntos.parentNode.insertBefore(contenedorBuscador, selectPuntos);
+
+                                document.getElementById('buscarRutaInput').addEventListener('input', function(e) {
+                                    const busqueda = e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                                    const filtrados = puntosLimpios.filter(p => 
+                                        p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(busqueda)
+                                    );
+                                    renderizarOpciones(filtrados);
+                                });
+                            } else {
+                                document.getElementById('buscarRutaInput').value = "";
+                            }
+
+                            renderizarOpciones(puntosLimpios);
+                            bloqueTrans.style.display = 'block';
+                            selectPuntos.required = true; 
                         }
-
-                        if (!document.getElementById('buscarRutaInput')) {
-                            const contenedorBuscador = document.createElement('div');
-                            contenedorBuscador.style.marginBottom = '12px';
-                            contenedorBuscador.innerHTML = `
-                                <input type="text" id="buscarRutaInput" placeholder="🔍 Escribe tu colonia o avenida para buscar parada..." 
-                                       style="padding: 10px 14px; font-size: 0.9rem; border-style: dashed; margin-bottom: 5px;">
-                            `;
-                            selectPuntos.parentNode.insertBefore(contenedorBuscador, selectPuntos);
-
-                            document.getElementById('buscarRutaInput').addEventListener('input', function(e) {
-                                const busqueda = e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                                const filtrados = puntosLimpios.filter(p => 
-                                    p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(busqueda)
-                                );
-                                renderizarOpciones(filtrados);
-                            });
-                        } else {
-                            document.getElementById('buscarRutaInput').value = "";
-                        }
-
-                        renderizarOpciones(puntosLimpios);
-                        bloqueTrans.style.display = 'block';
-                        selectPuntos.required = true; 
                     }
                 }
-            }
-        });
+            });
+        }
 
         document.getElementById('vacanteBannerBox').style.display = 'block';
         document.getElementById('menuVacantesBox').style.display = 'none';
@@ -578,38 +581,56 @@
         return { edad: isNaN(edadCalculada) ? "Indistinto" : String(edadCalculada), sexo: sexo };
     }
 
+    // ==========================================
+    // ENVÍO DE POSTULACIÓN DINÁMICA PREMIUM
+    // ==========================================
     window.enviarPostulacion = async function(e) {
         e.preventDefault();
+        
         const nombre = document.getElementById('postNombre').value.trim();
         const telefono = document.getElementById('postTelefono').value.trim();
         const curp = document.getElementById('postCurp').value.trim().toUpperCase();
+        const selectPuntos = document.getElementById('selPuntoRecoleccion');
         const selectReclutador = document.getElementById("selReclutador");
-        const puntoElegido = document.getElementById('selPuntoRecoleccion').value || "No aplica / No seleccionado";
         
-        let telefonoDestino = selectReclutador.value || fallbackTelefonoReclutador;
-        let nombreReclutadorCorto = selectReclutador.options[selectReclutador.selectedIndex].dataset.nombreReal || "Asesor Asignado";
+        const puntoElegido = (selectPuntos && selectPuntos.value) ? selectPuntos.value : "No aplica / No seleccionado";
 
-        if (curp.length !== 18) { alert("La CURP debe tener exactamente 18 caracteres."); return; }
-        if (telefono.length !== 10) { alert("El teléfono debe constar de 10 dígitos numéricos."); return; }
+        if (curp.length !== 18) { alert("❌ La CURP debe tener exactamente 18 caracteres."); return; }
+        if (telefono.length !== 10) { alert("❌ El teléfono debe constar de 10 dígitos numéricos."); return; }
+        if (!selectReclutador.value) { alert("❌ Por favor, selecciona al Asesor que te atiende."); return; }
+
+        let telefonoDestino = selectReclutador.value; 
+        let nombreReclutadorCorto = selectReclutador.options[selectReclutador.selectedIndex].dataset.nombreReal || "Asesor Asignado";
         
         if (telefonoDestino.length === 10) telefonoDestino = "52" + telefonoDestino;
 
         const datosExtraidos = extraerDatosCurp(curp);
-        const timestampId = "WF-" + Math.floor(100000 + Math.random() * 900000); 
+        const timestampId = "WF-" + Math.floor(100000 + Math.random() * 900000);
         const fechaYHoraActual = new Date().toLocaleString();
-        
-        const payload = {
-            id: timestampId, nombre: nombre, nombreCompleto: nombre, telefono: telefono, curp: curp,
-            edad: datosExtraidos.edad, sexo: datosExtraidos.sexo, genero: datosExtraidos.sexo,
-            empresa: empresaId, empresaDestino: empresaId, vacante: datosVacanteGlobal.vacanteNombre || 'Desconocida',
-            puesto: datosVacanteGlobal.vacanteNombre || 'Desconocida', fechaRegistro: fechaYHoraActual, 
-            atendidoPor: nombreReclutadorCorto, rutaTransporteSeleccionada: puntoElegido
+
+        const payloadPostulante = {
+            id: timestampId,
+            nombre: nombre,
+            nombreCompleto: nombre,
+            telefono: telefono,
+            curp: curp,
+            edad: datosExtraidos.edad,
+            sexo: datosExtraidos.sexo,
+            genero: datosExtraidos.sexo,
+            empresa: empresaId,
+            empresaDestino: empresaId,
+            vacante: datosVacanteGlobal.vacanteNombre || "Desconocida",
+            puesto: datosVacanteGlobal.vacanteNombre || "Desconocida",
+            fechaRegistro: fechaYHoraActual,
+            atendidoPor: nombreReclutadorCorto,
+            rutaTransporteSeleccionada: puntoElegido
         };
 
         try {
-            await db.ref(`postulantes/${timestampId}`).set(payload);
+            await db.ref(`postulantes/${timestampId}`).set(payloadPostulante);
             await db.ref('postulantes_count').update({ total: firebase.database.ServerValue.increment(1) });
 
+            // GENERACIÓN DE ACUSE EN PDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
@@ -628,7 +649,7 @@
             doc.text(`Folio Digital: ${timestampId}`, 150, 20);
 
             doc.setTextColor(15, 26, 44); 
-            doc.setFontSize(16); 
+            doc.setFontSize(15); 
             doc.setFont("helvetica", "bold");
             doc.text("CONFIRMACIÓN OFICIAL DE POSTULACIÓN", 15, 60);
             
@@ -640,14 +661,14 @@
             let y = 78;
             
             const camposPdf = [
-                { label: "PUESTO SOLICITADO:", val: payload.vacante.toUpperCase() },
-                { label: "SOCIO COMERCIAL:", val: payload.empresa.toUpperCase() },
-                { label: "CANDIDATO:", val: payload.nombre.toUpperCase() },
-                { label: "CURP VALIDADA:", val: payload.curp },
-                { label: "TELÉFONO MÓVIL:", val: payload.telefono },
+                { label: "PUESTO SOLICITADO:", val: payloadPostulante.vacante.toUpperCase() },
+                { label: "SOCIO COMERCIAL:", val: payloadPostulante.empresa.toUpperCase() },
+                { label: "CANDIDATO:", val: payloadPostulante.nombre.toUpperCase() },
+                { label: "CURP VALIDADA:", val: payloadPostulante.curp },
+                { label: "TELÉFONO MÓVIL:", val: payloadPostulante.telefono },
                 { label: "RUTA CONVENIENTE:", val: puntoElegido.toUpperCase() },
                 { label: "FECHA DE REGISTRO:", val: fechaYHoraActual },
-                { label: "RECLUTADOR ASIGNADO:", val: nombreReclutadorCorto.toUpperCase() }
+                { label: "ASESOR ASIGNADO:", val: nombreReclutadorCorto.toUpperCase() }
             ];
 
             camposPdf.forEach(item => {
@@ -671,32 +692,33 @@
             doc.setFont("helvetica", "italic");
             doc.setFontSize(9);
             doc.setTextColor(100, 116, 139);
-            doc.text("Este acuse ha sido generado por el área de Atracción de Talento de Workforce.", 20, y + 15);
-            doc.text("Presente este documento digital o impreso al momento del seguimiento de su proceso.", 20, y + 21);
+            doc.text("Este acuse ha sido generado por el sistema automatizado de Workforce Connect.", 20, y + 15);
+            doc.text("Conserve este documento digital para el seguimiento de su proceso.", 20, y + 21);
 
-            doc.save(`Acuse_${payload.curp}.pdf`);
-            
-            const mensajeWhatsApp = `*WORKFORCE CONNECT SOLUTION — SOLICITUD DE ENTREVISTA*\n\n` +
-                                    `Estimado área de Atracción de Talento,\n\n` +
-                                    `Por medio de la presente, presento mi postulación formal para la vacante activa del sistema:\n\n` +
-                                    `• *Puesto:* ${payload.vacante.toUpperCase()}\n` +
-                                    `• *Socio Comercial:* ${payload.empresa.toUpperCase()}\n` +
-                                    `• *Ruta Conveniente:* ${puntoElegido}\n` +
-                                    `• *Folio Único:* ${timestampId}\n\n` +
-                                    `*Datos Generales del Postulante:*\n` +
-                                    `• *Nombre Completo:* ${payload.nombre}\n` +
-                                    `• *CURP:* ${payload.curp}\n` +
-                                    `• *Teléfono de Contacto:* ${payload.telefono}\n\n` +
-                                    `He completado con éxito el registro oficial en el portal de vacantes y dispongo de mi acuse digital en formato PDF para cualquier aclaración inmediata.\n\n` +
-                                    `Quedo a su entera disposición para dar inicio al proceso de evaluación corporativa correspondiente.\n\n` +
-                                    `Atentamente,\n` +
-                                    `${payload.nombre}\n\n` +
+            doc.save(`Acuse_${payloadPostulante.curp}.pdf`);
+
+            // MENSAJE DE WHATSAPP DINÁMICO
+            const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante.\n\n` +
+                                    `*📌 Detalles de mi Postulación:*\n` +
+                                    `• *Folio:* ${timestampId}\n` +
+                                    `• *Puesto:* ${payloadPostulante.vacante}\n` +
+                                    `• *Empresa:* ${payloadPostulante.empresa.toUpperCase()}\n` +
+                                    `• *Ruta Conveniente:* ${puntoElegido}\n\n` +
+                                    `*👤 Mis Datos de Contacto:*\n` +
+                                    `• *Nombre:* ${payloadPostulante.nombre}\n` +
+                                    `• *Teléfono:* ${payloadPostulante.telefono}\n` +
+                                    `• *CURP:* ${payloadPostulante.curp}\n` +
+                                    `• *Edad:* ${payloadPostulante.edad} años\n` +
+                                    `• *Sexo:* ${payloadPostulante.sexo}\n\n` +
+                                    `Ya descargué mi acuse en formato PDF. Quedo atento a su respuesta.\n\n` +
                                     `_Atendido por: ${nombreReclutadorCorto}_`;
 
             document.getElementById('formPostulacion').reset();
             window.location.href = `https://wa.me/${telefonoDestino}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+            
         } catch (err) {
-            alert("Ocurrió un error al procesar la solicitud: " + err.message);
+            console.error(err);
+            alert("❌ Ocurrió un error al guardar la postulación: " + err.message);
         }
     };
 
