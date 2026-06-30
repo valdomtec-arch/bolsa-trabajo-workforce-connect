@@ -529,7 +529,7 @@ background: #132d20; border: 0px solid var(--green-success); border-radius: 8px;
         <input type="text" id="perId" placeholder="ej: ana_lopez">
       </div>
       <div class="form-group">
-        <label>Nombre y Apellidos</label>
+        <label>Nombre Nacimiento u Apellidos</label>
         <input type="text" id="perNombreCompleto" placeholder="Ana López Martínez">
       </div>
       <div class="form-group">
@@ -592,15 +592,6 @@ const apiKeyInput = document.getElementById('geminiApiKeyInput');
 if(localStorage.getItem('gemini_api_key')) apiKeyInput.value = localStorage.getItem('gemini_api_key');
 apiKeyInput.addEventListener('input', (e) => localStorage.setItem('gemini_api_key', e.target.value.trim()));
 
-// Función utilitaria global para desestructurar cualquier campo que venga como un objeto corrupto de Firebase
-function extraerTextoSeguro(val) {
-  if (val === null || val === undefined) return '';
-  if (typeof val === 'object') {
-    return val.valor || val.nombre || val.texto || val.numero || JSON.stringify(val);
-  }
-  return String(val);
-}
-
 document.querySelectorAll('.tabs-menu .tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tabs-menu .tab-btn').forEach(b => b.classList.remove('active'));
@@ -656,7 +647,7 @@ window.eliminarEmpresa = async function(id) {
 
 window.eliminarEmpresaPorInput = async function() {
   const id = document.getElementById('admId').value.trim();
-  if(!id) return alert('⚠️ Escribe el ID de la empresa en el formulario.');
+  if(!id) return alert('⚠️ Escribe el ID de la empresa in el formulario.');
   await eliminarEmpresa(id);
   limpiarFormularioEmpresas();
 };
@@ -938,20 +929,25 @@ onValue(ref(db, 'postulantes'), snap => {
   cachePostulantesGlobal = snap.val() || {};
   const llaves = Object.keys(cachePostulantesGlobal);
   
-  if(document.getElementById('contadorPostulantes').innerText === "0") {
-    document.getElementById('contadorPostulantes').innerText = llaves.length;
-  }
+  // Contamos únicamente los nodos que sean objetos válidos (excluyendo 'contador')
+  const totalPostulantes = llaves.filter(k => k !== 'contador' && typeof cachePostulantesGlobal[k] === 'object').length;
+  document.getElementById('contadorPostulantes').innerText = totalPostulantes;
   
   llaves.forEach(key => {
+    // 1. FILTRO CRÍTICO: Si la llave es 'contador' o no es un objeto válido, la saltamos de inmediato
+    if (key === 'contador' || typeof cachePostulantesGlobal[key] !== 'object') {
+      return; 
+    }
+    
     const p = cachePostulantesGlobal[key];
     
-    // Filtramos cada propiedad individual para evitar el escape de strings en formato "[object Object]"
-    const nombreFormateado = extraerTextoSeguro(p.nombre || p.nombreCompleto) || 'No especificado';
-    const edadFormateada = extraerTextoSeguro(p.edad) || '—';
-    const sexoFormateado = extraerTextoSeguro(p.sexo || p.genero) || '—';
-    const curpFormateada = extraerTextoSeguro(p.curp) || '—';
-    const empresaFormateada = extraerTextoSeguro(p.empresa || p.empresaDestino) || '—';
-    const vacanteFormateada = extraerTextoSeguro(p.vacante || p.puesto) || '—';
+    // Asignamos valores limpios y seguros
+    const nombreFormateado = p.nombre || p.nombreCompleto || 'No especificado';
+    const edadFormateada = p.edad || '—';
+    const sexoFormateado = p.sexo || p.genero || '—';
+    const curpFormateada = p.curp || '—';
+    const empresaFormateada = p.empresa || p.empresaDestino || '—';
+    const vacanteFormateada = p.vacante || p.puesto || '—';
 
     body.innerHTML += `<tr>
       <td><strong>${nombreFormateado}</strong></td>
@@ -974,14 +970,12 @@ window.abrirEditarPostulante = function(key) {
   const p = cachePostulantesGlobal[key];
   if(!p) return;
   document.getElementById('editPostulanteId').value = key;
-  
-  // Limpiamos los inputs del modal/formulario al dar clic en Editar
-  document.getElementById('editPostNombre').value = extraerTextoSeguro(p.nombre || p.nombreCompleto);
-  document.getElementById('editPostEdad').value = extraerTextoSeguro(p.edad);
-  document.getElementById('editPostSexo').value = extraerTextoSeguro(p.sexo || p.genero);
-  document.getElementById('editPostCurp').value = extraerTextoSeguro(p.curp);
-  document.getElementById('editPostEmpresa').value = extraerTextoSeguro(p.empresa || p.empresaDestino);
-  document.getElementById('editPostVacante').value = extraerTextoSeguro(p.vacante || p.puesto);
+  document.getElementById('editPostNombre').value = p.nombre || p.nombreCompleto || '';
+  document.getElementById('editPostEdad').value = p.edad || '';
+  document.getElementById('editPostSexo').value = p.sexo || p.genero || '';
+  document.getElementById('editPostCurp').value = p.curp || '';
+  document.getElementById('editPostEmpresa').value = p.empresa || p.empresaDestino || '';
+  document.getElementById('editPostVacante').value = p.vacante || p.puesto || '';
   
   const box = document.getElementById('formularioEdicionPostulanteBox');
   box.classList.add('open');
@@ -1165,6 +1159,7 @@ window.procesarDocumentoTransporteConGemini = async function() {
   lector.readAsDataURL(file);
 };
 
+// --- LÓGICA DE LA PESTAÑA 5 ---
 window.limpiarFormularioPersonal = function() {
   document.getElementById('perId').value = '';
   document.getElementById('perId').disabled = false;
