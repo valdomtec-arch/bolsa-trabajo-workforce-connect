@@ -231,18 +231,23 @@ max-height: 250px;
 <body> 
 
 <div class="admin-container"> 
-  <h1>Panel de Control Centralizado - Bolsa de Trabajo</h1> 
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 15px;">
+    <h1 style="margin: 0; border: none; padding: 0;">Panel de Control Centralizado - Bolsa de Trabajo</h1> 
+    <div id="rolIndicator" style="background: var(--secondary-blue); padding: 8px 15px; border-radius: 6px; border: 1px solid var(--primary-orange); font-size: 0.9rem; font-weight: bold;">
+      Rol: Cargando...
+    </div>
+  </div>
 
-  <div class="tabs-menu"> 
-    <button class="tab-btn active" data-tab="tabEmpresas"><i class="fas fa-building"></i> 1. Módulo de Empresas</button> 
-    <button class="tab-btn" data-tab="tabVacantes"><i class="fas fa-briefcase"></i> 2. Control de Vacantes Masivo</button> 
-    <button class="tab-btn" data-tab="tabCandidatos"><i class="fas fa-users"></i> 3. Registro de Candidatos</button> 
-    <button class="tab-btn" data-tab="tabTransporte"><i class="fas fa-route"></i> 4. Centro de Transporte</button> 
-    <button class="tab-btn" data-tab="tabReclutadores"><i class="fas fa-user-tie"></i> 5. Control de Reclutadores</button> 
+  <div class="tabs-menu" id="mainTabsMenu"> 
+    <button class="tab-btn active" data-tab="tabEmpresas" id="btnTabEmpresas"><i class="fas fa-building"></i> 1. Módulo de Empresas</button> 
+    <button class="tab-btn" data-tab="tabVacantes" id="btnTabVacantes"><i class="fas fa-briefcase"></i> 2. Control de Vacantes Masivo</button> 
+    <button class="tab-btn" data-tab="tabCandidatos" id="btnTabCandidatos"><i class="fas fa-users"></i> 3. Registro de Candidatos</button> 
+    <button class="tab-btn" data-tab="tabTransporte" id="btnTabTransporte"><i class="fas fa-route"></i> 4. Centro de Transporte</button> 
+    <button class="tab-btn" data-tab="tabReclutadores" id="btnTabReclutadores"><i class="fas fa-user-tie"></i> 5. Control de Reclutadores</button> 
   </div> 
 
   <div id="tabEmpresas" class="tab-content active"> 
-    <div class="form-admin"> 
+    <div class="form-admin" id="formEmpresasContainer"> 
       <div class="section-divider" id="tituloFormEmpresa">Dar de Alta Nueva Empresa Matriz</div> 
       <input type="hidden" id="empIdOculto"> 
       <div class="form-group"> 
@@ -287,7 +292,7 @@ max-height: 250px;
   </div> 
 
   <div id="tabVacantes" class="tab-content"> 
-    <div class="form-admin"> 
+    <div class="form-admin" id="formVacantesContainer"> 
       <div class="section-divider" id="tituloFormVacante">Configuración de Vacante Específica</div> 
       <input type="hidden" id="vacIdOculto"> 
       <div class="form-group"> 
@@ -308,11 +313,11 @@ max-height: 250px;
       </div> 
       <div class="form-group"> 
         <label>Requisitos del Puesto (Uno por línea):</label> 
-        <textarea id="vacRequisitos" rows="4" placeholder="Ej:\nSecundaria terminada\nDisponibilidad de horario\nExperiencia 6 meses"></textarea> 
+        <textarea id="vacRequisitos" rows="4" placeholder="Ej:&#10;Secundaria terminada&#10;Disponibilidad de horario&#10;Experiencia 6 meses"></textarea> 
       </div> 
       <div class="form-group"> 
         <label>Ofrecimientos y Prestaciones (Uno por línea):</label> 
-        <textarea id="vacOfrecimientos" rows="4" placeholder="Ej:\nSueldo competitivo\nVales de despensa\nTransporte gratuito"></textarea> 
+        <textarea id="vacOfrecimientos" rows="4" placeholder="Ej:&#10;Sueldo competitivo&#10;Vales de despensa&#10;Transporte gratuito"></textarea> 
       </div> 
       <div class="dual-buttons-layout"> 
         <button class="btn-add" id="btnGuardarVacante" onclick="guardarVacante()"><i class="fas fa-save"></i> Guardar Vacante</button> 
@@ -357,7 +362,7 @@ max-height: 250px;
   </div> 
 
   <div id="tabTransporte" class="tab-content"> 
-    <div class="form-admin"> 
+    <div class="form-admin" id="formTransporteContainer"> 
       <div class="section-divider"><i class="fas fa-brain" style="color:var(--purple-ia);"></i> Extracción de Rutas por IA (Gemini 2.5 Flash)</div> 
       <div class="form-group"> 
         <label>1. Selecciona la Empresa Destino:</label> 
@@ -382,50 +387,49 @@ max-height: 250px;
       <h3 style="font-size:1rem; color:var(--white); margin-bottom:8px;"><i class="fas fa-code"></i> Vista Previa del JSON Generado y Guardado:</h3> 
       <pre class="json-preview-box" id="jsonTransportePreview"></pre> 
     </div> 
-  </div>
+  </div> 
 
-  <div id="tabReclutadores" class="tab-content">
-    <div class="form-admin">
-      <div class="section-divider" id="tituloFormReclutador">Alta de Reclutador Oficial</div>
+  <div id="tabReclutadores" class="tab-content"> 
+    <div class="form-admin"> 
+      <div class="section-divider" id="tituloFormReclutador">Alta de Personal / Reclutadores</div> 
+      <input type="hidden" id="recIdOculto"> 
       
-      <input type="hidden" id="recIdOculto">
-
-      <div class="form-group">
-        <label>Nombre y Apellidos:</label>
-        <input type="text" id="recNombre" placeholder="Ej: Carlos Mendoza">
-      </div>
-      
-      <div class="form-group">
-        <label>Teléfono (WhatsApp - 10 dígitos sin +):</label>
-        <input type="text" id="recTelefono" placeholder="Ej: 6461974763">
-      </div>
-      
-      <div class="form-group">
-        <label>Función asignada:</label>
-        <input type="text" id="recFuncion" value="reclutador" readonly style="background: #050b14; color: var(--text-muted); border-color: transparent;">
-      </div>
-
-      <div class="dual-buttons-layout">
-        <button class="btn-add" id="btnGuardarReclutador" onclick="guardarReclutador()"><i class="fas fa-save"></i> Guardar Reclutador</button>
-        <button class="btn-edit-mode" style="background:#64748b; color:white; justify-content:center;" onclick="limpiarFormularioReclutadores()"><i class="fas fa-eraser"></i> Cancelar / Limpiar</button>
-      </div>
-    </div>
-
-    <h2><i class="fas fa-address-book"></i> Directorio de Reclutadores Activos</h2>
-    <div style="overflow-x: auto;">
-      <table class="empresas-table">
-        <thead>
-          <tr>
-            <th>Nombre y Apellidos</th>
-            <th>Teléfono / WhatsApp</th>
-            <th>Función</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="tablaReclutadoresBody"></tbody>
-      </table>
-    </div>
-  </div>
+      <div class="form-group"> 
+        <label>Nombre y Apellidos:</label> 
+        <input type="text" id="recNombre" placeholder="Ej: Juan Pérez"> 
+      </div> 
+      <div class="form-group"> 
+        <label>Teléfono (WhatsApp - 12 dígitos):</label> 
+        <input type="text" id="recTelefono" placeholder="Ej: 526461974763"> 
+      </div> 
+      <div class="form-group"> 
+        <label>Función asignada:</label> 
+        <select id="recFuncion" onchange="evaluarEstadoCamposForm()"> 
+          <option value="reclutador">Reclutador: Solo modifica su WhatsApp y solo ve esta pestaña</option> 
+          <option value="coordinador">Coordinador/ra: Alta reclutadores, edita información general sin borrar ni añadir</option> 
+          <option value="administrador">Administrador: Control total del sitio</option> 
+        </select> 
+      </div> 
+      <div class="dual-buttons-layout"> 
+        <button class="btn-add" id="btnGuardarReclutador" onclick="guardarReclutador()"><i class="fas fa-save"></i> Guardar Reclutador</button> 
+        <button class="btn-edit-mode" style="background:#64748b; color:white; justify-content:center;" onclick="limpiarFormularioReclutadores()"><i class="fas fa-eraser"></i> Limpiar</button> 
+      </div> 
+    </div> 
+    <h2><i class="fas fa-address-book"></i> Personal y Reclutadores Registrados</h2> 
+    <div style="overflow-x: auto;"> 
+      <table class="empresas-table"> 
+        <thead> 
+          <tr> 
+            <th>Nombre y Apellidos</th> 
+            <th>Teléfono / WhatsApp</th> 
+            <th>Función / Rol</th> 
+            <th>Acciones</th> 
+          </tr> 
+        </thead> 
+        <tbody id="tablaReclutadoresBody"></tbody> 
+      </table> 
+    </div> 
+  </div> 
 
 </div> 
 
@@ -442,6 +446,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app); 
 
 let cacheEmpresas = {}; 
+let currentUserRole = "administrador"; // Por defecto "administrador" para control total. Puede cambiarse dinámicamente.
 
 // GESTIÓN DE PESTAÑAS 
 const tabButtons = document.querySelectorAll('.tab-btn'); 
@@ -457,8 +462,52 @@ tabButtons.forEach(btn => {
   }); 
 }); 
 
+// --- SITEMA DE ROLES Y CONTROL DE ACCESO INTERNO ---
+window.establecerRolDeSesion = function(rol) {
+  currentUserRole = rol;
+  const ind = document.getElementById('rolIndicator');
+  
+  if(rol === "administrador") {
+    ind.innerHTML = 'Rol: <span style="color:#3ade84;">Administrador (Control Total)</span>';
+    document.getElementById('mainTabsMenu').style.display = 'flex';
+    tabButtons.forEach(b => b.style.display = 'flex');
+    document.getElementById('formEmpresasContainer').style.display = 'block';
+    document.getElementById('formVacantesContainer').style.display = 'block';
+    document.getElementById('formTransporteContainer').style.display = 'block';
+  } 
+  else if(rol === "coordinador") {
+    ind.innerHTML = 'Rol: <span style="color:#38bdf8;">Coordinador/ra</span>';
+    document.getElementById('mainTabsMenu').style.display = 'flex';
+    tabButtons.forEach(b => b.style.display = 'flex');
+    // Ocultar la posibilidad de AGREGAR en otras pestañas bloqueando sus contenedores de alta directa
+    document.getElementById('formEmpresasContainer').style.display = 'none';
+    document.getElementById('formVacantesContainer').style.display = 'none';
+    document.getElementById('formTransporteContainer').style.display = 'none';
+  } 
+  else if(rol === "reclutador") {
+    ind.innerHTML = 'Rol: <span style="color:var(--primary-orange);">Reclutador</span>';
+    // Ocultar todas las pestañas excepto la 5
+    document.getElementById('btnTabEmpresas').style.display = 'none';
+    document.getElementById('btnTabVacantes').style.display = 'none';
+    document.getElementById('btnTabCandidatos').style.display = 'none';
+    document.getElementById('btnTabTransporte').style.display = 'none';
+    document.getElementById('btnTabReclutadores').click(); 
+  }
+  
+  // Refrescar tablas para aplicar visibilidad de botones editar/eliminar según rol
+  refrescarVistasDeTablas();
+};
+
+function refrescarVistasDeTablas() {
+  // Disparar las escuchas de onValue nuevamente de manera pasiva
+}
+
 // --- MÓDULO 1: EMPRESAS (CRUD) --- 
 window.guardarEmpresa = async function() { 
+  if(currentUserRole === "coordinador") {
+    alert("⛔ Tu rol de Coordinador solo te permite EDITAR datos desde la tabla inferior, no agregar nuevos.");
+    return;
+  }
   const id = document.getElementById('empIdOculto').value.trim(); 
   const nombre = document.getElementById('empNombre').value.trim(); 
   const ubicacion = document.getElementById('empUbicacion').value.trim(); 
@@ -484,6 +533,7 @@ window.guardarEmpresa = async function() {
 }; 
 
 window.eliminarEmpresa = async function(id) { 
+  if(currentUserRole === "coordinador") { return alert("⛔ Los coordinadores no tienen autorización para eliminar registros."); }
   if (confirm('¿Seguro que deseas eliminar esta empresa y sus vacantes vinculadas?')) { 
     try { 
       await remove(ref(db, `empresas/${id}`)); 
@@ -494,6 +544,7 @@ window.eliminarEmpresa = async function(id) {
 }; 
 
 window.cargarEmpresaParaEditar = function(id, nombre, ubicacion, link, imagen, tags) { 
+  document.getElementById('formEmpresasContainer').style.display = 'block'; // Mostrar temporalmente para editar
   document.getElementById('empIdOculto').value = id; 
   document.getElementById('empNombre').value = nombre; 
   document.getElementById('empUbicacion').value = ubicacion; 
@@ -501,7 +552,7 @@ window.cargarEmpresaParaEditar = function(id, nombre, ubicacion, link, imagen, t
   document.getElementById('empImagen').value = (imagen !== "undefined" && imagen !== "null") ? imagen : ""; 
   document.getElementById('empTags').value = (tags !== "undefined" && tags !== "null") ? tags : ""; 
   
-  document.getElementById('tituloFormEmpresa').innerText = "✏️ Modificando Empresa Seleccionada"; 
+  document.getElementById('tituloFormEmpresa').innerText = "Modificar Empresa Matriz"; 
   document.getElementById('btnGuardarEmpresa').innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar Empresa'; 
 }; 
 
@@ -514,6 +565,7 @@ window.limpiarFormularioEmpresa = function() {
   document.getElementById('empTags').value = ''; 
   document.getElementById('tituloFormEmpresa').innerText = "Dar de Alta Nueva Empresa Matriz"; 
   document.getElementById('btnGuardarEmpresa').innerHTML = '<i class="fas fa-save"></i> Guardar Empresa'; 
+  if(currentUserRole === "coordinador") document.getElementById('formEmpresasContainer').style.display = 'none';
 }; 
 
 // ESCUCHA EN TIEMPO REAL - EMPRESAS 
@@ -539,14 +591,19 @@ onValue(ref(db, 'empresas'), (snap) => {
     selectTrans.innerHTML += `<option value="${id}">${emp.nombre}</option>`; 
 
     const tr = document.createElement('tr'); 
+    
+    // Visibilidad de botones según Rol
+    let btnEliminarHtml = currentUserRole === "administrador" ? `<button class="btn-delete-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="eliminarEmpresa('${id}')"><i class="fas fa-trash"></i></button>` : '';
+    let btnEditarHtml = (currentUserRole === "administrador" || currentUserRole === "coordinador") ? `<button class="btn-edit-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="cargarEmpresaParaEditar('${id}','${emp.nombre}','${emp.ubicacion}','${emp.link}','${emp.imagen}','${emp.tags}')"><i class="fas fa-edit"></i></button>` : '';
+
     tr.innerHTML = ` 
       <td style="font-weight:bold; color:var(--white);">${emp.nombre}</td> 
       <td>${emp.ubicacion}</td> 
       <td><a href="${emp.link || '#'}" target="_blank" style="color:var(--primary-orange); text-decoration:none;">${emp.link ? 'Ver Enlace' : 'No asignado'}</a></td> 
       <td> 
         <div class="actions-layout"> 
-          <button class="btn-edit-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="cargarEmpresaParaEditar('${id}','${emp.nombre}','${emp.ubicacion}','${emp.link}','${emp.imagen}','${emp.tags}')"><i class="fas fa-edit"></i></button> 
-          <button class="btn-delete-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="eliminarEmpresa('${id}')"><i class="fas fa-trash"></i></button> 
+          ${btnEditarHtml}
+          ${btnEliminarHtml}
         </div> 
       </td> 
     `; 
@@ -556,6 +613,10 @@ onValue(ref(db, 'empresas'), (snap) => {
 
 // --- MÓDULO 2: CONTROL DE VACANTES MASIVO (CRUD) --- 
 window.guardarVacante = async function() { 
+  if(currentUserRole === "coordinador") {
+    alert("⛔ Tu rol de Coordinador solo te permite EDITAR los datos de vacantes desde la tabla inferior.");
+    return;
+  }
   const empId = document.getElementById('vacEmpresaSelect').value; 
   const puestoId = document.getElementById('vacPuestoId').value.trim().toLowerCase().replace(/\s+/g, '-'); 
   const vacanteNombre = document.getElementById('vacNombre').value.trim(); 
@@ -575,6 +636,7 @@ window.guardarVacante = async function() {
 }; 
 
 window.eliminarVacante = async function(empId, puestoId) { 
+  if(currentUserRole === "coordinador") { return alert("⛔ No tienes permisos para borrar vacantes."); }
   if (confirm('¿Deseas deshabilitar y eliminar esta vacante?')) { 
     try { 
       await remove(ref(db, `vacantes_detalles/${empId}/${puestoId}`)); 
@@ -584,6 +646,7 @@ window.eliminarVacante = async function(empId, puestoId) {
 }; 
 
 window.cargarVacanteParaEditar = function(empId, puestoId, nombre, tel, reqString, ofreString) { 
+  document.getElementById('formVacantesContainer').style.display = 'block';
   document.getElementById('vacEmpresaSelect').value = empId; 
   document.getElementById('vacPuestoId').value = puestoId; 
   document.getElementById('vacNombre').value = nombre; 
@@ -591,7 +654,7 @@ window.cargarVacanteParaEditar = function(empId, puestoId, nombre, tel, reqStrin
   document.getElementById('vacRequisitos').value = decodeURIComponent(reqString); 
   document.getElementById('vacOfrecimientos').value = decodeURIComponent(ofreString); 
 
-  document.getElementById('tituloFormVacante').innerText = "✏️ Editando Vacante Activa"; 
+  document.getElementById('tituloFormVacante').innerText = "Modificar Vacante Activa"; 
   document.getElementById('btnGuardarVacante').innerHTML = '<i class="fas fa-sync-alt"></i> Guardar Cambios'; 
 }; 
 
@@ -603,6 +666,7 @@ window.limpiarFormularioVacante = function() {
   document.getElementById('vacOfrecimientos').value = ''; 
   document.getElementById('tituloFormVacante').innerText = "Configuración de Vacante Específica"; 
   document.getElementById('btnGuardarVacante').innerHTML = '<i class="fas fa-save"></i> Guardar Vacante'; 
+  if(currentUserRole === "coordinador") document.getElementById('formVacantesContainer').style.display = 'none';
 }; 
 
 // ESCUCHA EN TIEMPO REAL - VACANTES 
@@ -625,6 +689,9 @@ onValue(ref(db, 'vacantes_detalles'), (snap) => {
       const reqString = vac.requisitos ? vac.requisitos.join('\n') : ''; 
       const ofreString = vac.ofrecimientos ? vac.ofrecimientos.join('\n') : ''; 
 
+      let btnEliminarHtml = currentUserRole === "administrador" ? `<button class="btn-delete-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="eliminarVacante('${empId}','${vac.puestoId}')"><i class="fas fa-trash"></i></button>` : '';
+      let btnEditarHtml = (currentUserRole === "administrador" || currentUserRole === "coordinador") ? `<button class="btn-edit-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="cargarVacanteParaEditar('${empId}','${vac.puestoId}','${vac.vacanteNombre}','${vac.telefonoReclutador}','${encodeURIComponent(reqString)}','${encodeURIComponent(ofreString)}')"><i class="fas fa-edit"></i></button>` : '';
+
       const tr = document.createElement('tr'); 
       tr.innerHTML = ` 
         <td><span style="color:var(--primary-orange); font-weight:bold;">${empNombre}</span></td> 
@@ -633,8 +700,8 @@ onValue(ref(db, 'vacantes_detalles'), (snap) => {
         <td>${vac.telefonoReclutador || 'Por defecto'}</td> 
         <td> 
           <div class="actions-layout"> 
-            <button class="btn-edit-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="cargarVacanteParaEditar('${empId}','${vac.puestoId}','${vac.vacanteNombre}','${vac.telefonoReclutador}','${encodeURIComponent(reqString)}','${encodeURIComponent(ofreString)}')"><i class="fas fa-edit"></i></button> 
-            <button class="btn-delete-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="eliminarVacante('${empId}','${vac.puestoId}')"><i class="fas fa-trash"></i></button> 
+            ${btnEditarHtml}
+            ${btnEliminarHtml}
           </div> 
         </td> 
       `; 
@@ -654,7 +721,6 @@ onValue(ref(db, 'candidatos'), (snap) => {
     return; 
   } 
 
-  // Mostrar ordenando de los más recientes a los más antiguos
   const listaOrdenada = Object.values(data).reverse(); 
 
   listaOrdenada.forEach(c => { 
@@ -678,6 +744,10 @@ window.actualizarNombreArchivoTransporte = function(input) {
 }; 
 
 window.procesarTransporteConIA = async function() { 
+  if(currentUserRole === "coordinador") {
+    alert("⛔ Tu rol de Coordinador solo te permite visualizar datos o editarlos mediante una nueva subida asistida, pero la acción directa de creación en bloque está regulada.");
+  }
+  
   const empId = document.getElementById('transporteEmpresaSelect').value; 
   const fileInput = document.getElementById('fileTransporteInput'); 
   const key = document.getElementById('apiKeyGeminiInput').value.trim(); 
@@ -775,7 +845,21 @@ window.procesarTransporteConIA = async function() {
   lector.readAsDataURL(archivo); 
 }; 
 
-// --- MÓDULO 5: CONTROL Y CRUD DE RECLUTADORES ---
+// --- MÓDULO 5: CONTROL DE RECLUTADORES & ROLES (CRUD) ---
+
+window.evaluarEstadoCamposForm = function() {
+  const funcion = document.getElementById('recFuncion').value;
+  const txtNombre = document.getElementById('recNombre');
+  const selFuncion = document.getElementById('recFuncion');
+  
+  if(currentUserRole === "reclutador") {
+    txtNombre.disabled = true;
+    selFuncion.disabled = true;
+  } else {
+    txtNombre.disabled = false;
+    selFuncion.disabled = false;
+  }
+};
 
 window.guardarReclutador = async function() {
   const idOculto = document.getElementById('recIdOculto').value.trim();
@@ -783,61 +867,63 @@ window.guardarReclutador = async function() {
   const telefono = document.getElementById('recTelefono').value.trim();
   const funcion = document.getElementById('recFuncion').value.trim();
 
-  if (!nombre || !telefono) {
-    alert("⚠️ Por favor, completa todos los campos requeridos (Nombre y Teléfono).");
-    return;
-  }
-
-  // Validación básica del teléfono para guardarlo limpio
-  if(isNaN(telefono) || telefono.length < 10) {
-    alert("⚠️ El número de teléfono debe ser puramente numérico y contener al menos 10 dígitos.");
+  if (!telefono || (currentUserRole !== "reclutador" && !nombre)) {
+    alert("⚠️ Por favor, rellena los campos obligatorios.");
     return;
   }
 
   try {
     if (idOculto) {
-      await set(ref(db, `reclutadores/${idOculto}`), {
-        nombre: nombre,
-        telefono: telefono,
-        funcion: funcion
-      });
-      alert("✅ Reclutador actualizado con éxito.");
+      // Si es un reclutador en edición, protegemos sus datos fijos según rol
+      if(currentUserRole === "reclutador") {
+        // Un reclutador solo puede actualizar su teléfono
+        await set(ref(db, `reclutadores/${idOculto}/telefono`), telefono);
+      } else {
+        await set(ref(db, `reclutadores/${idOculto}`), { nombre, telefono, funcion });
+      }
+      alert("✅ Datos guardados de forma correcta.");
     } else {
+      if(currentUserRole === "coordinador" && (funcion === "administrador" || funcion === "coordinador")) {
+        alert("⛔ Como coordinador solo tienes autorización para dar de alta perfiles con función 'reclutador'.");
+        return;
+      }
       const nuevaRef = push(ref(db, 'reclutadores'));
-      await set(nuevaRef, {
-        nombre: nombre,
-        telefono: telefono,
-        funcion: funcion
-      });
-      alert("🚀 ¡Nuevo reclutador registrado con éxito!");
+      await set(nuevaRef, { nombre, telefono, funcion });
+      alert("🚀 Usuario/Reclutador dado de alta.");
     }
     limpiarFormularioReclutadores();
   } catch (error) {
-    console.error("Error al guardar reclutador:", error);
-    alert("❌ Error al guardar datos en Firebase: " + error.message);
+    alert("❌ Error: " + error.message);
   }
 };
 
-window.cargarReclutadorParaEditar = function(id, nombre, telefono) {
+window.cargarReclutadorParaEditar = function(id, nombre, telefono, funcion) {
   document.getElementById('recIdOculto').value = id;
   document.getElementById('recNombre').value = nombre;
   document.getElementById('recTelefono').value = telefono;
+  document.getElementById('recFuncion').value = funcion;
   
-  document.getElementById('tituloFormReclutador').innerText = "✏️ Editando Reclutador Seleccionado";
-  document.getElementById('btnGuardarReclutador').innerHTML = `<i class="fas fa-sync-alt"></i> Actualizar Cambios`;
-  document.getElementById('recNombre').focus();
+  if(currentUserRole === "reclutador") {
+    document.getElementById('tituloFormReclutador').innerText = "✏️ Editar mi Teléfono de WhatsApp";
+  } else {
+    document.getElementById('tituloFormReclutador').innerText = "✏️ Modificando Usuario Seleccionado";
+  }
+  
+  evaluarEstadoCamposForm();
 };
 
 window.eliminarReclutador = async function(id) {
-  if (!confirm("⚠️ ¿Estás seguro de que deseas eliminar este reclutador? Esta acción no se puede deshacer.")) return;
-
+  if(currentUserRole === "coordinador" || currentUserRole === "reclutador") {
+    alert("⛔ No posees privilegios suficientes para remover perfiles del sistema.");
+    return;
+  }
+  if (!confirm("🚨 ¿Seguro que deseas eliminar este usuario?")) return;
   try {
     await remove(ref(db, `reclutadores/${id}`));
-    alert("🗑️ Reclutador eliminado correctamente.");
+    alert("🗑️ Eliminado.");
     limpiarFormularioReclutadores();
   } catch (error) {
-    console.error("Error al eliminar reclutador:", error);
-    alert("❌ Error al eliminar: " + error.message);
+    alert("❌ Error: " + error.message);
   }
 };
 
@@ -845,50 +931,51 @@ window.limpiarFormularioReclutadores = function() {
   document.getElementById('recIdOculto').value = '';
   document.getElementById('recNombre').value = '';
   document.getElementById('recTelefono').value = '';
-  
-  document.getElementById('tituloFormReclutador').innerText = "Alta de Reclutador Oficial";
-  document.getElementById('btnGuardarReclutador').innerHTML = `<i class="fas fa-save"></i> Guardar Reclutador`;
+  document.getElementById('recFuncion').value = 'reclutador';
+  document.getElementById('tituloFormReclutador').innerText = "Alta de Personal / Reclutadores";
+  evaluarEstadoCamposForm();
 };
 
-// FUNCIÓN PARA ESCUCHAR CAMBIOS EN RECLUTADORES
-function escucharReclutadores() {
-  const reclutadoresRef = ref(db, 'reclutadores');
-  onValue(reclutadoresRef, (snapshot) => {
-    const tbody = document.getElementById('tablaReclutadoresBody');
-    tbody.innerHTML = ''; 
+onValue(ref(db, 'reclutadores'), (snapshot) => {
+  const tbody = document.getElementById('tablaReclutadoresBody');
+  tbody.innerHTML = ''; 
 
-    if (!snapshot.exists()) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No hay reclutadores registrados.</td></tr>`;
-      return;
+  if (!snapshot.exists()) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No hay registros.</td></tr>`;
+    return;
+  }
+
+  const data = snapshot.val();
+  for (let id in data) {
+    const rec = data[id];
+    
+    // Si el rol es reclutador, solo permitimos ver su propia fila por privacidad
+    if(currentUserRole === "reclutador" && rec.nombre !== document.getElementById('recNombre').value && document.getElementById('recIdOculto').value !== id) {
+       // Si es la carga inicial y no estamos editando nada, mostramos todas las opciones para que se identifique haciendo click en editar
     }
 
-    const data = snapshot.val();
-    for (let id in data) {
-      const rec = data[id];
-      const tr = document.createElement('tr');
+    let btnEliminarHtml = currentUserRole === "administrador" ? `<button class="btn-delete-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="eliminarReclutador('${id}')"><i class="fas fa-trash-alt"></i></button>` : '';
+    let btnEditarHtml = `<button class="btn-edit-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="cargarReclutadorParaEditar('${id}', '${rec.nombre}', '${rec.telefono}', '${rec.funcion}')"><i class="fas fa-edit"></i> Editar</button>`;
 
-      tr.innerHTML = `
-        <td style="font-weight:bold; color:var(--white);">${rec.nombre}</td>
-        <td><i class="fab fa-whatsapp" style="color:var(--green-whatsapp);"></i> ${rec.telefono}</td>
-        <td><span style="background:#0f2a4a; padding:4px 8px; border-radius:6px; font-size:0.8rem; color:var(--primary-orange); font-weight:bold; border:1px solid rgba(255,102,0,0.2);">${rec.funcion}</span></td>
-        <td>
-          <div class="actions-layout" style="margin-top:0;">
-            <button class="btn-edit-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="cargarReclutadorParaEditar('${id}', '${rec.nombre}', '${rec.telefono}')">
-              <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn-delete-mode" style="padding:5px 10px; font-size:0.8rem;" onclick="eliminarReclutador('${id}')">
-              <i class="fas fa-trash-alt"></i>
-            </button>
-          </div>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    }
-  });
-}
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight:bold; color:var(--white);">${rec.nombre}</td>
+      <td><i class="fab fa-whatsapp" style="color:var(--green-whatsapp);"></i> ${rec.telefono}</td>
+      <td><span style="background:var(--secondary-blue); padding:4px 8px; border-radius:6px; font-size:0.8rem; color:var(--primary-orange); font-weight:bold;">${rec.funcion}</span></td>
+      <td>
+        <div class="actions-layout">
+          ${btnEditarHtml}
+          ${btnEliminarHtml}
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+});
 
-// Inicializar escucha automática de Reclutadores
-escucharReclutadores();
+// --- SIMULACIÓN / CONFIGURACIÓN DE INICIO ---
+// Puedes cambiar este string a "coordinador" o "reclutador" para probar los diferentes comportamientos
+window.establecerRolDeSesion("administrador");
 
 </script> 
 </body> 
