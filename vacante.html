@@ -28,7 +28,7 @@
             margin: 0; padding: 20px 10px;
         }
         .container {
-            max-width: 800px;
+            max-width: 650px;
             margin: 0 auto;
             background-color: var(--container-bg);
             padding: 25px;
@@ -44,87 +44,62 @@
         }
         .empresa-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         .empresa-header h1 {
             color: var(--white);
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 6px;
         }
         .empresa-header .location {
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: 0.95rem;
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
-        .menu-titulo {
-            text-align: center;
-            font-size: 1.25rem;
-            color: var(--white);
-            font-weight: bold;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
-        .vacantes-lista {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .vacante-item-card {
-            background-color: #142238;
-            border: 1px solid var(--border-color);
+        
+        /* --- ESTILOS DEL CARRUSEL --- */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            margin-bottom: 25px;
             border-radius: 8px;
-            padding: 18px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.2s;
-        }
-        .vacante-item-card:hover {
-            background-color: #1a2d4a;
-            transform: translateY(-2px);
-        }
-        .vacante-item-info h2 {
-            color: var(--orange-title);
-            font-size: 1.15rem;
-            margin: 0 0 6px 0;
-            text-transform: uppercase;
-        }
-        .vacante-item-info p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .vacante-item-card .chevron-icon {
-            color: var(--orange-title);
-            font-size: 1.2rem;
-        }
-        .btn-regresar {
-            background: none;
+            overflow: hidden;
             border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 8px 14px;
-            border-radius: 6px;
+        }
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 8px 12px;
             cursor: pointer;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            transition: background 0.2s;
         }
-        .btn-regresar:hover {
-            background: #142238;
-            color: var(--white);
-        }
+        .carousel-btn:hover { background: var(--primary-blue); }
+        .carousel-btn.prev { left: 10px; }
+        .carousel-btn.next { right: 10px; }
+
+        /* --- BANNER PUBLICITARIO --- */
         .banner-container {
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid var(--border-color);
@@ -133,10 +108,65 @@
         .banner-container img {
             width: 100%;
             height: auto;
-            max-height: 350px;
+            max-height: 220px;
             object-fit: cover;
             display: block;
         }
+
+        /* --- MENÚ INTERMEDIO DE SELECCIÓN --- */
+        .menu-titulo {
+            font-size: 1.1rem;
+            color: var(--white);
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .vacantes-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .btn-puesto {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+        .btn-puesto:hover {
+            border-color: var(--primary-blue);
+            background-color: #1f314d;
+        }
+        .btn-puesto span.salario-tag {
+            font-size: 0.85rem;
+            color: var(--secondary-teal);
+            font-weight: normal;
+        }
+
+        /* --- DETALLES DE LA VACANTE --- */
+        .btn-regresar {
+            background: none;
+            border: none;
+            color: var(--blue-accent);
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0;
+            margin-bottom: 15px;
+        }
+        .btn-regresar:hover { text-decoration: underline; }
+
         .card {
             background-color: var(--card-bg);
             padding: 20px;
@@ -190,6 +220,8 @@
         }
         .detalle-item span { font-size: 0.95rem; color: var(--text-light); }
         .texto-bloque { white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6; margin: 0; color: #cbd5e1; }
+        
+        /* --- FORMULARIO Y BOTONES --- */
         .btn {
             background-color: var(--secondary-teal);
             color: var(--white);
@@ -227,32 +259,36 @@
 <body>
 
 <div class="container">
-    <div id="loading"><i class="fas fa-spinner fa-spin"></i> Buscando vacantes de la empresa...</div>
+    <div id="loading"><i class="fas fa-spinner fa-spin"></i> Cargando información del servidor...</div>
     
     <div id="empresaHeaderBox" class="empresa-header" style="display: none;">
         <h1 id="mainEmpresaNombre">Nombre de la Empresa</h1>
         <div class="location"><i class="fa-solid fa-location-dot"></i> <span id="mainEmpresaLugar">—</span></div>
     </div>
 
-    <!-- VISTA 1: Contenedor del Menú Intermedio (Funciona con tu link directo) -->
+    <div class="carousel-container" id="empresaCarouselBox" style="display: none;">
+        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800" alt="Ubicación 1"></div>
+        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800" alt="Ubicación 2"></div>
+        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800" alt="Ubicación 3"></div>
+        <button class="carousel-btn prev" onclick="cambiarSlide(-1)">&#10094;</button>
+        <button class="carousel-btn next" onclick="cambiarSlide(1)">&#10095;</button>
+    </div>
+
+    <div class="banner-container" id="vacanteBannerBox">
+        <img id="vacanteBanner" src="" alt="Banner Puesto">
+    </div>
+
     <div id="menuVacantesBox" style="display: none;">
-        <div class="menu-titulo">Vacantes Disponibles Actualmente</div>
+        <div class="menu-titulo">Selecciona la vacante de tu interés:</div>
         <div id="listaVacantesDinamica" class="vacantes-lista"></div>
     </div>
 
-    <!-- VISTA 2: Contenedor de Detalles -->
     <div id="content" style="display:none;">
-        <button id="btnVolverAlMenu" class="btn-regresar" onclick="regresarAlMenu()">
-            <i class="fa-solid fa-arrow-left"></i> Volver a todas las vacantes
-        </button>
-
-        <div class="banner-container" id="vacanteBannerBox">
-            <img id="vacanteBanner" src="" alt="Banner Publicitario">
-        </div>
-
-        <h1 id="vacanteTitulo" style="color: var(--white); font-size: 1.8rem; margin-bottom: 15px; text-align: center;">Título de la Vacante</h1>
+        <button id="btnVolverMenu" class="btn-regresar" onclick="regresarAlMenu()"><i class="fa-solid fa-arrow-left"></i> Volver a las vacantes</button>
         
-        <div class="meta-info" style="justify-content: center;">
+        <h1 id="vacanteTitulo" style="color: var(--white); font-size: 1.6rem; margin-bottom: 15px; text-transform: uppercase;">Título de la Vacante</h1>
+        
+        <div class="meta-info">
             <span><i class="fa-solid fa-building"></i> Empresa: <code id="vacanteEmpresa" style="color:var(--white);">—</code></span>
             <span><i class="fa-solid fa-eye"></i> Visitas: <span id="vacanteVisitas">0</span></span>
         </div>
@@ -272,19 +308,17 @@
             <p id="vacanteActividades" class="texto-bloque">Cargando...</p>
         </div>
 
-        <!-- Muestra dinámicamente el campo prestaciones -->
         <div class="card">
             <h3><i class="fa-solid fa-gift"></i> Prestaciones y Beneficios</h3>
             <p id="vacanteBeneficios" class="texto-bloque">No especificadas.</p>
         </div>
 
-        <!-- Muestra dinámicamente el campo notas -->
         <div class="card">
             <h3><i class="fa-solid fa-note-sticky"></i> Notas Adicionales</h3>
             <p id="vacanteNotas" class="texto-bloque">Sin notas adicionales.</p>
         </div>
 
-        <div class="card" style="border-color: var(--primary-blue); background: rgba(2, 132, 199, 0.02);">
+        <div class="card" style="border-color: var(--primary-blue); background: rgba(2, 132, 199, 0.01);">
             <h3 style="color: var(--white); border-bottom-color: var(--primary-blue);"><i class="fa-solid fa-id-card"></i> Formulario de Postulación Exprés</h3>
             <form id="formPostulacion" onsubmit="enviarPostulacion(event)">
                 <div class="form-group">
@@ -322,10 +356,31 @@
     let todasLasVacantesEmpresa = {};
     let datosVacanteGlobal = null;
     let vacanteKeyDetectada = "";
+    let tieneMultiplesVacantes = false;
+    let slideIndex = 0;
+
+    // Lógica del Carrusel
+    window.cambiarSlide = function(n) {
+        const slides = document.getElementsByClassName("carousel-slide");
+        if (slides.length === 0) return;
+        slides[slideIndex].style.display = "none";
+        slideIndex += n;
+        if (slideIndex >= slides.length) { slideIndex = 0; }
+        if (slideIndex < 0) { slideIndex = slides.length - 1; }
+        slides[slideIndex].style.display = "block";
+    }
+
+    function iniciarCarrusel() {
+        const slides = document.getElementsByClassName("carousel-slide");
+        if (slides.length > 0) {
+            slides[0].style.display = "block";
+            setInterval(() => cambiarSlide(1), 5000);
+        }
+    }
 
     async function cargarDetallesVacante() {
         if (!empresaId) {
-            document.getElementById('loading').innerHTML = "❌ Enlace no válido.<br><small>Se requiere especificar el parámetro ?empresa=ID_EMPRESA</small>";
+            document.getElementById('loading').innerHTML = "❌ Parámetro de empresa no especificado.<br><small>Ejemplo: ?empresa=nombre_empresa</small>";
             return;
         }
 
@@ -336,6 +391,7 @@
             if (snapshot.exists()) {
                 const dataRaw = snapshot.val();
                 
+                // Normalizar si viene directo o agrupado en sub-nodos
                 if (dataRaw.vacanteNombre || dataRaw.salario) {
                     todasLasVacantesEmpresa = {};
                     const llaveUnica = dataRaw.vacanteNombre.replace(/\s+/g, '_').toLowerCase() || "puesto_unico";
@@ -347,56 +403,80 @@
                 const keys = Object.keys(todasLasVacantesEmpresa).filter(k => k !== 'undefined' && k !== '');
                 
                 if (keys.length === 0) {
-                    document.getElementById('loading').innerText = "❌ No hay vacantes activas publicadas para esta empresa.";
+                    document.getElementById('loading').innerText = "❌ No hay vacantes activas para esta empresa.";
                     return;
                 }
 
+                // Configurar encabezado primario de la empresa
                 const primerVacante = todasLasVacantesEmpresa[keys[0]];
                 document.getElementById('mainEmpresaNombre').innerText = primerVacante.empresaNombre || empresaId.toUpperCase();
                 document.getElementById('mainEmpresaLugar').innerText = primerVacante.lugarOrigen || 'Ubicación no especificada';
                 document.getElementById('empresaHeaderBox').style.display = 'block';
 
-                const listaContenedor = document.getElementById('listaVacantesDinamica');
-                listaContenedor.innerHTML = ''; 
-                
-                keys.forEach(key => {
-                    const vac = todasLasVacantesEmpresa[key];
-                    
-                    const cardItem = document.createElement('div');
-                    cardItem.className = 'vacante-item-card';
-                    cardItem.onclick = () => renderizarPuestoEspecifico(key);
-                    
-                    cardItem.innerHTML = `
-                        <div class="vacante-item-info">
-                            <h2>${vac.vacanteNombre || key}</h2>
-                            <p><i class="fa-solid fa-money-bill-wave"></i> ${vac.salario || 'No especificado'}</p>
-                        </div>
-                        <div class="chevron-icon">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </div>
-                    `;
-                    listaContenedor.appendChild(cardItem);
-                });
-                
+                // Mostrar carrusel por defecto en el menú inicial
+                document.getElementById('empresaCarouselBox').style.display = 'block';
+                iniciarCarrusel();
+
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('content').style.display = 'none';
-                document.getElementById('menuVacantesBox').style.display = 'block';
+
+                if (keys.length > 1) {
+                    // MÚLTIPLES VACANTES: Construir menú intermedio dinámico
+                    tieneMultiplesVacantes = true;
+                    document.getElementById('btnVolverMenu').style.display = 'inline-flex';
+                    
+                    const listaContenedor = document.getElementById('listaVacantesDinamica');
+                    listaContenedor.innerHTML = '';
+                    
+                    keys.forEach(key => {
+                        const vac = todasLasVacantesEmpresa[key];
+                        const btn = document.createElement('button');
+                        btn.className = 'btn-puesto';
+                        btn.onclick = () => seleccionarPuesto(key);
+                        btn.innerHTML = `
+                            <span>${vac.vacanteNombre || key}</span>
+                            <span class="salario-tag">${vac.salario || ''} <i class="fa-solid fa-chevron-right"></i></span>
+                        `;
+                        listaContenedor.appendChild(btn);
+                    });
+                    
+                    document.getElementById('menuVacantesBox').style.display = 'block';
+                } else {
+                    // UNA SOLA VACANTE: Renderizar directo
+                    tieneMultiplesVacantes = false;
+                    document.getElementById('btnVolverMenu').style.display = 'none';
+                    seleccionarPuesto(keys[0]);
+                }
 
             } else {
-                document.getElementById('loading').innerText = "❌ La empresa especificada no cuenta con vacantes en el servidor.";
+                document.getElementById('loading').innerText = "❌ La empresa especificada no cuenta con registros vigentes.";
             }
         } catch (error) {
             console.error(error);
-            document.getElementById('loading').innerText = "❌ Error al conectar con la base de datos de Workforce.";
+            document.getElementById('loading').innerText = "❌ Error de conexión con el servidor.";
         }
     }
 
-    async function renderizarPuestoEspecifico(key) {
+    async function seleccionarPuesto(key) {
         vacanteKeyDetectada = key;
         const data = todasLasVacantesEmpresa[key];
         datosVacanteGlobal = data;
-        
-        // --- CONTADOR DE VISITAS SEGURO CON RUNTRANSACTION Y SESSIONSTORAGE ---
+
+        // Ocultar menú intermedio si existía
+        if (tieneMultiplesVacantes) {
+            document.getElementById('menuVacantesBox').style.display = 'none';
+        }
+
+        // --- MANEJO DE BANNER VS CARRUSEL ---
+        if (data.bannerUrl && data.bannerUrl.trim() !== "") {
+            document.getElementById('vacanteBanner').src = data.bannerUrl.trim();
+            document.getElementById('vacanteBannerBox').style.display = 'block';
+            document.getElementById('empresaCarouselBox').style.display = 'none'; // Reemplaza por el banner específico
+        } else {
+            document.getElementById('vacanteBannerBox').style.display = 'none';
+            document.getElementById('empresaCarouselBox').style.display = 'block'; // Mantiene o regresa al carrusel
+        }
+
+        // --- INCREMENTAR CONTADOR DE VISITAS ---
         const pathVisita = `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}/visitas`;
         if (!sessionStorage.getItem(`visita_${empresaId}_${vacanteKeyDetectada}`)) {
             try {
@@ -404,9 +484,10 @@
                     return (currentValue || 0) + 1;
                 });
                 sessionStorage.setItem(`visita_${empresaId}_${vacanteKeyDetectada}`, 'true');
-            } catch(e) { console.log("Visita no acumulada de forma síncrona"); }
+            } catch(e) { console.log("Visita omitida"); }
         }
 
+        // Renderizar datos en pantalla
         document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
         document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
         document.getElementById('vacanteVisitas').innerText = data.visitas ? (data.visitas + 1) : 1;
@@ -423,21 +504,15 @@
         document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
         document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
 
-        if (data.bannerUrl && data.bannerUrl.trim() !== "") {
-            const imgElement = document.getElementById('vacanteBanner');
-            imgElement.src = data.bannerUrl.trim();
-            document.getElementById('vacanteBannerBox').style.display = 'block';
-        } else {
-            document.getElementById('vacanteBannerBox').style.display = 'none';
-        }
-
-        document.getElementById('menuVacantesBox').style.display = 'none';
+        // Mostrar la sección B
         document.getElementById('content').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     window.regresarAlMenu = function() {
         document.getElementById('content').style.display = 'none';
+        document.getElementById('vacanteBannerBox').style.display = 'none';
+        document.getElementById('empresaCarouselBox').style.display = 'block'; // Regresar al carrusel base siempre
         document.getElementById('menuVacantesBox').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -479,17 +554,16 @@
     window.enviarPostulacion = async function(e) {
         e.preventDefault();
         
-        if (!datosVacanteGlobal) {
-            alert("Por favor, selecciona primero un puesto de trabajo.");
-            return;
-        }
+        if (!datosVacanteGlobal) return;
 
         const nombre = document.getElementById('postNombre').value.trim();
         const telefono = document.getElementById('postTelefono').value.trim();
         const curp = document.getElementById('postCurp').value.trim().toUpperCase();
         
-        if (curp.length !== 18) {
-            alert("Por favor, ingresa una CURP válida de 18 caracteres.");
+        // --- VALIDACIÓN ESTRICTA DE CURP MEXICANA ---
+        const curpRegex = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/;
+        if (!curpRegex.test(curp)) {
+            alert("❌ El formato de la CURP es incorrecto. Por favor verifícalo.");
             return;
         }
 
@@ -516,30 +590,31 @@
             await set(ref(db, `postulantes/${timestampId}`), payloadPostulante);
             await update(ref(db, 'postulantes_count'), { total: increment(1) });
 
-            alert(`¡Postulación procesada! Los datos se han guardado con éxito.\nEdad detectada: ${datosExtraidos.edad} años.\nSexo: ${datosExtraidos.sexo}.\n\nDescargando tu acuse y abriendo WhatsApp...`);
+            alert("¡Postulación exitosa! Guardando datos y generando comprobante digital...");
 
+            // Generación de PDF con jsPDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
             doc.setFillColor(15, 42, 74); doc.rect(0, 0, 210, 40, 'F');
             doc.setTextColor(56, 189, 248); doc.setFont("Helvetica", "bold"); doc.setFontSize(22); doc.text("WORKFORCE CONNECT", 15, 26);
             doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.setFont("Helvetica", "normal"); doc.text("COMPROBANTE DE POSTULACIÓN OFICIAL", 125, 25);
-            doc.setTextColor(33, 33, 33); doc.setFontSize(14); doc.setFont("Helvetica", "bold"); doc.text("Detalles de la Solicitud", 15, 55);
+            doc.setTextColor(33, 33, 33); doc.setFontSize(14); doc.setFont("Helvetica", "bold"); doc.text("Detalles del Registro", 15, 55);
             doc.setLineWidth(0.5); doc.setDrawColor(210, 210, 210); doc.line(15, 58, 195, 58);
 
             doc.setFontSize(11);
             let y = 68;
             
             const datosImpresion = [
-                { label: "Folio Único:", val: timestampId },
+                { label: "Folio de Postulación:", val: timestampId },
                 { label: "Puesto Solicitado:", val: payloadPostulante.vacante },
-                { label: "Código Empresa:", val: payloadPostulante.empresa.toUpperCase() },
-                { label: "Candidato:", val: payloadPostulante.nombre },
-                { label: "CURP Validada:", val: payloadPostulante.curp },
+                { label: "Empresa Destino:", val: payloadPostulante.empresa.toUpperCase() },
+                { label: "Nombre Candidato:", val: payloadPostulante.nombre },
+                { label: "CURP:", val: payloadPostulante.curp },
                 { label: "Teléfono:", val: payloadPostulante.telefono },
                 { label: "Edad calculada:", val: `${payloadPostulante.edad} años` },
                 { label: "Sexo detectado:", val: payloadPostulante.sexo },
-                { label: "Fecha de Registro:", val: payloadPostulante.fechaRegistro }
+                { label: "Fecha:", val: payloadPostulante.fechaRegistro }
             ];
 
             datosImpresion.forEach(item => {
@@ -550,15 +625,15 @@
 
             y += 10;
             doc.setFillColor(241, 245, 249); doc.rect(15, y, 180, 25, 'F');
-            doc.setTextColor(15, 42, 74); doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.text("Nota importante para el candidato:", 20, y + 8);
+            doc.setTextColor(15, 42, 74); doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.text("Nota informativa:", 20, y + 8);
             doc.setFont("Helvetica", "normal");
-            doc.text("Conserva este acuse digital. Tu perfil ya se encuentra guardado en el sistema de base de datos.", 20, y + 14);
-            doc.text("Un reclutador se comunicará contigo al teléfono provisto en caso de cubrir con el perfil.", 20, y + 19);
+            doc.text("Guarda este archivo en tu dispositivo. Tu postulación ya se encuentra en nuestra base de datos.", 20, y + 14);
 
             doc.save(`Comprobante-${payloadPostulante.curp}.pdf`);
             
-            // --- ENVÍO DE DATOS POR WHATSAPP AL RECLUTADOR ---
-            const telefonoReclutador = "526461974763";
+            // --- NÚMERO DE RECLUTADOR DINÁMICO ---
+            const telefonoReclutador = datosVacanteGlobal.telefonoReclutador ? datosVacanteGlobal.telefonoReclutador.trim() : "526461974763";
+            
             const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante.\n\n` +
                                     `*📌 Detalles de mi Postulación:*\n` +
                                     `• *Folio:* ${timestampId}\n` +

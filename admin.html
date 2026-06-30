@@ -92,7 +92,7 @@ gap: 16px;
 .form-group input, .form-group select, .form-group textarea { 
 padding: 11px 14px; 
 background: #1d2e47; 
-border: 1px solid var(--border-color);
+border: 1px solid var(--border-color); 
 border-radius: 8px; 
 color: white; 
 font-size: 0.92rem;
@@ -137,7 +137,6 @@ margin-top: 8px;
 } 
 @media (max-width:600px){ .dual-buttons-layout{grid-template-columns:1fr;} }
 
-/* AJUSTE PARA BOTONES FINALES PESTAÑA 2 AL MISMO NIVEL Y MEDIDA */
 .final-actions-grid {
   grid-column: 1 / -1; 
   display: grid; 
@@ -151,7 +150,6 @@ margin-top: 8px;
   }
 }
 
-/* ESTRUCTURA CORREGIDA DE 2 COLUMNAS EN ESCRITORIO */
 .tab2-grid-layout {
   display: grid;
   grid-template-columns: 1fr;
@@ -169,7 +167,6 @@ margin-top: 8px;
   top: 15px;
 }
 
-/* COMPONENTE ACORDEÓN PARA LA IA */
 .accordion-toggle-btn {
   width: 100%;
   background: #251842;
@@ -191,7 +188,6 @@ margin-top: 8px;
 }
 .accordion-content.open { display: block; }
 
-/* RE-DISEÑO CAJA DE EXTRACTOR VERDE / TARJETAS */
 .preview-card-view {
   background: #0b2019;
   border: 1px solid var(--green-success);
@@ -340,7 +336,6 @@ pre.json-view { background:#061c15; color:#34d399; border:1px solid var(--green-
 .metric-val { font-size: 2.2rem; font-weight: bold; color: var(--primary-orange); margin-bottom: 4px; }
 .metric-lbl { color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
 
-/* ESTILOS NUEVOS PARA EL FORMULARIO INTEGRADO DE POSTULANTES */
 .postulante-edit-container {
   display: none; 
   background: #161630;
@@ -367,6 +362,7 @@ pre.json-view { background:#061c15; color:#34d399; border:1px solid var(--green-
 <button class="tab-btn active" data-tab="tabPrincipal"><i class="fas fa-building"></i> 1. Registrar Empresa</button> 
 <button class="tab-btn" data-tab="tabSecundarias"><i class="fas fa-briefcase"></i> 2. Control de Vacantes Masivo</button>
 <button class="tab-btn" data-tab="tabRegistros"><i class="fas fa-chart-line"></i> 3. Registros y Postulantes</button>
+<button class="tab-btn" data-tab="tabTransporte"><i class="fas fa-route"></i> 4. Centro de Transporte</button>
 </div> 
 
 <div id="tabPrincipal" class="tab-content active"> 
@@ -407,7 +403,7 @@ pre.json-view { background:#061c15; color:#34d399; border:1px solid var(--green-
         <div class="section-divider" style="margin-top:0;">Configuración de Destino</div> 
         <div class="form-group">
           <label>Selecciona Empresa:</label>
-          <select id="secEmpresaSelect" onchange="escucharVacantesExistentes(this.value)">
+          <select id="secEmpresaSelect" class="empresa-dropdown-compartido" onchange="escucharVacantesExistentes(this.value)">
             <option value="">-- Elige una Empresa --</option>
           </select>
         </div>
@@ -476,6 +472,7 @@ pre.json-view { background:#061c15; color:#34d399; border:1px solid var(--green-
         <div class="sub-section-title"><i class="fas fa-fingerprint"></i> Enlaces e Identificación</div>
         <div class="form-group"><label>ID Clave Puesto:</label><input type="text" id="secPuestoId" placeholder="Ej: ayudante-general"></div>
         <div class="form-group"><label>Estatus de Publicación:</label><select id="secEstatus"><option value="disponible">✅ Activa (Visible)</option><option value="no_disponible">❌ Pausada (Oculta)</option></select></div>
+        <div class="form-group"><label>WhatsApp Reclutador (12 dígitos sin +):</label><input type="text" id="secTelefonoReclutador" placeholder="Ej: 526461974763"></div>
         <div class="form-group full-width"><label>URL Banner Publicitario (Imagen):</label><input type="url" id="secBannerUrl" placeholder="https://..."></div>
         
         <div class="sub-section-title"><i class="fas fa-user-graduate"></i> Requisitos del Perfil</div>
@@ -562,6 +559,45 @@ pre.json-view { background:#061c15; color:#34d399; border:1px solid var(--green-
   </div>
 </div>
 
+<div id="tabTransporte" class="tab-content">
+  <div class="form-admin" style="grid-template-columns: 1fr;">
+    <div class="section-divider" style="margin-top:0;">Asignación de Logística y Transporte por Empresa</div>
+    
+    <div class="form-group" style="margin-bottom:15px;">
+      <label>1. Selecciona la Empresa Destino:</label>
+      <select id="transporteEmpresaSelect" style="width:100%;">
+        <option value="">-- Elige una Empresa --</option>
+      </select>
+    </div>
+
+    <div class="ia-box" style="background: rgba(16, 185, 129, 0.03); border: 1px dashed var(--green-success); padding:20px;">
+      <label style="color:var(--green-success); font-weight:bold; display:block; margin-bottom:8px;">
+        <i class="fas fa-file-import"></i> 2. Cargar Documento de Logística o Rutas (.pdf, .jpg, .png, .txt, .docx)
+      </label>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0; margin-bottom:12px;">
+        Sube el croquis, lista de horarios en Word/PDF, imagen de paradas o mensajes informativos. La IA de Gemini creará el JSON de transporte automáticamente.
+      </p>
+
+      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <div class="file-input-wrapper">
+          <div class="btn-file-custom" style="background:var(--green-success);"><i class="fas fa-upload"></i> Seleccionar Archivo</div>
+          <input type="file" id="archivoTransporteInput" accept=".pdf,.jpg,.jpeg,.png,.txt,.docx" onchange="actualizarLabelArchivoTransporte()">
+        </div>
+        <span id="lblArchivoTransporteSeleccionado" style="font-size:0.9rem; color:var(--primary-orange); font-weight:bold;">Ningún archivo seleccionado</span>
+      </div>
+
+      <button type="button" class="btn-ia" id="btnProcesarTransporte" style="background:var(--blue-update); width:100%; margin-top:15px; font-size:1rem; padding:12px;" onclick="procesarDocumentoTransporteConGemini()">
+        <i class="fas fa-brain"></i> Convertir Archivo a JSON y Guardar en Firebase
+      </button>
+    </div>
+
+    <div id="boxPreviewTransporte" style="display:none; margin-top:15px; background:#0a1524; border:1px solid var(--blue-update); padding:15px; border-radius:10px;">
+      <h3 style="color:var(--blue-update); margin-top:0; font-size:1.1rem;"><i class="fas fa-clipboard-check"></i> JSON Generado y Almacenado Exitosamente:</h3>
+      <pre id="jsonTransportePreview" style="background:#040a12; color:#38bdf8; padding:12px; border-radius:6px; font-size:0.85rem; max-height:250px; overflow:auto; border:1px solid var(--border-color); white-space:pre-wrap;"></pre>
+    </div>
+  </div>
+</div>
+
 </div> 
 
 <script type="module">
@@ -569,7 +605,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { GoogleGenAI, Type } from "https://esm.run/@google/genai";
 
-// CONFIGURACIÓN DE TU NUEVA BASE DE DATOS FIREBASE
 const firebaseConfig = { databaseURL: "https://bolsa-de-trabajo-workforce-default-rtdb.firebaseio.com/" };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
@@ -583,7 +618,6 @@ const apiKeyInput = document.getElementById('geminiApiKeyInput');
 if(localStorage.getItem('gemini_api_key')) apiKeyInput.value = localStorage.getItem('gemini_api_key');
 apiKeyInput.addEventListener('input', (e) => localStorage.setItem('gemini_api_key', e.target.value.trim()));
 
-// CONTROL PESTAÑAS
 document.querySelectorAll('.tabs-menu .tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tabs-menu .tab-btn').forEach(b => b.classList.remove('active'));
@@ -593,7 +627,6 @@ document.querySelectorAll('.tabs-menu .tab-btn').forEach(btn => {
   });
 });
 
-// FUNCIÓN PARA EL ACORDEÓN DE IA
 window.toggleAccordionIa = function() {
   const content = document.getElementById('accordionIaContent');
   const arrow = document.getElementById('accordionArrow');
@@ -605,7 +638,6 @@ window.toggleAccordionIa = function() {
   }
 };
 
-// LÓGICA DE EMPRESAS
 window.limpiarFormularioEmpresas = function() {
   ['admId','admNombre','admUbicacion','admLink','admImagen','admTags'].forEach(id => {
     document.getElementById(id).value = '';
@@ -672,9 +704,13 @@ window.filtrarEmpresas = function() {
 
 onValue(ref(db,'empresas'), snap=>{
   const tb = document.getElementById('adminTablaEmpresas');
-  const sel = document.getElementById('secEmpresaSelect');
+  const selSec = document.getElementById('secEmpresaSelect');
+  const selTrans = document.getElementById('transporteEmpresaSelect');
+  
   tb.innerHTML='';
-  sel.innerHTML='<option value="">-- Elige una Empresa --</option>';
+  selSec.innerHTML='<option value="">-- Elige una Empresa --</option>';
+  selTrans.innerHTML='<option value="">-- Elige una Empresa --</option>';
+  
   empresasData = snap.val()||{};
   
   Object.values(empresasData).forEach(e=>{
@@ -690,11 +726,11 @@ onValue(ref(db,'empresas'), snap=>{
          </div>
       </td>
     </tr>`;
-    sel.innerHTML += `<option value="${e.id}">${e.nombre}</option>`;
+    selSec.innerHTML += `<option value="${e.id}">${e.nombre}</option>`;
+    selTrans.innerHTML += `<option value="${e.id}">${e.nombre}</option>`;
   });
 });
 
-// PESTAÑA 2: LÓGICA E INTEGRACIÓN CON GEMINI
 const IA_V6 = {
   esquemaBols: {
     type: Type.ARRAY, description: "Lista de vacantes.",
@@ -704,8 +740,8 @@ const IA_V6 = {
         vacanteNombre: { type: Type.STRING }, salario: { type: Type.STRING }, edad: { type: Type.STRING },
         lugarOrigen: { type: Type.STRING }, turnos: { type: Type.STRING }, sexo: { type: Type.STRING },
         experiencia: { type: Type.STRING }, escolaridad: { type: Type.STRING }, actividades: { type: Type.STRING },
-        beneficios: { type: Type.STRING }, informacionGeneral: { type: Type.STRING }
-      }, required: ["vacanteNombre", "salario", "edad", "lugarOrigen", "turnos", "sexo", "experiencia", "escolaridad", "actividades", "beneficios", "informacionGeneral"]
+        beneficios: { type: Type.STRING }, informacionGeneral: { type: Type.STRING }, telefonoReclutador: { type: Type.STRING }
+      }, required: ["vacanteNombre", "salario", "edad", "lugarOrigen", "turnos", "sexo", "experiencia", "escolaridad", "actividades", "beneficios", "informacionGeneral", "telefonoReclutador"]
     }
   },
   async llamarInterprete(texto) {
@@ -737,7 +773,7 @@ window.cargarVacanteParaEditar = function(){
   const k = document.getElementById('selectorVacantesEnFirebase').value;
   if(!k || !baseVacantesActualesEnFirebase[k]) return alert('Selecciona una vacante');
   const v = baseVacantesActualesEnFirebase[k];
-  ['secPuestoId','secEstatus','secVacanteNombre','secSalario','secEdad','secLugarOrigen','secTurnos','secSexo','secExperiencia','secEscolaridad','secBannerUrl','secActividades','secBeneficios','secInfoGeneral'].forEach(id=>{
+  ['secPuestoId','secEstatus','secVacanteNombre','secSalario','secEdad','secLugarOrigen','secTurnos','secSexo','secExperiencia','secEscolaridad','secBannerUrl','secActividades','secBeneficios','secInfoGeneral','secTelefonoReclutador'].forEach(id=>{
     const c = id.replace('sec','').charAt(0).toLowerCase()+id.replace('sec','').slice(1);
     const element = document.getElementById(id);
     if(element) element.value = v[c] || '';
@@ -755,7 +791,7 @@ window.eliminarVacanteWeb = function(){
 };
 
 window.limpiarFormularioVacantes = function(){
-  ['secPuestoId','secVacanteNombre','secSalario','secEdad','secLugarOrigen','secTurnos','secExperiencia','secEscolaridad','secBannerUrl','secActividades','secBeneficios','secInfoGeneral'].forEach(id=>{
+  ['secPuestoId','secVacanteNombre','secSalario','secEdad','secLugarOrigen','secTurnos','secExperiencia','secEscolaridad','secBannerUrl','secActividades','secBeneficios','secInfoGeneral','secTelefonoReclutador'].forEach(id=>{
      const el = document.getElementById(id);
      if(el) el.value='';
   });
@@ -807,7 +843,8 @@ window.subirTodasLasVacantesVerdesALote = async function() {
           puestoId: pId, estatus:"disponible", vacanteNombre: p.vacanteNombre||'Sin nombre', salario: p.salario||'No especificado',
           edad: p.edad||'Indistinto', lugarOrigen: p.lugarOrigen||'No especificado', turnos: p.turnos||'No especificado', sexo: p.sexo||'Indistinto',
           experiencia: p.experiencia||'No especificada', escolaridad: p.escolaridad||'No especificada', bannerUrl:"",
-          actividades: p.actividades||'', beneficios: p.beneficios||'', informacionGeneral: p.informacionGeneral||'', actualizado: new Date().toISOString()
+          actividades: p.actividades||'', beneficios: p.beneficios||'', informacionGeneral: p.informacionGeneral||'', 
+          telefonoReclutador: p.telefonoReclutador||'526461974763', actualizado: new Date().toISOString()
         });
       }
       alert('🚀 Lote masivo subido correctamente.');
@@ -832,6 +869,7 @@ window.procesarTextoBrutoTxt = async function(){
     document.getElementById('secActividades').value = d.actividades||'';
     document.getElementById('secBeneficios').value = d.beneficios||'';
     document.getElementById('secInfoGeneral').value = d.informacionGeneral||'';
+    document.getElementById('secTelefonoReclutador').value = d.telefonoReclutador||'526461974763';
     if(d.sexo) document.getElementById('secSexo').value = d.sexo;
     if(d.vacanteNombre) document.getElementById('secPuestoId').value = sanitizarId(d.vacanteNombre.toLowerCase().split(' ')[0]);
   } catch(e) { alert('Error al procesar: '+e.message); }
@@ -846,6 +884,7 @@ function leerVacanteForm(){
     experiencia: document.getElementById('secExperiencia').value.trim(), escolaridad: document.getElementById('secEscolaridad').value.trim(),
     bannerUrl: document.getElementById('secBannerUrl').value.trim(), actividades: document.getElementById('secActividades').value.trim(),
     beneficios: document.getElementById('secBeneficios').value.trim(), informacionGeneral: document.getElementById('secInfoGeneral').value.trim(),
+    telefonoReclutador: document.getElementById('secTelefonoReclutador').value.trim() || '526461974763',
     actualizado: new Date().toISOString()
   };
 }
@@ -861,7 +900,6 @@ window.guardarActualizacionVacante = async function(){
   set(ref(db,`vacantes_detalles/${emp}/${d.puestoId}`), d).then(()=>{ alert('Vacante actualizada.'); escucharVacantesExistentes(emp); });
 };
 
-// --- PESTAÑA 3: MÉTRICAS Y ACCIONES DE POSTULANTES ---
 onValue(ref(db, 'visitas'), snap => {
   const datosVisitas = snap.val();
   let numeroRealVisitas = 0;
@@ -901,7 +939,6 @@ onValue(ref(db, 'postulantes'), snap => {
   });
 });
 
-// FUNCIONALIDAD GESTIÓN DE POSTULANTES
 window.abrirEditarPostulante = function(key) {
   const p = cachePostulantesGlobal[key];
   if(!p) return;
@@ -969,6 +1006,132 @@ window.filtrarPostulantes = function() {
 };
 
 function sanitizarId(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[.#$\[\]\/\s]/g,'-').replace(/-+/g,'-').slice(0,50); }
+
+// --- LÓGICA EXCLUSIVA DEL CENTRO DE TRANSPORTE DINÁMICO (TAB 4) ---
+window.actualizarLabelArchivoTransporte = function() {
+  const input = document.getElementById('archivoTransporteInput');
+  const lbl = document.getElementById('lblArchivoTransporteSeleccionado');
+  if (input.files.length > 0) {
+    lbl.textContent = input.files[0].name;
+  } else {
+    lbl.textContent = "Ningún archivo seleccionado";
+  }
+};
+
+const esquemaTransporte = {
+  type: Type.OBJECT,
+  description: "Información estructurada de rutas de transporte público y privado para la empresa.",
+  properties: {
+    transporte_privado_empresa: {
+      type: Type.OBJECT,
+      properties: {
+        ofrece: { type: Type.BOOLEAN, description: "¿La empresa ofrece transporte privado/de personal?" },
+        detalles: { type: Type.STRING, description: "Descripción general de los turnos o condiciones del transporte privado." },
+        puntos_recoleccion: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              nombre: { type: Type.STRING, description: "Punto o cruce de recolección" },
+              horario: { type: Type.STRING, description: "Hora aproximada de paso (Ej: 06:15 AM)" }
+            },
+            required: ["nombre", "horario"]
+          }
+        }
+      },
+      required: ["ofrece", "detalles", "puntos_recoleccion"]
+    },
+    transporte_publico_sugerido: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          rutaNombre: { type: Type.STRING, description: "Nombre de la ruta de camión, metro o colectivo" },
+          instrucciones: { type: Type.STRING, description: "Indicaciones de dónde tomarlo y dónde bajarse para llegar" },
+          costoAproximado: { type: Type.STRING, description: "Precio estimado del pasaje" }
+        },
+        required: ["rutaNombre", "instrucciones", "costoAproximado"]
+      }
+    }
+  },
+  required: ["transporte_privado_empresa", "transporte_publico_sugerido"]
+};
+
+window.procesarDocumentoTransporteConGemini = async function() {
+  const empId = document.getElementById('transporteEmpresaSelect').value;
+  const fileInput = document.getElementById('archivoTransporteInput');
+  const key = localStorage.getItem('gemini_api_key') || apiKeyInput.value.trim();
+  
+  if (!empId) return alert('⚠️ Por favor, selecciona una empresa antes de continuar.');
+  if (!fileInput.files.length) return alert('⚠️ Selecciona un archivo (.pdf, .jpg, .png, .txt, .docx) para procesar.');
+  if (!key) return alert('⚠️ Ingresa tu API Key de Gemini en la parte superior del panel.');
+
+  const file = fileInput.files[0];
+  const btn = document.getElementById('btnProcesarTransporte');
+  
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Leyendo y Analizando con Gemini...';
+  btn.disabled = true;
+
+  const lector = new FileReader();
+  
+  let mimeType = file.type;
+  if (!mimeType) {
+    if (file.name.endsWith('.docx')) mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    if (file.name.endsWith('.txt')) mimeType = 'text/plain';
+  }
+
+  lector.onload = async (e) => {
+    try {
+      const base64Data = e.target.result.split(',')[1] || e.target.result;
+      
+      const prompt = `
+        Analiza detalladamente este documento. Contiene información clave sobre las alternativas de transporte, rutas de camión, 
+        puntos de recogida de transporte de personal, horarios y costos para llegar a la empresa seleccionada.
+        Extrae todos los datos posibles de manera precisa y estructurada.
+      `;
+
+      const ai = new GoogleGenAI({ apiKey: key });
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: [
+          {
+            inlineData: {
+              data: base64Data,
+              mimeType: mimeType
+            }
+          },
+          prompt
+        ],
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: esquemaTransporte
+        }
+      });
+
+      const jsonResultado = JSON.parse(response.text.trim());
+      jsonResultado.actualizadoLogistica = new Date().toISOString();
+
+      await set(ref(db, `rutas_transporte/${empId}`), jsonResultado);
+
+      document.getElementById('jsonTransportePreview').textContent = JSON.stringify(jsonResultado, null, 2);
+      document.getElementById('boxPreviewTransporte').style.display = 'block';
+      
+      alert('🚀 ¡Éxito! Las rutas de transporte se extrajeron y guardaron dinámicamente para la empresa.');
+      
+      fileInput.value = '';
+      document.getElementById('lblArchivoTransporteSeleccionado').textContent = "Ningún archivo seleccionado";
+
+    } catch (error) {
+      console.error(error);
+      alert('❌ Error al procesar el archivo: ' + error.message);
+    } finally {
+      btn.innerHTML = '<i class="fas fa-brain"></i> Convertir Archivo a JSON y Guardar en Firebase';
+      btn.disabled = false;
+    }
+  };
+
+  lector.readAsDataURL(file);
+};
 </script>
 </body>
 </html>
