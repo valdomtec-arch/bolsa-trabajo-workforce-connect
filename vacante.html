@@ -120,6 +120,73 @@
             gap: 6px;
         }
 
+        /* DISEÑO REFORMADO DE LISTA INTERMEDIA DE VACANTES */
+        .menu-titulo {
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--white);
+            font-weight: bold;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .vacantes-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .vacante-item-card {
+            background: linear-gradient(135deg, rgba(22, 36, 59, 0.4) 0%, rgba(13, 26, 48, 0.7) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .vacante-item-card:hover {
+            border-color: var(--wf-accent-blue);
+            background: rgba(56, 189, 248, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 189, 248, 0.1);
+        }
+
+        .vacante-item-info h2 {
+            color: var(--orange-title);
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .vacante-item-info p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vacante-item-info p i {
+            color: var(--green-whatsapp);
+        }
+
+        .chevron-icon {
+            color: var(--wf-accent-blue);
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .vacante-item-card:hover .chevron-icon {
+            transform: translateX(5px);
+        }
+
+        /* DETALLES DE VACANTE */
         .banner-container {
             width: 100%;
             margin-bottom: 25px;
@@ -165,6 +232,21 @@
             text-transform: uppercase;
         }
 
+        .meta-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+            background: #081122;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+        .meta-info span { display: inline-flex; align-items: center; gap: 8px; }
+        .meta-info i { color: var(--wf-accent-blue); }
+
         .grid-detalles {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -192,39 +274,6 @@
             font-size: 1rem;
             color: var(--text-light);
             font-weight: 600;
-        }
-
-        .card-transporte {
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(15, 26, 44, 0.6) 100%);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.05);
-        }
-        
-        .badge-transporte {
-            background-color: var(--green-whatsapp);
-            color: var(--secondary-blue-dark);
-            padding: 4px 10px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .map-placeholder {
-            margin-top: 15px;
-            background: #081122;
-            border: 1px dashed var(--border-color);
-            padding: 15px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .map-placeholder i {
-            font-size: 1.8rem;
-            color: var(--wf-accent-blue);
         }
 
         .texto-bloque {
@@ -312,75 +361,86 @@
 <body>
 
 <div class="container">
-    <button class="btn-regresar" onclick="regresarAlIndex()">
-        <i class="fas fa-arrow-left"></i> Volver a la Bolsa Principal
-    </button>
-
     <div id="loading">
         <i class="fas fa-spinner fa-spin"></i> Sincronizando espacio de trabajo...
     </div>
 
-    <div id="contenidoVacante" style="display: none;">
-        <div class="empresa-header">
-            <h1 id="txtNombreEmpresa">Empresa</h1>
-            <div class="location">
-                <i class="fas fa-map-marker-alt"></i> <span id="txtUbicacionEmpresa">Ubicación</span>
-            </div>
+    <div id="empresaHeaderBox" class="empresa-header" style="display: none;">
+        <h1 id="mainEmpresaNombre">Nombre de la Empresa</h1>
+        <div class="location">
+            <i class="fa-solid fa-location-dot"></i> <span id="mainEmpresaLugar">—</span>
         </div>
+    </div>
 
-        <div class="banner-container" id="bannerContenedor">
-            <img src="" id="imgBannerVacante" alt="Banner de la Vacante">
+    <div id="menuVacantesBox" style="display: none;">
+        <div class="menu-titulo">Vacantes Disponibles Actualmente</div>
+        <div id="listaVacantesDinamica" class="vacantes-lista"></div>
+    </div>
+
+    <div id="content" style="display: none;">
+        <button class="btn-regresar" onclick="regresarAlMenu()">
+            <i class="fas fa-arrow-left"></i> Volver a la Lista de Vacantes
+        </button>
+
+        <div class="banner-container" id="vacanteBannerBox">
+            <img id="vacanteBanner" src="" alt="Banner de la Vacante">
         </div>
 
         <div class="card">
             <h3 class="vacante-titulo-principal">
-                <i class="fas fa-briefcase"></i> <span id="txtTituloVacante">Puesto de Trabajo</span>
+                <i class="fas fa-briefcase"></i> <span id="vacanteTitulo">Puesto de Trabajo</span>
             </h3>
+
+            <div class="meta-info" style="justify-content: center; margin-bottom: 15px;">
+                <span><i class="fa-solid fa-building"></i> ID Socio: <code id="vacanteEmpresa" style="color:var(--white);">—</code></span>
+                <span><i class="fa-solid fa-eye"></i> Visitas acumuladas: <span id="vacanteVisitas">0</span></span>
+            </div>
             
             <div class="grid-detalles">
                 <div class="detalle-item">
-                    <strong>Sueldo Ofrecido</strong>
-                    <span id="txtSueldo">—</span>
+                    <strong>💰 Sueldo Ofrecido</strong>
+                    <span id="detSalario">—</span>
                 </div>
                 <div class="detalle-item">
-                    <strong>Horario / Turnos</strong>
-                    <span id="txtTurnos">—</span>
+                    <strong>📍 Zona de Trabajo</strong>
+                    <span id="detLugar">—</span>
                 </div>
                 <div class="detalle-item">
-                    <strong>Rango de Edad</strong>
-                    <span id="txtEdadReq">—</span>
+                    <strong>🕒 Horarios y Turnos</strong>
+                    <span id="detTurnos">—</span>
                 </div>
                 <div class="detalle-item">
-                    <strong>Lugar de Trabajo / Planta</strong>
-                    <span id="txtLugarDestino">—</span>
+                    <strong>🔞 Edad Solicitada</strong>
+                    <span id="detEdad">—</span>
                 </div>
-            </div>
-        </div>
-
-        <div class="card card-transporte" id="bloqueTransporte" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(56, 189, 248, 0.2); padding-bottom: 10px; margin-bottom: 15px;">
-                <h3 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
-                    <i class="fas fa-bus-alt"></i> Logística y Transporte
-                </h3>
-                <span class="badge-transporte">Servicio Incluido</span>
-            </div>
-            <div class="map-placeholder">
-                <i class="fas fa-route"></i>
-                <div>
-                    <strong style="color: var(--wf-accent-blue); font-size: 0.85rem; display: block; text-transform: uppercase;">Circuito / Ruta Asignada:</strong>
-                    <span id="txtRutaTransporte" style="color: var(--white); font-weight: 600; font-size: 1.05rem;">Buscando...</span>
+                <div class="detalle-item">
+                    <strong>👫 Género / Sexo</strong>
+                    <span id="detSexo">—</span>
+                </div>
+                <div class="detalle-item">
+                    <strong>💼 Experiencia Mínima</strong>
+                    <span id="detExperiencia">—</span>
+                </div>
+                <div class="detalle-item">
+                    <strong>🎓 Escolaridad Req.</strong>
+                    <span id="detEscolaridad">—</span>
                 </div>
             </div>
         </div>
 
         <div class="card">
-            <h3><i class="fas fa-list-check"></i> Requisitos del Puesto</h3>
-            <p class="texto-bloque" id="txtRequisitos">No especificados.</p>
+            <h3><i class="fas fa-list-check"></i> Actividades Principales</h3>
+            <p class="texto-bloque" id="vacanteActividades">Cargando...</p>
         </div>
 
         <div class="card">
             <h3><i class="fas fa-gift"></i> Ofrecimientos y Beneficios</h3>
-            <p class="texto-bloque" id="txtBeneficios">No especificados.</p>
+            <p class="texto-bloque" id="vacanteBeneficios">No especificados.</p>
+        </div>
+
+        <div class="card">
+            <h3><i class="fa-solid fa-note-sticky"></i> Notas Adicionales</h3>
+            <p class="texto-bloque" id="vacanteNotas">Sin notas adicionales.</p>
         </div>
 
         <div class="links-section">
@@ -388,37 +448,21 @@
                 <i class="fas fa-user-pen"></i> Postulación Express
             </h3>
             
-            <form id="formPostulacion" onsubmit="procesarPostulacion(event)">
+            <form id="formPostulacion" onsubmit="enviarPostulacion(event)">
                 <div class="grid-2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
                     <div class="form-group">
-                        <label for="txtNombre">Nombre Completo:</label>
-                        <input type="text" id="txtNombre" required placeholder="Ej: Juan Pérez López">
+                        <label for="postNombre">Nombre Completo:</label>
+                        <input type="text" id="postNombre" required placeholder="Ej: Juan Pérez López">
                     </div>
                     <div class="form-group">
-                        <label for="txtTelefono">Teléfono Celular (10 dígitos):</label>
-                        <input type="tel" id="txtTelefono" required pattern="[0-9]{10}" placeholder="Ej: 6461234567">
+                        <label for="postTelefono">Teléfono Celular (10 dígitos):</label>
+                        <input type="tel" id="postTelefono" required pattern="[0-9]{10}" placeholder="Ej: 6461234567">
                     </div>
                 </div>
 
-                <div class="grid-2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
-                    <div class="form-group">
-                        <label for="txtCurp">CURP (18 caracteres):</label>
-                        <input type="text" id="txtCurp" required maxlength="18" style="text-transform: uppercase;" placeholder="Completa tu CURP">
-                    </div>
-                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div class="form-group">
-                            <label for="txtEdad">Edad:</label>
-                            <input type="number" id="txtEdad" required min="18" max="70" placeholder="Años">
-                        </div>
-                        <div class="form-group">
-                            <label for="selSexo">Sexo:</label>
-                            <select id="selSexo" required>
-                                <option value="">Selecciona...</option>
-                                <option value="Masculino">Masculino</option>
-                                <option value="Femenino">Femenino</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label for="postCurp">CURP (18 caracteres):</label>
+                    <input type="text" id="postCurp" required maxlength="18" style="text-transform: uppercase;" placeholder="Completa tu CURP para precalificación automática">
                 </div>
 
                 <div class="form-group" style="margin-top: 5px;">
@@ -441,135 +485,145 @@
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, get, child, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, set, update, increment, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+    // DATABASE URL DE TU ARCHIVO ORIGINAL GARANTIZADA
     const firebaseConfig = {
-        databaseURL: "https://bolsa-de-trabajo-bdf67-default-rtdb.firebaseio.com/"
+        databaseURL: "https://bolsa-de-trabajo-workforce-default-rtdb.firebaseio.com/"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    let infoEmpresaGlobal = null;
-    let infoVacanteGlobal = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const empresaId = urlParams.get('empresa');
+
+    let todasLasVacantesEmpresa = {};
+    let datosVacanteGlobal = null;
+    let vacanteKeyDetectada = "";
     let fallbackTelefonoReclutador = "526461974763"; 
 
-    const params = new URLSearchParams(window.location.search);
-    let idEmpresaUrl = params.get("empresa");
-    let idVacanteUrl = params.get("id");
-
-    window.regresarAlIndex = function() {
-        window.location.href = "index.html";
-    };
-
-    document.addEventListener("DOMContentLoaded", async () => {
-        // Ejecutar las peticiones de forma controlada
-        await evaluarYAsignarVacante();
-        await cargarCatalogoReclutadores();
-    });
-
-    // RESOLUCIÓN CRÍTICA: Asegura que las variables globales tengan datos válidos ANTES de renderizar
-    async function evaluarYAsignarVacante() {
-        const dbRef = ref(db);
-
-        // Si los parámetros de la URL están ausentes o vacíos
-        if (!idEmpresaUrl || !idVacanteUrl || idEmpresaUrl.trim() === "" || idVacanteUrl.trim() === "") {
-            try {
-                const snapTodasVacantes = await get(child(dbRef, "vacantes_por_empresa"));
-                if (snapTodasVacantes.exists()) {
-                    const datosEmpresas = snapTodasVacantes.val();
-                    // Forzar asignación global directa
-                    idEmpresaUrl = Object.keys(datosEmpresas)[0];
-                    const vacantesDeEsaEmpresa = datosEmpresas[idEmpresaUrl];
-                    idVacanteUrl = Object.keys(vacantesDeEsaEmpresa)[0];
-                    console.log(`[Auto-Mapeo Exitoso] ID Empresa: ${idEmpresaUrl} | ID Vacante: ${idVacanteUrl}`);
-                }
-            } catch (e) {
-                console.warn("Fallo el mapeo en vivo de Firebase:", e);
-            }
+    async function cargarDetallesVacante() {
+        if (!empresaId) {
+            document.getElementById('loading').innerHTML = "❌ Enlace no válido.<br><small>Se requiere especificar el parámetro de enlace ?empresa=ID_EMPRESA</small>";
+            return;
         }
 
-        // Una vez evaluados los parámetros, ejecutar la carga de datos sin frenar el flujo
-        await cargarDatosVacante();
+        try {
+            // Lectura del nodo original provisto por tu archivo funcional
+            const lasVacantesRef = ref(db, `vacantes_detalles/${empresaId}`);
+            const snapshot = await get(lasVacantesRef);
+            
+            if (snapshot.exists()) {
+                const dataRaw = snapshot.val();
+                
+                if (dataRaw.vacanteNombre || dataRaw.salario) {
+                    todasLasVacantesEmpresa = {};
+                    const llaveUnica = dataRaw.vacanteNombre.replace(/\s+/g, '_').toLowerCase() || "puesto_unico";
+                    todasLasVacantesEmpresa[llaveUnica] = dataRaw;
+                } else {
+                    todasLasVacantesEmpresa = dataRaw;
+                }
+
+                const keys = Object.keys(todasLasVacantesEmpresa).filter(k => k !== 'undefined' && k !== '');
+                
+                if (keys.length === 0) {
+                    document.getElementById('loading').innerText = "❌ No hay vacantes activas publicadas para esta empresa.";
+                    return;
+                }
+
+                const primerVacante = todasLasVacantesEmpresa[keys[0]];
+                document.getElementById('mainEmpresaNombre').innerText = primerVacante.empresaNombre || empresaId.toUpperCase();
+                document.getElementById('mainEmpresaLugar').innerText = primerVacante.lugarOrigen || 'Ubicación no especificada';
+                document.getElementById('empresaHeaderBox').style.display = 'block';
+
+                const listaContenedor = document.getElementById('listaVacantesDinamica');
+                listaContenedor.innerHTML = ''; 
+                
+                keys.forEach(key => {
+                    const vac = todasLasVacantesEmpresa[key];
+                    
+                    const cardItem = document.createElement('div');
+                    cardItem.className = 'vacante-item-card';
+                    cardItem.onclick = () => renderizarPuestoEspecifico(key);
+                    
+                    cardItem.innerHTML = `
+                        <div class="vacante-item-info">
+                            <h2>${vac.vacanteNombre || key}</h2>
+                            <p><i class="fa-solid fa-money-bill-wave"></i> ${vac.salario || 'No especificado'}</p>
+                        </div>
+                        <div class="chevron-icon">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    `;
+                    listaContenedor.appendChild(cardItem);
+                });
+                
+                // Cargar también el catálogo de asesores de forma paralela
+                await cargarCatalogoReclutadores();
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'none';
+                document.getElementById('menuVacantesBox').style.display = 'block';
+
+            } else {
+                document.getElementById('loading').innerText = "❌ La empresa especificada no cuenta con vacantes en el servidor.";
+            }
+        } catch (error) {
+            console.error(error);
+            document.getElementById('loading').innerText = "❌ Error al conectar con la base de datos de Workforce.";
+        }
     }
 
-    async function cargarDatosVacante() {
-        try {
-            const dbRef = ref(db);
-            let datosCargadosCorrectamente = false;
-
-            // Intentar leer desde Firebase si los IDs son válidos
-            if (idEmpresaUrl && idVacanteUrl) {
-                const snapEmpresa = await get(child(dbRef, `empresas_principales/${idEmpresaUrl}`));
-                const snapVacante = await get(child(dbRef, `vacantes_por_empresa/${idEmpresaUrl}/${idVacanteUrl}`));
-
-                if (snapEmpresa.exists() && snapVacante.exists()) {
-                    infoEmpresaGlobal = snapEmpresa.val();
-                    infoVacanteGlobal = snapVacante.val();
-                    datosCargadosCorrectamente = true;
-                }
-            }
-
-            // ENTORNO MAQUETA COMPLETO: Si falló la conexión o la URL está vacía, se autodeclaran aquí
-            if (!datosCargadosCorrectamente) {
-                console.log("[Contingencia Activa] Generando interfaz visual de respaldo.");
-                infoEmpresaGlobal = {
-                    nombreComercial: "Workforce Connect Solutions",
-                    ubicacion: "Zona Industrial Central"
-                };
-                infoVacanteGlobal = {
-                    nombreVacante: "Operador de Logística y Distribución",
-                    salarioSemanal: "3,500 + Bonos",
-                    turnos: "Rotativo (Mañana y Tarde)",
-                    edadRequisito: "18 a 55 años",
-                    lugarDestino: "Planta de Ensamble de Componentes",
-                    ofreceTransporte: true,
-                    rutaTransporte: "Ruta 3A - Paradas en Alamar, Blvd. Casablanca y El Florido",
-                    requisitos: "• Secundaria terminada.\n• Documentación básica en regla.\n• Disponibilidad de horario.",
-                    beneficios: "• Prestaciones superiores a las de la ley.\n• Caja de ahorro opcional.\n• Servicio de comedor subsidiado."
-                };
-            }
-
-            // Renderizar de inmediato en el DOM
-            document.getElementById("txtNombreEmpresa").innerText = infoEmpresaGlobal.nombreComercial || "Empresa Registrada";
-            document.getElementById("txtUbicacionEmpresa").innerText = infoEmpresaGlobal.ubicacion || "Ubicación General";
-            
-            document.getElementById("txtTituloVacante").innerText = infoVacanteGlobal.nombreVacante || "Puesto General";
-            document.getElementById("txtSueldo").innerText = infoVacanteGlobal.salarioSemanal ? `$${infoVacanteGlobal.salarioSemanal}` : "A convenir";
-            document.getElementById("txtTurnos").innerText = infoVacanteGlobal.turnos || "No especificado";
-            document.getElementById("txtEdadReq").innerText = infoVacanteGlobal.edadRequisito || "18+";
-            document.getElementById("txtLugarDestino").innerText = infoVacanteGlobal.lugarDestino || "Planta Central";
-            
-            document.getElementById("txtRequisitos").innerText = infoVacanteGlobal.requisitos || "Documentación básica.";
-            document.getElementById("txtBeneficios").innerText = infoVacanteGlobal.beneficios || "Prestaciones de Ley.";
-
-            if (infoVacanteGlobal.ofreceTransporte === true || infoVacanteGlobal.rutaTransporte) {
-                const rutaTexto = infoVacanteGlobal.rutaTransporte || `Disponible hacia: ${infoVacanteGlobal.lugarDestino}`;
-                document.getElementById("txtRutaTransporte").innerText = rutaTexto;
-                document.getElementById("bloqueTransporte").style.display = "block";
-            } else {
-                document.getElementById("bloqueTransporte").style.display = "none";
-            }
-
-            if (infoVacanteGlobal.urlImagen) {
-                const imgElement = document.getElementById("imgBannerVacante");
-                imgElement.src = infoVacanteGlobal.urlImagen;
-                document.getElementById("bannerContenedor").style.display = "block";
-            } else {
-                document.getElementById("bannerContenedor").style.display = "none";
-            }
-
-            // APAGADO DEL CARGADOR Y ACTIVACIÓN DE INTERFAZ
-            document.getElementById("loading").style.display = "none";
-            document.getElementById("contenidoVacante").style.display = "block";
-
-        } catch (error) {
-            console.error("Error en renderizado general:", error);
-            // Si ocurre un error catastrófico, apagar el loader y forzar la muestra del contenido para no trabar al usuario
-            document.getElementById("loading").style.display = "none";
-            document.getElementById("contenidoVacante").style.display = "block";
+    async function renderizarPuestoEspecifico(key) {
+        vacanteKeyDetectada = key;
+        const data = todasLasVacantesEmpresa[key];
+        datosVacanteGlobal = data;
+        
+        // CONTADOR DE VISITAS SEGURO CON TU LOGÍSITICA ORIGINAL
+        const pathVisita = `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}/visitas`;
+        if (!sessionStorage.getItem(`visita_${empresaId}_${vacanteKeyDetectada}`)) {
+            try {
+                await runTransaction(ref(db, pathVisita), (currentValue) => {
+                    return (currentValue || 0) + 1;
+                });
+                sessionStorage.setItem(`visita_${empresaId}_${vacanteKeyDetectada}`, 'true');
+            } catch(e) { console.log("Visita no acumulada"); }
         }
+
+        document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
+        document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
+        document.getElementById('vacanteVisitas').innerText = data.visitas ? (data.visitas + 1) : 1;
+        
+        document.getElementById('detSalario').innerText = data.salario || 'No especificado';
+        document.getElementById('detLugar').innerText = data.lugarOrigen || 'No especificado';
+        document.getElementById('detTurnos').innerText = data.turnos || 'No especificado';
+        document.getElementById('detEdad').innerText = data.edad || 'Indistinto';
+        document.getElementById('detSexo').innerText = data.sexo || 'Indistinto';
+        document.getElementById('detExperiencia').innerText = data.experiencia || 'No requerida';
+        document.getElementById('detEscolaridad').innerText = data.escolaridad || 'No especificada';
+
+        document.getElementById('vacanteActividades').innerText = data.actividades || 'No especificadas.';
+        document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
+        document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
+
+        if (data.bannerUrl && data.bannerUrl.trim() !== "") {
+            document.getElementById('vacanteBanner').src = data.bannerUrl.trim();
+            document.getElementById('vacanteBannerBox').style.display = 'block';
+        } else {
+            document.getElementById('vacanteBannerBox').style.display = 'none';
+        }
+
+        document.getElementById('menuVacantesBox').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.regresarAlMenu = function() {
+        document.getElementById('content').style.display = 'none';
+        document.getElementById('menuVacantesBox').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     async function cargarCatalogoReclutadores() {
@@ -580,7 +634,6 @@
 
             if (snapReclutadores.exists()) {
                 const listado = snapReclutadores.val();
-                
                 const optDef = document.createElement("option");
                 optDef.value = "";
                 optDef.textContent = "— Elige un Reclutador / Asesor disponible —";
@@ -592,7 +645,6 @@
                     if (rec.telefono) {
                         telfLimpio = typeof rec.telefono === 'object' ? (rec.telefono.valor || rec.telefono.numero) : rec.telefono;
                     }
-
                     if (telfLimpio) {
                         const option = document.createElement("option");
                         option.value = telfLimpio.trim();
@@ -608,112 +660,143 @@
             }
         } catch (e) {
             console.error("Error al poblar reclutadores:", e);
-            selectElement.innerHTML = `<option value="${fallbackTelefonoReclutador}">Asesor General de Guardia (Modo Offline)</option>`;
+            selectElement.innerHTML = `<option value="${fallbackTelefonoReclutador}">Asesor General de Guardia</option>`;
         }
     }
 
-    window.procesarPostulacion = async function(e) {
+    function extraerDatosCurp(curp) {
+        if (!curp || curp.length < 11) return { edad: "Indistinto", sexo: "Indistinto" };
+        const letraSexo = curp.charAt(10).toUpperCase();
+        let sexo = "Indistinto";
+        if (letraSexo === 'H') sexo = "Masculino";
+        else if (letraSexo === 'M') sexo = "Femenino";
+
+        let anio = parseInt(curp.substr(4, 2), 10);
+        const mes = parseInt(curp.substr(6, 2), 10);
+        const dia = parseInt(curp.substr(8, 2), 10);
+        
+        const digitoSiglo = curp.charAt(16);
+        if (isNaN(parseInt(digitoSiglo, 10))) {
+            anio += 2000;
+        } else {
+            anio += (anio > 30) ? 1900 : 2000; 
+        }
+
+        const fechaNacimiento = new Date(anio, mes - 1, dia);
+        const fechaActual = new Date(); 
+        let edadCalculada = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
+        const m = fechaActual.getMonth() - fechaNacimiento.getMonth();
+        if (m < 0 || (m === 0 && fechaActual.getDate() < fechaNacimiento.getDate())) {
+            edadCalculada--;
+        }
+        return {
+            edad: isNaN(edadCalculada) ? "Indistinto" : String(edadCalculada),
+            sexo: sexo
+        };
+    }
+
+    window.enviarPostulacion = async function(e) {
         e.preventDefault();
         
-        const timestampId = "FOLIO-" + Date.now();
-        const inputTel = document.getElementById("txtTelefono").value.trim();
+        if (!datosVacanteGlobal) {
+            alert("Por favor, selecciona primero un puesto de trabajo.");
+            return;
+        }
+
+        const nombre = document.getElementById('postNombre').value.trim();
+        const telefono = document.getElementById('postTelefono').value.trim();
+        const curp = document.getElementById('postCurp').value.trim().toUpperCase();
         const selectReclutador = document.getElementById("selReclutador");
         
         let telefonoDestinoWhatsApp = selectReclutador.value || fallbackTelefonoReclutador;
         let nombreReclutadorSeleccionado = selectReclutador.options[selectReclutador.selectedIndex].text;
 
+        if (curp.length !== 18) {
+            alert("Por favor, ingresa una CURP válida de 18 caracteres.");
+            return;
+        }
+
         if (telefonoDestinoWhatsApp.length === 10) {
             telefonoDestinoWhatsApp = "52" + telefonoDestinoWhatsApp;
         }
 
-        // Validaciones preventivas de datos antes del armado de payload
-        const nombreVacanteFinal = infoVacanteGlobal && infoVacanteGlobal.nombreVacante ? infoVacanteGlobal.nombreVacante : "PUESTO GENERAL";
-        const lugarDestinoFinal = infoVacanteGlobal && infoVacanteGlobal.lugarDestino ? infoVacanteGlobal.lugarDestino : "No asignado";
-        const transportInfo = infoVacanteGlobal && (infoVacanteGlobal.rutaTransporte || (infoVacanteGlobal.ofreceTransporte ? "Sí (Ruta General)" : "No Especificado")) || "No Especificado";
-        const idEmpresaFinal = idEmpresaUrl || "DEMO-CORP";
-
+        const datosExtraidos = extraerDatosCurp(curp);
+        const timestampId = "post-" + Date.now();
+        
         const payloadPostulante = {
-            folio: timestampId,
-            vacante: nombreVacanteFinal.toUpperCase(),
-            empresa: idEmpresaFinal.toUpperCase(),
-            destinoPlanta: lugarDestinoFinal,
-            rutaTransporte: transportInfo,
-            nombre: document.getElementById("txtNombre").value.trim(),
-            telefono: inputTel,
-            curp: document.getElementById("txtCurp").value.trim().toUpperCase(),
-            edad: document.getElementById("txtEdad").value,
-            sexo: document.getElementById("selSexo").value,
+            id: timestampId,
+            nombre: nombre,
+            nombreCompleto: nombre,
+            telefono: telefono,
+            curp: curp,
+            edad: datosExtraidos.edad,
+            sexo: datosExtraidos.sexo,
+            genero: datosExtraidos.sexo,
+            empresa: empresaId,
+            empresaDestino: empresaId,
+            vacante: datosVacanteGlobal.vacanteNombre || 'Desconocida',
+            puesto: datosVacanteGlobal.vacanteNombre || 'Desconocida',
             fechaRegistro: new Date().toLocaleString(),
             atendidoPor: nombreReclutadorSeleccionado
         };
 
         try {
-            await set(ref(db, `postulantes_registrados/${timestampId}`), payloadPostulante);
+            // Guardar en tu histórico original
+            await set(ref(db, `postulantes/${timestampId}`), payloadPostulante);
+            await update(ref(db, 'postulantes_count'), { total: increment(1) });
 
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                
-                doc.setFillColor(11, 20, 38);
-                doc.rect(0, 0, 220, 40, 'F');
-                
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(18);
-                doc.setFont("helvetica", "bold");
-                doc.text("WORKFORCE CONNECT SOLUTION", 15, 25);
-                
-                doc.setTextColor(15, 26, 44);
-                doc.setFontSize(22);
-                doc.text("ACUSE DE POSTULACIÓN OFICIAL", 15, 60);
-                
-                doc.setDrawColor(56, 189, 248);
-                doc.setLineWidth(1);
-                doc.line(15, 65, 195, 65);
-                
-                doc.setFontSize(11);
-                doc.setFont("helvetica", "normal");
-                doc.text(`Folio de Registro: ${payloadPostulante.folio}`, 15, 78);
-                doc.text(`Fecha y Hora: ${payloadPostulante.fechaRegistro}`, 15, 86);
-                doc.text(`Puesto de Interés: ${payloadPostulante.vacante}`, 15, 94);
-                doc.text(`Socio Comercial: ${payloadPostulante.empresa}`, 15, 102);
-                doc.text(`Ruta Asignada: ${payloadPostulante.rutaTransporte}`, 15, 110); 
-                
-                doc.setFont("helvetica", "bold");
-                doc.text("DATOS GENERALES DEL CANDIDATO:", 15, 126);
-                doc.setFont("helvetica", "normal");
-                doc.text(`Nombre Completo: ${payloadPostulante.nombre}`, 15, 136);
-                doc.text(`Teléfono de Contacto: ${payloadPostulante.telefono}`, 15, 144);
-                doc.text(`CURP: ${payloadPostulante.curp}`, 15, 152);
-                doc.text(`Edad: ${payloadPostulante.edad} años`, 15, 160);
-                doc.text(`Sexo: ${payloadPostulante.sexo}`, 15, 168);
-                doc.text(`Asesor Asignado: ${payloadPostulante.atendidoPor}`, 15, 176);
-                
-                doc.setFillColor(244, 115, 22);
-                doc.rect(15, 195, 180, 25, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(10);
-                doc.text("IMPORTANTE: Tu entrevista ha sido agendada con éxito.", 20, 205);
-                doc.text("Presenta este documento digital al iniciar tu chat de WhatsApp.", 20, 211);
-                
-                doc.save(`Acuse_Postulacion_${payloadPostulante.folio}.pdf`);
-            } catch (pdfError) {
-                console.error("Error generando el acuse PDF:", pdfError);
-            }
+            // RENDER PDF MEJORADO CON LA NUEVA MARCA
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
+            doc.setFillColor(11, 20, 38); doc.rect(0, 0, 220, 40, 'F');
+            doc.setTextColor(56, 189, 248); doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.text("WORKFORCE CONNECT SOLUTION", 15, 25);
+            doc.setTextColor(15, 26, 44); doc.setFontSize(22); doc.text("ACUSE DE POSTULACIÓN OFICIAL", 15, 60);
+            doc.setDrawColor(56, 189, 248); doc.setLineWidth(1); doc.line(15, 65, 195, 65);
+
+            doc.setFontSize(11); doc.setFont("helvetica", "normal");
+            
+            const datosImpresion = [
+                { label: "Folio Único:", val: timestampId },
+                { label: "Puesto Solicitado:", val: payloadPostulante.vacante },
+                { label: "Socio Comercial:", val: payloadPostulante.empresa.toUpperCase() },
+                { label: "Nombre Candidato:", val: payloadPostulante.nombre },
+                { label: "CURP Validada:", val: payloadPostulante.curp },
+                { label: "Teléfono Móvil:", val: payloadPostulante.telefono },
+                { label: "Edad de Perfil:", val: `${payloadPostulante.edad} años` },
+                { label: "Sexo Biológico:", val: payloadPostulante.sexo },
+                { label: "Asesor Asignado:", val: payloadPostulante.atendidoPor },
+                { label: "Fecha de Registro:", val: payloadPostulante.fechaRegistro }
+            ];
+
+            let y = 78;
+            datosImpresion.forEach(item => {
+                doc.setFont("helvetica", "bold"); doc.text(item.label, 15, y);
+                doc.setFont("helvetica", "normal"); doc.text(String(item.val), 60, y);
+                y += 10;
+            });
+
+            y += 10;
+            doc.setFillColor(244, 115, 22); doc.rect(15, y, 180, 25, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(10); 
+            doc.text("IMPORTANTE: Tu entrevista ha sido agendada con éxito.", 20, y + 10);
+            doc.text("Presenta este acuse digital al iniciar tu chat de WhatsApp con tu asesor.", 20, y + 16);
+
+            doc.save(`Acuse_Postulacion_${payloadPostulante.curp}.pdf`);
+            
+            // REDIRECCIÓN DIRECTA AL WHATSAPP DEL ASESOR SELECCIONADO
             const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante.\n\n` +
                                     `*📌 Detalles de mi Postulación:*\n` +
-                                    `• *Folio:* ${payloadPostulante.folio}\n` +
+                                    `• *Folio:* ${timestampId}\n` +
                                     `• *Puesto:* ${payloadPostulante.vacante}\n` +
-                                    `• *Destino:* ${payloadPostulante.destinoPlanta}\n` +
-                                    `• *Ruta / Transporte:* ${payloadPostulante.rutaTransporte}\n\n` + 
+                                    `• *Empresa:* ${payloadPostulante.empresa.toUpperCase()}\n\n` +
                                     `*👤 Mis Datos de Contacto:*\n` +
                                     `• *Nombre:* ${payloadPostulante.nombre}\n` +
                                     `• *Teléfono:* ${payloadPostulante.telefono}\n` +
                                     `• *CURP:* ${payloadPostulante.curp}\n` +
                                     `• *Edad:* ${payloadPostulante.edad} años\n` +
                                     `• *Sexo:* ${payloadPostulante.sexo}\n\n` +
-                                    `Ya descargué mi acuse en formato PDF y requiero iniciar mi proceso de entrevista con usted como mi asesor asignado. Quedo atento a su respuesta.`;
+                                    `Ya descargué mi acuse en formato PDF y requiero iniciar mi entrevista con usted como mi asesor asignado. Quedo atento a su respuesta.`;
 
             document.getElementById('formPostulacion').reset();
             window.location.href = `https://wa.me/${telefonoDestinoWhatsApp}?text=${encodeURIComponent(mensajeWhatsApp)}`;
@@ -723,7 +806,8 @@
             alert("❌ Ocurrió un error al guardar la postulación: " + err.message);
         }
     };
-</script>
 
+    window.onload = cargarDetallesVacante;
+</script>
 </body>
 </html>
