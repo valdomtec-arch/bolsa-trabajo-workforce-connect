@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bolsa de Trabajo - Detalles de la Vacante</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <!-- LIBRERÍAS CLÁSICAS COMPATIBLES -->
@@ -449,7 +449,7 @@
         document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
         document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
 
-        // LÓGICA DE ASIGNACIÓN 100% DINÁMICA DE BANNER (OPCIÓN B)
+        // LÓGICA DE ASIGNACIÓN BANNER (OPCIÓN B)
         let imagenFinalBanner = "";
         if (data.bannerUrl && data.bannerUrl.trim() !== "") {
             imagenFinalBanner = data.bannerUrl.trim();
@@ -466,12 +466,12 @@
             imgElement.onerror = null;
         };
 
-        // CONSULTAR LOGÍSTICA DE TRANSPORTE EN EL NODO INDEPENDIENTE
+        // CONSULTAR LOGÍSTICA DE TRANSPORTE CON FILTRADO EN TIEMPO REAL
         const selectPuntos = document.getElementById('selPuntoRecoleccion');
         const bloqueTrans = document.getElementById('bloqueTransporte');
         const txtDetallesTrans = document.getElementById('txtDetallesTransporte');
         
-        selectPuntos.innerHTML = '<option value="">— Selecciona la ruta/parada que más te encaje —</option>';
+        selectPuntos.innerHTML = '<option value="">— Cargando rutas disponibles... —</option>';
         bloqueTrans.style.display = 'none';
         selectPuntos.required = false;
 
@@ -485,16 +485,41 @@
                     
                     const puntos = infoTransporte.puntos_recoleccion;
                     if (puntos && Array.isArray(puntos)) {
-                        puntos.forEach((punto, index) => {
-                            if(punto) {
+                        const puntosLimpios = puntos.filter(p => p && p.trim() !== "");
+
+                        function renderizarOpciones(listaFiltrada) {
+                            selectPuntos.innerHTML = '<option value="">— Selecciona la parada/referencia más cercana a tu casa —</option>';
+                            listaFiltrada.forEach((punto) => {
                                 const opt = document.createElement('option');
                                 opt.value = punto;
-                                opt.textContent = `Parada #${index + 1}: ${punto}`;
+                                opt.textContent = punto.toUpperCase(); 
                                 selectPuntos.appendChild(opt);
-                            }
-                        });
+                            });
+                        }
+
+                        if (!document.getElementById('buscarRutaInput')) {
+                            const contenedorBuscador = document.createElement('div');
+                            contenedorBuscador.style.marginBottom = '12px';
+                            contenedorBuscador.innerHTML = `
+                                <input type="text" id="buscarRutaInput" placeholder="🔍 Escribe tu colonia o avenida para buscar parada..." 
+                                       style="padding: 10px 14px; font-size: 0.9rem; border-style: dashed; margin-bottom: 5px;">
+                            `;
+                            selectPuntos.parentNode.insertBefore(contenedorBuscador, selectPuntos);
+
+                            document.getElementById('buscarRutaInput').addEventListener('input', function(e) {
+                                const busqueda = e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                                const filtrados = puntosLimpios.filter(p => 
+                                    p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(busqueda)
+                                );
+                                renderizarOpciones(filtrados);
+                            });
+                        } else {
+                            document.getElementById('buscarRutaInput').value = "";
+                        }
+
+                        renderizarOpciones(puntosLimpios);
                         bloqueTrans.style.display = 'block';
-                        selectPuntos.required = true; // Forzar a elegir parada si existe transporte
+                        selectPuntos.required = true; 
                     }
                 }
             }
@@ -585,7 +610,6 @@
             await db.ref(`postulantes/${timestampId}`).set(payload);
             await db.ref('postulantes_count').update({ total: firebase.database.ServerValue.increment(1) });
 
-            // GENERACIÓN DE ACUSE EN PDF (CON RUTA SELECCIONADA INCLUIDA)
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
@@ -652,7 +676,6 @@
 
             doc.save(`Acuse_${payload.curp}.pdf`);
             
-            // REDIRECCIÓN A WHATSAPP API (CON DATA DE TRANSPORTE)
             const mensajeWhatsApp = `*WORKFORCE CONNECT SOLUTION — SOLICITUD DE ENTREVISTA*\n\n` +
                                     `Estimado área de Atracción de Talento,\n\n` +
                                     `Por medio de la presente, presento mi postulación formal para la vacante activa del sistema:\n\n` +
