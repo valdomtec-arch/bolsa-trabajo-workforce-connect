@@ -79,7 +79,10 @@ transition: all 0.3s ease;
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+.grid-asymmetric { display: grid; grid-template-columns: 4.5fr 5.5fr; gap: 20px; }
+@media (max-width: 1024px) { 
+  .grid-2, .grid-asymmetric { grid-template-columns: 1fr; } 
+}
 .card {
 background: var(--container-bg);
 border: 1px solid var(--border-color);
@@ -233,7 +236,7 @@ background: #132d20; border: 0px solid var(--green-success); border-radius: 8px;
 </div>
 
 <div id="tab1" class="tab-content active">
-  <div class="grid-2">
+  <div class="grid-asymmetric">
     <div class="card">
       <div class="card-title">Datos de la Entidad / Socio</div>
       <div class="form-group">
@@ -272,7 +275,7 @@ background: #132d20; border: 0px solid var(--green-success); border-radius: 8px;
         <span>Directorio de Empresas Activas</span>
         <input type="text" id="tablaBuscador" placeholder="Filtrar..." onkeyup="filtrarEmpresas()" style="width:160px; font-size:12px; padding:4px 8px; background:var(--card-bg); color:white; border:1px solid var(--border-color); border-radius:4px;">
       </div>
-      <div style="overflow-x:auto; max-height:480px;">
+      <div style="overflow-x:auto; max-height:510px;">
         <table>
           <thead>
             <tr><th>Logo</th><th>ID</th><th>Nombre</th><th>Ubicación</th><th>Acciones</th></tr>
@@ -285,155 +288,165 @@ background: #132d20; border: 0px solid var(--green-success); border-radius: 8px;
 </div>
 
 <div id="tab2" class="tab-content">
-  <div class="card" style="background:#0f1d30; border:1px solid #1d3b66;">
+  <div class="card" style="background:#0f1d30; border:1px solid #1d3b66; margin-bottom: 20px;">
     <div class="form-group" style="margin-bottom:0;">
       <label style="color:#38bdf8; font-weight:bold; font-size:15px;"><i class="fas fa-filter"></i> SELECCIONA LA EMPRESA PARA ASIGNAR O GESTIONAR VACANTES:</label>
       <select id="secEmpresaSelect" onchange="escucharVacantesExistentes(this.value); limpiarFormularioVacantes();" style="border:1px solid #38bdf8; font-weight:bold; color:white; background:#1e293b;"></select>
     </div>
   </div>
 
-  <div class="accordion-ia">
-    <div class="accordion-ia-header" onclick="toggleAccordionIa()">
-      <span><i class="fab fa-whatsapp"></i> <i class="fas fa-brain"></i> Extractor IA V6 Masivo (Convertir archivos de texto/chats de WhatsApp a JSON)</span>
-      <i id="accordionArrow" class="fas fa-chevron-down"></i>
-    </div>
-    <div id="accordionIaContent" class="accordion-ia-content">
-      <p style="margin-top:0; font-size:13px; color:var(--text-muted);">Sube un archivo de texto largo (como un volcado de chat o requerimientos brutos) para que la IA extraiga múltiples vacantes estructuradas de golpe.</p>
-      <div class="file-upload-wrapper">
-        <span class="file-upload-custom" id="lblNombreArchivoCargado"><i class="fas fa-cloud-upload-alt"></i> Arrastra o selecciona tu archivo .txt</span>
-        <input type="file" id="archivoTxtInput" accept=".txt" onchange="procesarTxtWhatsAppV6()">
-      </div>
-      <div class="btn-row" style="margin-bottom:15px;">
-        <button class="btn-ia" id="btnInterpretarIa" style="width:100%; justify-content:center; padding:12px;"><i class="fas fa-wand-magic-sparkles"></i> Autorellenar Formulario</button>
-      </div>
-      
-      <div id="contenedorResultadoVerde" style="display:none; background:#161026; border:1px solid #5b21b6; padding:15px; border-radius:6px;">
-        <div class="form-group">
-          <label style="color:#c084fc;">Vacantes Detectadas por IA en el Archivo:</label>
-          <select id="selectorVacantesDetectadas" onchange="cambiarVacanteVerdeSeleccionada()" style="background:#2e1857; border-color:#6b21a8;"></select>
-        </div>
-        <div class="grid-2">
-          <div>
-            <label style="font-size:12px; font-weight:bold; color:#a78bfa;">Vista Previa Estructural (JSON):</label>
-            <pre id="codigoJsonVerde"></pre>
-            <button class="btn-clear" onclick="transferirAlEspacioMorado()" style="font-size:12px; padding:4px 8px; margin-top:5px; background:#2e1857; color:#e9d5ff;"><i class="fas fa-arrow-down"></i> Forzar copia al espacio morado individual</button>
+  <div id="boxGestionVacantes" style="display:none;">
+    <div class="grid-asymmetric">
+      <div>
+        <div class="accordion-ia">
+          <div class="accordion-ia-header" onclick="toggleAccordionIa()">
+            <span><i class="fab fa-whatsapp"></i> <i class="fas fa-brain"></i> Extractor IA V6 Masivo (Convertir archivos de texto/chats a JSON)</span>
+            <i id="accordionArrow" class="fas fa-chevron-down"></i>
           </div>
-          <div class="preview-card">
-            <h4 style="margin:0 0 8px 0; color:white;" id="lblPreviewNombre">Nombre de la Vacante</h4>
-            <div class="preview-grid">
-              <div class="preview-item"><strong>Sueldo:</strong> <span id="lblPreviewSalario"></span></div>
-              <div class="preview-item"><strong>Edad:</strong> <span id="lblPreviewEdad"></span></div>
-              <div class="preview-item"><strong>Origen:</strong> <span id="lblPreviewLugar"></span></div>
-              <div class="preview-item"><strong>Turnos:</strong> <span id="lblPreviewTurnos"></span></div>
+          <div id="accordionIaContent" class="accordion-ia-content">
+            <p style="margin-top:0; font-size:13px; color:var(--text-muted);">Sube un archivo de texto largo (como un volcado de chat o requerimientos brutos) para extraer múltiples vacantes de golpe.</p>
+            <div class="file-upload-wrapper">
+              <span class="file-upload-custom" id="lblNombreArchivoCargado"><i class="fas fa-cloud-upload-alt"></i> Arrastra o selecciona tu archivo .txt</span>
+              <input type="file" id="archivoTxtInput" accept=".txt" onchange="procesarTxtWhatsAppV6()">
+            </div>
+            <div class="btn-row" style="margin-bottom:15px;">
+              <button class="btn-ia" id="btnInterpretarIa" style="width:100%; justify-content:center; padding:12px;"><i class="fas fa-wand-magic-sparkles"></i> Autorellenar Formulario</button>
+            </div>
+            
+            <div id="contenedorResultadoVerde" style="display:none; background:#161026; border:1px solid #5b21b6; padding:15px; border-radius:6px;">
+              <div class="form-group">
+                <label style="color:#c084fc;">Vacantes Detectadas por IA en el Archivo:</label>
+                <select id="selectorVacantesDetectadas" onchange="cambiarVacanteVerdeSeleccionada()" style="background:#2e1857; border-color:#6b21a8;"></select>
+              </div>
+              <div class="grid-2">
+                <div>
+                  <label style="font-size:12px; font-weight:bold; color:#a78bfa;">Vista Previa Estructural (JSON):</label>
+                  <pre id="codigoJsonVerde" style="border: 1px solid var(--green-success); background: #04140b; color: #34d399;"></pre>
+                  <button class="btn-clear" onclick="transferirAlEspacioMorado()" style="font-size:12px; padding:4px 8px; margin-top:5px; background:#2e1857; color:#e9d5ff;"><i class="fas fa-arrow-down"></i> Forzar copia al espacio morado individual</button>
+                </div>
+                <div class="preview-card">
+                  <h4 style="margin:0 0 8px 0; color:white;" id="lblPreviewNombre">Nombre de la Vacante</h4>
+                  <div class="preview-grid">
+                    <div class="preview-item"><strong>Sueldo:</strong> <span id="lblPreviewSalario"></span></div>
+                    <div class="preview-item"><strong>Edad:</strong> <span id="lblPreviewEdad"></span></div>
+                    <div class="preview-item"><strong>Origen:</strong> <span id="lblPreviewLugar"></span></div>
+                    <div class="preview-item"><strong>Turnos:</strong> <span id="lblPreviewTurnos"></span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="btn-row" style="margin-top:12px;">
+                <button class="btn-add" onclick="subirTodasLasVacantesVerdesALote()" style="background:#7c3aed; color:white; width:100%; justify-content:center;"><i class="fas fa-layer-group"></i> INYECTAR TODAS ESTAS VACANTES EN LOTE MASIVO A FIREBASE</button>
+              </div>
             </div>
           </div>
         </div>
-        <div class="btn-row" style="margin-top:12px;">
-          <button class="btn-add" onclick="subirTodasLasVacantesVerdesALote()" style="background:#7c3aed; color:white; width:100%; justify-content:center;"><i class="fas fa-layer-group"></i> INYECTAR TODAS ESTAS VACANTES EN LOTE MASIVO A FIREBASE</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <div id="boxGestionVacantes" style="display:none;">
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Formulario de Vacante / Puesto</div>
-        
-        <div style="background:#22153f; border:1px solid #581c87; padding:12px; border-radius:6px; margin-bottom:15px;">
-          <label style="color:#c084fc; font-weight:bold; font-size:12px; display:block; margin-bottom:4px;"><i class="fas fa-brain"></i> INTELIGENCIA ARTIFICIAL INDIVIDUAL (Pegar texto bruto / JSON):</label>
-          <textarea id="iaTextoPegar" rows="3" placeholder="Pega aquí el fragmento de texto de WhatsApp o una sola vacante..." style="font-size:12px; background:#12072b; color:#e9d5ff; border:1px solid #6b21a8;"></textarea>
-          <button class="btn-ia" onclick="procesarTextoBrutoTxt()" style="margin-top:6px; font-size:12px; padding:6px 12px; width:100%; justify-content:center;"><i class="fas fa-bolt"></i> Extraer texto individual con Gemini</button>
-        </div>
+        <div class="card">
+          <div class="card-title">Formulario de Vacante / Puesto</div>
+          
+          <div style="background:#22153f; border:1px solid #581c87; padding:12px; border-radius:6px; margin-bottom:15px;">
+            <label style="color:#c084fc; font-weight:bold; font-size:12px; display:block; margin-bottom:4px;"><i class="fas fa-brain"></i> INTELIGENCIA ARTIFICIAL INDIVIDUAL (Pegar texto bruto / JSON):</label>
+            <textarea id="iaTextoPegar" rows="3" placeholder="Pega aquí el fragmento de texto de WhatsApp o una sola vacante..." style="font-size:12px; background:#12072b; color:#e9d5ff; border:1px solid #6b21a8;"></textarea>
+            <button class="btn-ia" onclick="procesarTextoBrutoTxt()" style="margin-top:6px; font-size:12px; padding:6px 12px; width:100%; justify-content:center;"><i class="fas fa-bolt"></i> Extraer texto individual con Gemini</button>
+          </div>
 
-        <div class="grid-2" style="gap:10px;">
-          <div class="form-group">
-            <label>ID de Vacante (ej: chofer-trailer)</label>
-            <input type="text" id="secPuestoId" placeholder="chofer-trailer">
+          <div class="grid-2" style="gap:10px;">
+            <div class="form-group">
+              <label>ID de Vacante (ej: chofer-trailer)</label>
+              <input type="text" id="secPuestoId" placeholder="chofer-trailer">
+            </div>
+            <div class="form-group">
+              <label>Estatus Comercial</label>
+              <select id="secEstatus">
+                <option value="disponible">🟢 DISPONIBLE / ACTIVA</option>
+                <option value="pausada">🟡 PAUSADA TEMPORALMENTE</option>
+                <option value="agotada">🔴 AGOTADA / CERRADA</option>
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Estatus Comercial</label>
-            <select id="secEstatus">
-              <option value="disponible">🟢 DISPONIBLE / ACTIVA</option>
-              <option value="pausada">🟡 PAUSADA TEMPORALMENTE</option>
-              <option value="agotada">🔴 AGOTADA / CERRADA</option>
-            </select>
-          </div>
-        </div>
 
-        <div class="form-group">
-          <label>Nombre Público del Puesto / Vacante</label>
-          <input type="text" id="secVacanteNombre" placeholder="Chofer de Patio Quinta Rueda">
-        </div>
+          <div class="form-group">
+            <label>Nombre Público del Puesto / Vacante</label>
+            <input type="text" id="secVacanteNombre" placeholder="Chofer de Patio Quinta Rueda">
+          </div>
 
-        <div class="grid-2" style="gap:10px;">
-          <div class="form-group">
-            <label>Salario / Pago Semanal u Ofrecido</label>
-            <input type="text" id="secSalario" placeholder="$4,500 - $6,000 libres semanales">
+          <div class="grid-2" style="gap:10px;">
+            <div class="form-group">
+              <label>Salario / Pago Semanal u Ofrecido</label>
+              <input type="text" id="secSalario" placeholder="$4,500 - $6,000 libres semanales">
+            </div>
+            <div class="form-group">
+              <label>Rango de Edad Sugerido</label>
+              <input type="text" id="secEdad" placeholder="22 a 55 años">
+            </div>
           </div>
-          <div class="form-group">
-            <label>Rango de Edad Sugerido</label>
-            <input type="text" id="secEdad" placeholder="22 a 55 años">
-          </div>
-        </div>
 
-        <div class="grid-2" style="gap:10px;">
-          <div class="form-group">
-            <label>Lugar de Origen / Contratación</label>
-            <input type="text" id="secLugarOrigen" placeholder="Veracruz, Boca del Río, Medellín">
+          <div class="grid-2" style="gap:10px;">
+            <div class="form-group">
+              <label>Lugar de Origen / Contratación</label>
+              <input type="text" id="secLugarOrigen" placeholder="Veracruz, Boca del Río, Medellín">
+            </div>
+            <div class="form-group">
+              <label>Turnos / Jornada Laboral</label>
+              <input type="text" id="secTurnos" placeholder="Rotativos de 8hrs o 12hrs, 6x1">
+            </div>
           </div>
-          <div class="form-group">
-            <label>Turnos / Jornada Laboral</label>
-            <input type="text" id="secTurnos" placeholder="Rotativos de 8hrs o 12hrs, 6x1">
-          </div>
-        </div>
 
-        <div class="grid-2" style="gap:10px;">
-          <div class="form-group">
-            <label>Género / Sexo</label>
-            <select id="secSexo">
-              <option value="Indistinto">Indistinto</option>
-              <option value="Masculino">Masculino</option>
-              <option value="Femenino">Femenino</option>
-            </select>
+          <div class="grid-2" style="gap:10px;">
+            <div class="form-group">
+              <label>Género / Sexo</label>
+              <select id="secSexo">
+                <option value="Indistinto">Indistinto</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Experiencia Mínima Requerida</label>
+              <input type="text" id="secExperiencia" placeholder="6 meses a 1 año en puestos similares">
+            </div>
           </div>
-          <div class="form-group">
-            <label>Experiencia Mínima Requerida</label>
-            <input type="text" id="secExperiencia" placeholder="6 meses a 1 año en puestos similares">
-          </div>
-        </div>
 
-        <div class="grid-2" style="gap:10px;">
-          <div class="form-group">
-            <label>Escolaridad Mínima</label>
-            <input type="text" id="secEscolaridad" placeholder="Primaria / Secundaria / Saber leer y escribir">
+          <div class="grid-2" style="gap:10px;">
+            <div class="form-group">
+              <label>Escolaridad Mínima</label>
+              <input type="text" id="secEscolaridad" placeholder="Primaria / Secundaria / Saber leer y escribir">
+            </div>
+            <div class="form-group">
+              <label>URL Banner Promocional / Flyer</label>
+              <input type="text" id="secBannerUrl" placeholder="https://dominio.com/flyer-vacante.jpg">
+            </div>
           </div>
-          <div class="form-group">
-            <label>URL Banner Promocional / Flyer</label>
-            <input type="text" id="secBannerUrl" placeholder="https://dominio.com/flyer-vacante.jpg">
+
+          <div class="form-group"><label>Actividades Principales (Usa saltos de línea)</label><textarea id="secActividades" rows="3" placeholder="- Maniobras de carga y descarga&#10;- Revisión de niveles de unidad"></textarea></div>
+          <div class="form-group"><label>Beneficios / Prestaciones (Usa saltos de línea)</label><textarea id="secBeneficios" rows="3" placeholder="- Seguro de Vida&#10;- Vales de despensa semanales&#10;- Prestaciones de Ley superiores"></textarea></div>
+          <div class="form-group"><label>Información General / Documentación Adicional</label><textarea id="secInfoGeneral" rows="2" placeholder="Presentarse con solicitud elaborada, INE, CURP y RFC en oficinas centrales."></textarea></div>
+
+          <div class="btn-row">
+            <button class="btn-add" onclick="guardarComoNuevaVacante()"><i class="fas fa-plus-circle"></i> Guardar como NUEVA Vacante</button>
+            <button class="btn-update" onclick="guardarActualizacionVacante()"><i class="fas fa-sync-alt"></i> Aplicar Cambios sobre Vacante Cargada</button>
+            <button class="btn-clear" onclick="limpiarFormularioVacantes()">Limpiar</button>
           </div>
-        </div>
-
-        <div class="form-group"><label>Actividades Principales (Usa saltos de línea)</label><textarea id="secActividades" rows="3" placeholder="- Maniobras de carga y descarga&#10;- Revisión de niveles de unidad"></textarea></div>
-        <div class="form-group"><label>Beneficios / Prestaciones (Usa saltos de línea)</label><textarea id="secBeneficios" rows="3" placeholder="- Seguro de Vida&#10;- Vales de despensa semanales&#10;- Prestaciones de Ley superiores"></textarea></div>
-        <div class="form-group"><label>Información General / Documentación Adicional</label><textarea id="secInfoGeneral" rows="2" placeholder="Presentarse con solicitud elaborada, INE, CURP y RFC en oficinas centrales."></textarea></div>
-
-        <div class="btn-row">
-          <button class="btn-add" onclick="guardarComoNuevaVacante()"><i class="fas fa-plus-circle"></i> Guardar como NUEVA Vacante</button>
-          <button class="btn-update" onclick="guardarActualizacionVacante()"><i class="fas fa-sync-alt"></i> Aplicar Cambios sobre Vacante Cargada</button>
-          <button class="btn-clear" onclick="limpiarFormularioVacantes()">Limpiar</button>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">Vacantes Registradas en esta Empresa</div>
-        <div class="form-group">
-          <label>Selecciona una vacante existente para editarla o darla de baja:</label>
-          <select id="selectorVacantesEnFirebase" size="10" style="height:250px; font-family:monospace;"></select>
+        <div class="card-title">
+          <span>Vacantes Publicadas en esta Empresa</span>
+          <input type="text" id="buscadorVacantes" placeholder="Filtrar vacantes..." onkeyup="filtrarVacantes()" style="width:160px; font-size:12px; padding:4px 8px; background:var(--card-bg); color:white; border:1px solid var(--border-color); border-radius:4px;">
         </div>
-        <div class="btn-row">
-          <button class="btn-update" onclick="cargarVacanteParaEditar()" style="width:47%; justify-content:center;"><i class="fas fa-folder-open"></i> Cargar Datos en Formulario</button>
-          <button class="btn-delete" onclick="eliminarVacanteWeb()" style="width:47%; justify-content:center;"><i class="fas fa-trash-alt"></i> Eliminar Vacante</button>
+        <div style="overflow-x:auto; max-height:750px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Puesto / ID</th>
+                <th>Estatus</th>
+                <th>Salario</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaMasterVacantesBody"></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -697,8 +710,8 @@ onValue(ref(db,'empresas'), snap=>{
       <td>${e.ubicacion||''}</td>
       <td>
          <div style="display:flex; gap:6px;">
-           <button class="btn-edit-mode" style="padding:4px 8px;" onclick="cargarEmpresaParaEditar('${e.id}')"><i class="fas fa-edit"></i></button>
-           <button class="btn-delete-mode" style="padding:4px 8px;" onclick="eliminarEmpresa('${e.id}')"><i class="fas fa-trash"></i></button>
+           <button class="btn-update" style="padding:4px 8px; background:var(--blue-update);" onclick="cargarEmpresaParaEditar('${e.id}')"><i class="fas fa-edit"></i></button>
+           <button class="btn-delete" style="padding:4px 8px; background:var(--red-danger);" onclick="eliminarEmpresa('${e.id}')"><i class="fas fa-trash"></i></button>
          </div>
       </td>
     </tr>`;
@@ -733,21 +746,37 @@ const IA_V6 = {
 
 window.escucharVacantesExistentes = function(empresaId){
   const box = document.getElementById('boxGestionVacantes');
-  const sel = document.getElementById('selectorVacantesEnFirebase');
-  if(!empresaId){ box.style.display='none'; sel.innerHTML=''; return; }
+  const tbody = document.getElementById('tablaMasterVacantesBody');
+  if(!empresaId){ box.style.display='none'; tbody.innerHTML=''; return; }
   onValue(ref(db,`vacantes_detalles/${empresaId}`), snap=>{
-    sel.innerHTML='<option value="">-- Selecciona vacante --</option>';
+    tbody.innerHTML='';
     baseVacantesActualesEnFirebase = snap.val() || {};
     Object.keys(baseVacantesActualesEnFirebase).forEach(k=> {
-      if(k && k!=='undefined') sel.innerHTML += `<option value="${k}">[${k}] ${baseVacantesActualesEnFirebase[k].vacanteNombre}</option>`;
+      if(k && k!=='undefined') {
+        const v = baseVacantesActualesEnFirebase[k];
+        let estatusBadg = "🟢 Activa";
+        if(v.estatus === "pausada") estatusBadg = "🟡 Pausada";
+        if(v.estatus === "agotada") estatusBadg = "🔴 Cerrada";
+        
+        tbody.innerHTML += `<tr>
+          <td><strong>${v.vacanteNombre}</strong><br><small style="color:var(--text-muted);">ID: <code>${k}</code></small></td>
+          <td><span style="font-size:12px;">${estatusBadg}</span></td>
+          <td><span style="color:var(--green-success); font-weight:600;">${v.salario || '—'}</span></td>
+          <td>
+            <div style="display:flex; gap:6px;">
+              <button class="btn-update" style="padding:4px 8px;" onclick="cargarVacanteEspecificaParaEditar('${k}')"><i class="fas fa-edit"></i></button>
+              <button class="btn-delete" style="padding:4px 8px;" onclick="eliminarVacanteEspecifica('${k}')"><i class="fas fa-trash-alt"></i></button>
+            </div>
+          </td>
+        </tr>`;
+      }
     });
     box.style.display='block';
   }, {onlyOnce:true});
 };
 
-window.cargarVacanteParaEditar = function(){
-  const k = document.getElementById('selectorVacantesEnFirebase').value;
-  if(!k || !baseVacantesActualesEnFirebase[k]) return alert('Selecciona una vacante');
+window.cargarVacanteEspecificaParaEditar = function(k){
+  if(!k || !baseVacantesActualesEnFirebase[k]) return alert('No se encontraron datos de la vacante seleccionada');
   const v = baseVacantesActualesEnFirebase[k];
   
   document.getElementById('secPuestoId').value = k;
@@ -764,15 +793,27 @@ window.cargarVacanteParaEditar = function(){
   document.getElementById('secActividades').value = v.actividades || '';
   document.getElementById('secBeneficios').value = v.beneficios || '';
   document.getElementById('secInfoGeneral').value = v.informacionGeneral || '';
+  
+  window.scrollTo({ top: document.getElementById('boxGestionVacantes').offsetTop, behavior: 'smooth' });
 };
 
-window.eliminarVacanteWeb = function(){
+window.eliminarVacanteEspecifica = function(k){
   const e = document.getElementById('secEmpresaSelect').value;
-  const k = document.getElementById('selectorVacantesEnFirebase').value;
-  if(!e||!k) return alert('Faltan datos');
-  if(confirm(`¿Eliminar la vacante permanentemente?`)) {
-    remove(ref(db,`vacantes_detalles/${e}/${k}`)).then(()=>{ alert('Eliminada.'); limpiarFormularioVacantes(); escucharVacantesExistentes(e); });
+  if(!e||!k) return alert('Faltan datos de indexación');
+  if(confirm(`¿Deseas eliminar de forma permanente esta vacante en Firebase?`)) {
+    remove(ref(db,`vacantes_detalles/${e}/${k}`)).then(()=>{ 
+      alert('Vacante eliminada.'); 
+      limpiarFormularioVacantes(); 
+      escucharVacantesExistentes(e); 
+    });
   }
+};
+
+window.filtrarVacantes = function() {
+  const query = document.getElementById('buscadorVacantes').value.toLowerCase().trim();
+  document.querySelectorAll('#tablaMasterVacantesBody tr').forEach(tr => {
+    tr.style.display = tr.innerText.toLowerCase().includes(query) ? '' : 'none';
+  });
 };
 
 window.limpiarFormularioVacantes = function(){
@@ -922,26 +963,22 @@ onValue(ref(db, 'postulantes_count'), snap => {
   }
 });
 
-// --- LÓGICA COMPLETAMENTE BLINDADA DE LA PESTAÑA 3 (CENTRO DE POSTULANTES) ---
 onValue(ref(db, 'postulantes'), snap => {
   const body = document.getElementById('tablaPostulantesBody');
   body.innerHTML = '';
   cachePostulantesGlobal = snap.val() || {};
   const llaves = Object.keys(cachePostulantesGlobal);
   
-  // Contamos únicamente los nodos que sean objetos válidos (excluyendo 'contador')
   const totalPostulantes = llaves.filter(k => k !== 'contador' && typeof cachePostulantesGlobal[k] === 'object').length;
   document.getElementById('contadorPostulantes').innerText = totalPostulantes;
   
   llaves.forEach(key => {
-    // 1. FILTRO CRÍTICO: Si la llave es 'contador' o no es un objeto válido, la saltamos de inmediato
     if (key === 'contador' || typeof cachePostulantesGlobal[key] !== 'object') {
       return; 
     }
     
     const p = cachePostulantesGlobal[key];
     
-    // Asignamos valores limpios y seguros
     const nombreFormateado = p.nombre || p.nombreCompleto || 'No especificado';
     const edadFormateada = p.edad || '—';
     const sexoFormateado = p.sexo || p.genero || '—';
@@ -1106,7 +1143,7 @@ window.procesarDocumentoTransporteConGemini = async function() {
     if (file.name.endsWith('.txt')) mimeType = 'text/plain';
   }
 
-  lector.onload = async (e) => {
+lector.onload = async (e) => {
     try {
       const base64Data = e.target.result.split(',')[1] || e.target.result;
       
@@ -1159,7 +1196,6 @@ window.procesarDocumentoTransporteConGemini = async function() {
   lector.readAsDataURL(file);
 };
 
-// --- LÓGICA DE LA PESTAÑA 5 ---
 window.limpiarFormularioPersonal = function() {
   document.getElementById('perId').value = '';
   document.getElementById('perId').disabled = false;
