@@ -786,6 +786,9 @@
             <div style="margin-bottom: 12px;">
                 <input type="text" id="altaPuesto" placeholder="Puesto (Ej: Reclutador Junior / HR)" required style="background-color: var(--input-bg); color: white; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; width: 100%; outline: none;">
             </div>
+            <div style="margin-bottom: 12px;">
+                <input type="tel" id="altaTelefono" placeholder="Teléfono WhatsApp del Reclutador (10 dígitos)" maxlength="10" required style="background-color: var(--input-bg); color: white; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; width: 100%; outline: none;">
+            </div>
             <div style="margin-bottom: 15px;">
                 <input type="password" id="altaPass" placeholder="Asignar Clave Personal de Acceso" required style="background-color: var(--input-bg); color: white; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; width: 100%; outline: none;">
             </div>
@@ -820,6 +823,7 @@
     let todasLasEmpresas = {}; 
     let todasLasVacantes = {};
     let empresasFiltradas = [];
+    let todosLosReclutadores = {};
 
     let startX = 0;
     let isDragging = false;
@@ -900,7 +904,6 @@
         });
     }
 
-    // --- NUEVA BÚSQUEDA DINÁMICA CON CONTEXTO COMPLETO (IA INTELIGENTE) ---
     window.ejecutarBusqueda = function(valorInput) {
         const term = limpiaTexto(valorInput);
 
@@ -910,10 +913,8 @@
                 const ubicacion = limpiaTexto(emp.ubicacion);
                 const tags = limpiaTexto(emp.tags);
 
-                // Evalúa coincidencia en los datos directos de la empresa
                 const matchEmpresa = nombre.includes(term) || ubicacion.includes(term) || tags.includes(term);
 
-                // Evalúa recursivamente coincidencias internas dentro de sus vacantes ligadas en Firebase
                 let matchVacante = false;
                 const listaPuestos = todasLasVacantes[emp.id] || {};
                 
@@ -940,6 +941,7 @@
         const data = snapshot.val() || {};
         todasLasEmpresas = data.empresas || {}; 
         todasLasVacantes = data.vacantes_detalles || {};
+        todosLosReclutadores = data.reclutadores_autorizados || {};
         
         const selectEmpresa = document.getElementById('empresa');
         selectEmpresa.innerHTML = '<option value="" disabled selected hidden></option>';
@@ -1053,6 +1055,7 @@
         input.addEventListener('blur', () => window.validarCampo(input));
     });
 
+    // --- ENVIAR WHATSAPP ENRUTADO DINÁMICAMENTE POR RECLUTADOR ---
     window.enviarWhatsApp = function() {
         let formularioCorrecto = true;
 
@@ -1072,8 +1075,35 @@
         const telefono = document.getElementById('telefono').value.trim();
         const edad = document.getElementById('edad').value.trim();
         const comboEmpresa = document.getElementById('empresa');
+        const idEmpresa = comboEmpresa.value;
         const empresaTexto = comboEmpresa.options[comboEmpresa.selectedIndex].text;
         const vacante = document.getElementById('vacante').value;
+
+        // Teléfono de respaldo por defecto
+        let telefonoDestinoReclutador = "526461974763";
+        let nombreReclutadorAsignado = "Sistema Central";
+
+        // Localizar el reclutador vinculado a los detalles de la vacante de esta empresa
+        const puestosData = todasLasVacantes[idEmpresa];
+        if (puestosData) {
+            let reclutadorIdEncontrado = null;
+            Object.keys(puestosData).forEach((keyPuesto) => {
+                const nombreVacanteFirebase = puestosData[keyPuesto].vacanteNombre || puestosData[keyPuesto].puestoId || keyPuesto;
+                if (nombreVacanteFirebase.toLowerCase().trim() === vacante.toLowerCase().trim()) {
+                    reclutadorIdEncontrado = puestosData[keyPuesto].reclutadorId; 
+                }
+            });
+
+            // Si hay un ID de reclutador asignado en la vacante, extraemos su teléfono de Firebase
+            if (reclutadorIdEncontrado && todosLosReclutadores[reclutadorIdEncontrado]) {
+                const recObj = todosLosReclutadores[reclutadorIdEncontrado];
+                if (recObj.telefono && recObj.telefono.trim().length === 10) {
+                    // Convertimos a formato internacional de México (52 + 10 dígitos)
+                    telefonoDestinoReclutador = "52" + recObj.telefono.trim();
+                    nombreReclutadorAsignado = recObj.nombreCompleto;
+                }
+            }
+        }
 
         push(ref(db, 'candidatos'), {
             nombre: nombre,
@@ -1082,20 +1112,21 @@
             edad: edad,
             empresa: empresaTexto,
             vacante: vacante,
+            reclutadorAsignado: nombreReclutadorAsignado,
             fechaRegistro: new Date().toLocaleString()
         });
-
-        const telefonoReclutador = "526461974763";
         
         const mensaje = `*NUEVA POSTULACIÓN*%0A%0A` +
+                        `• *Atención Reclutador:* ${encodeURIComponent(nombreReclutadorAsignado)}%0A` +
                         `• *Nombre y Apellido:* ${encodeURIComponent(nombre)}%0A` +
                         `• *CURP:* ${encodeURIComponent(curp)}%0A` +
                         `• *Teléfono:* ${encodeURIComponent(telefono)}%0A` +
                         `• *Edad:* ${encodeURIComponent(edad)} años%0A` +
                         `• *Empresa:* ${encodeURIComponent(empresaTexto)}%0A` +
-                        `• *Vacante:* ${encodeURIComponent(vacante)}`;
+                        `• *Vacante:* ${encodeURIComponent(vacante)}%0A%0A` +
+                        `_Toda la información y el acuse en PDF de la vacante han sido asignados a tu cuenta._`;
 
-        const urlWhatsApp = `https://api.whatsapp.com/send?phone=${telefonoReclutador}&text=${mensaje}`;
+        const urlWhatsApp = `https://api.whatsapp.com/send?phone=${telefonoDestinoReclutador}&text=${mensaje}`;
         window.open(urlWhatsApp, '_blank');
     };
 
@@ -1146,19 +1177,26 @@
         e.preventDefault();
         const nombre = document.getElementById('altaNombre').value.trim();
         const puesto = document.getElementById('altaPuesto').value.trim();
+        const telefono = document.getElementById('altaTelefono').value.trim();
         const clave = document.getElementById('altaPass').value.trim();
         const keyId = "rec-" + Date.now();
+
+        if (telefono.length !== 10 || isNaN(telefono)) {
+            alert("Por favor introduce un número de teléfono válido a 10 dígitos.");
+            return;
+        }
 
         try {
             await set(ref(db, `reclutadores_autorizados/${keyId}`), {
                 id: keyId,
                 nombreCompleto: nombre,
                 puesto: puesto,
+                telefono: telefono,
                 clave: clave,
                 fechaAlta: new Date().toLocaleString()
             });
 
-            alert(`¡Reclutador "${nombre}" autorizado con éxito!\nYa puede iniciar sesión con su contraseña.`);
+            alert(`¡Reclutador "${nombre}" autorizado con éxito!\nEl número de WhatsApp ${telefono} ha sido vinculado al perfil.`);
             document.getElementById('formAltaReclutador').reset();
         } catch (err) {
             alert("Error al registrar en la base de datos: " + err.message);
