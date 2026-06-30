@@ -316,13 +316,15 @@
     let vacanteKeyDetectada = "";
     const fallbackTelefonoReclutador = "526461974763";
 
-    // MAPEO DE IMÁGENES POR DEFECTO SEGÚN EMPRESA (CARRUSEL INDEX.HTML)
+    // MAPEO DE IMÁGENES CORREGIDO CON RUTAS ABSOLUTAS DE GITHUB PAGES
     const catalogoBannersPorEmpresa = {
-        "isisa": "img/carrusel/isisa.jpg",
-        "hutchison": "img/carrusel/hutchison.jpg",
-        "pando": "img/carrusel/pando.jpg",
-        "encasa": "img/carrusel/encasa.jpg",
-        "rener": "img/carrusel/rener.jpg"
+        "isisa": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/isisa.jpg",
+        "hutchison": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/hutchison.jpg",
+        "pando": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/pando.jpg",
+        "encasa": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/encasa.jpg",
+        "rener": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/rener.jpg",
+        "aspen": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/aspen.jpg",
+        "default": "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/img/carrusel/default.jpg"
     };
 
     async function cargarDetallesVacante() {
@@ -414,13 +416,13 @@
         document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
         document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
 
-        // ASIGNACIÓN INTELIGENTE DE BANNER (PUNTO 2)
+        // ASIGNACIÓN INTELIGENTE DE BANNER CON RUTAS ABSOLUTAS EN CASO DE FALLBACK
         let imagenFinalBanner = "";
         if (data.bannerUrl && data.bannerUrl.trim() !== "") {
             imagenFinalBanner = data.bannerUrl.trim();
         } else {
             const idEmpresaLimpio = empresaId.toLowerCase().trim();
-            imagenFinalBanner = catalogoBannersPorEmpresa[idEmpresaLimpio] || "img/carrusel/default.jpg";
+            imagenFinalBanner = catalogoBannersPorEmpresa[idEmpresaLimpio] || catalogoBannersPorEmpresa["default"];
         }
         
         document.getElementById('vacanteBanner').src = imagenFinalBanner;
@@ -491,11 +493,10 @@
         if (curp.length !== 18) { alert("La CURP debe tener exactamente 18 caracteres."); return; }
         if (telefono.length !== 10) { alert("El teléfono debe constar de 10 dígitos numéricos."); return; }
         
-        // Formateo del prefijo telefónico internacional
         if (telefonoDestino.length === 10) telefonoDestino = "52" + telefonoDestino;
 
         const datosExtraidos = extraerDatosCurp(curp);
-        const timestampId = "WF-" + Math.floor(100000 + Math.random() * 900000); // Folio corporativo numérico corto
+        const timestampId = "WF-" + Math.floor(100000 + Math.random() * 900000); 
         const fechaYHoraActual = new Date().toLocaleString();
         
         const payload = {
@@ -506,15 +507,13 @@
         };
 
         try {
-            // Guardar registro en la Base de Datos
             await db.ref(`postulantes/${timestampId}`).set(payload);
             await db.ref('postulantes_count').update({ total: firebase.database.ServerValue.increment(1) });
 
-            // GENERACIÓN DE PDF PREMIUM CORPORATIVO (PUNTO 4)
+            // GENERACIÓN DE PDF PREMIUM CORPORATIVO
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // Encabezado institucional - Paleta Navy & Sky Blue
             doc.setFillColor(11, 20, 38); 
             doc.rect(0, 0, 210, 45, 'F');
             
@@ -529,18 +528,15 @@
             doc.text("Sistema de Registro y Control de Talentos", 15, 28);
             doc.text(`Folio Digital: ${timestampId}`, 150, 20);
 
-            // Título del documento
             doc.setTextColor(15, 26, 44); 
             doc.setFontSize(16); 
             doc.setFont("helvetica", "bold");
             doc.text("CONFIRMACIÓN OFICIAL DE POSTULACIÓN", 15, 60);
             
-            // Línea divisoria elegante estilizada
             doc.setDrawColor(56, 189, 248);
             doc.setLineWidth(1);
             doc.line(15, 65, 195, 65); 
             
-            // Cuerpo de información del Candidato
             doc.setFontSize(11); 
             let y = 78;
             
@@ -563,7 +559,6 @@
                 doc.setTextColor(15, 26, 44);
                 doc.text(String(item.val), 68, y);
                 
-                // Líneas guías muy tenues entre filas
                 doc.setDrawColor(226, 232, 240);
                 doc.setLineWidth(0.2);
                 doc.line(15, y + 3, 195, y + 3);
@@ -571,7 +566,6 @@
                 y += 12;
             });
 
-            // Nota al pie institucional
             doc.setFillColor(248, 250, 252);
             doc.rect(15, y + 5, 180, 25, 'F');
             doc.setFont("helvetica", "italic");
@@ -580,10 +574,9 @@
             doc.text("Este acuse ha sido generado por el área de Atracción de Talento de Workforce.", 20, y + 15);
             doc.text("Presente este documento digital o impreso al momento del seguimiento de su proceso.", 20, y + 21);
 
-            // Guardado automático en el dispositivo local (Visor / Descarga transparente)
             doc.save(`Acuse_${payload.curp}.pdf`);
             
-            // PLANTILLA DE MENSAJE FORMAL WHATSAPP (PUNTO 5)
+            // PLANTILLA DE MENSAJE FORMAL WHATSAPP
             const mensajeWhatsApp = `*WORKFORCE CONNECT SOLUTION — SOLICITUD DE ENTREVISTA*\n\n` +
                                     `Estimado área de Atracción de Talento,\n\n` +
                                     `Por medio de la presente, presento mi postulación formal para la vacante activa del sistema:\n\n` +
@@ -601,8 +594,6 @@
                                     `_Atendido por: ${nombreReclutadorCorto}_`;
 
             document.getElementById('formPostulacion').reset();
-            
-            // Redirección directa hacia el asesor asignado
             window.location.href = `https://wa.me/${telefonoDestino}?text=${encodeURIComponent(mensajeWhatsApp)}`;
         } catch (err) {
             alert("Ocurrió un error al procesar la solicitud: " + err.message);
