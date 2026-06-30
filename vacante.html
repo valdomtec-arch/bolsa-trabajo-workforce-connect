@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
+    <!-- LIBRERÍAS CLÁSICAS COMPATIBLES -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
@@ -180,6 +181,36 @@
         .detalle-item span { font-size: 1rem; color: var(--text-light); font-weight: 600; }
         
         .texto-bloque { white-space: pre-wrap; font-size: 0.98rem; line-height: 1.7; color: #cbd5e1; }
+
+        /* ESTILOS PARA LA SECCIÓN DE TRANSPORTE DE PERSONAL */
+        .card-transporte {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(15, 26, 44, 0.6) 100%);
+            border: 1px dashed var(--wf-accent-blue);
+            padding: 25px;
+            border-radius: var(--radius-md);
+            margin-bottom: 25px;
+            backdrop-filter: blur(8px);
+        }
+        .card-transporte h3 {
+            font-size: 1.25rem;
+            color: var(--wf-accent-blue);
+            border-bottom: 2px solid rgba(56, 189, 248, 0.2);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .transporte-detalles {
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            background: rgba(4, 8, 20, 0.5);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--wf-accent-blue);
+        }
+
         .links-section { background: var(--bg-form); padding: 35px; border-radius: var(--radius-lg); border-top: 4px solid var(--orange-title); box-shadow: var(--shadow-md); margin-top: 35px; }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; }
@@ -216,6 +247,7 @@
             <i class="fas fa-arrow-left"></i> Volver a la Lista de Vacantes
         </button>
 
+        <!-- CONTENEDOR DE BANNER INTELIGENTE -->
         <div class="banner-container" id="vacanteBannerBox">
             <img id="vacanteBanner" src="" alt="Banner Publicitario Corporativo">
         </div>
@@ -256,6 +288,22 @@
             <p class="texto-bloque" id="vacanteNotas">Sin notas adicionales.</p>
         </div>
 
+        <!-- SECCIÓN DINÁMICA DE RUTAS DE TRANSPORTE -->
+        <div class="card-transporte" id="bloqueTransporte" style="display: none;">
+            <h3><i class="fa-solid fa-bus"></i> Servicio de Transporte de Personal Incluido</h3>
+            <p id="txtDetallesTransporte" class="transporte-detalles">Cargando información del servicio de transporte...</p>
+            
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="selPuntoRecoleccion" style="color: var(--wf-accent-blue); font-weight: bold;">
+                    <i class="fa-solid fa-map-location-dot"></i> Selecciona el Punto de Recolección más cercano a tu domicilio:
+                </label>
+                <select id="selPuntoRecoleccion">
+                    <option value="">— Selecciona una parada para tu entrevista —</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- FORMULARIO DE POSTULACIÓN -->
         <div class="links-section">
             <h3 style="color: var(--white); margin-bottom: 20px; font-size: 1.3rem; border-bottom: 2px solid rgba(56, 189, 248, 0.15); padding-bottom: 10px;">
                 <i class="fas fa-user-pen"></i> Formulario de Postulación Oficial
@@ -401,14 +449,11 @@
         document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
         document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
 
-        // LÓGICA DE ASIGNACIÓN 100% DINÁMICA DE LA OPCIÓN B
+        // LÓGICA DE ASIGNACIÓN 100% DINÁMICA DE BANNER (OPCIÓN B)
         let imagenFinalBanner = "";
-        
-        // 1. Validar si Firebase contiene una URL personalizada de banner para esta vacante
         if (data.bannerUrl && data.bannerUrl.trim() !== "") {
             imagenFinalBanner = data.bannerUrl.trim();
         } else {
-            // 2. Si Firebase no lo tiene, deduce la URL de la raíz de tu GitHub Pages automáticamente
             const idEmpresaLimpio = empresaId.toLowerCase().trim();
             imagenFinalBanner = `https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/imagen-${idEmpresaLimpio}.jpg`;
         }
@@ -416,11 +461,44 @@
         const imgElement = document.getElementById('vacanteBanner');
         imgElement.src = imagenFinalBanner;
         
-        // 3. Fallback definitivo en caso de que la imagen deducida de GitHub arroje error 404
         imgElement.onerror = function() {
             imgElement.src = "https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/imagen-logo.jpg";
-            imgElement.onerror = null; // Evitar bucle infinito si la por defecto fallara
+            imgElement.onerror = null;
         };
+
+        // CONSULTAR LOGÍSTICA DE TRANSPORTE EN EL NODO INDEPENDIENTE
+        const selectPuntos = document.getElementById('selPuntoRecoleccion');
+        const bloqueTrans = document.getElementById('bloqueTransporte');
+        const txtDetallesTrans = document.getElementById('txtDetallesTransporte');
+        
+        selectPuntos.innerHTML = '<option value="">— Selecciona la ruta/parada que más te encaje —</option>';
+        bloqueTrans.style.display = 'none';
+        selectPuntos.required = false;
+
+        db.ref(`rutas_transporte/${empresaId}`).once('value', function(snapRuta) {
+            if (snapRuta.exists()) {
+                const dataRuta = snapRuta.val();
+                const infoTransporte = dataRuta.transporte_privado_empresa || dataRuta.transporte_privado;
+                
+                if (infoTransporte && infoTransporte.ofrece === true) {
+                    txtDetallesTrans.innerText = infoTransporte.detalles || "La empresa cuenta con circuito de transporte disponible para sus colaboradores.";
+                    
+                    const puntos = infoTransporte.puntos_recoleccion;
+                    if (puntos && Array.isArray(puntos)) {
+                        puntos.forEach((punto, index) => {
+                            if(punto) {
+                                const opt = document.createElement('option');
+                                opt.value = punto;
+                                opt.textContent = `Parada #${index + 1}: ${punto}`;
+                                selectPuntos.appendChild(opt);
+                            }
+                        });
+                        bloqueTrans.style.display = 'block';
+                        selectPuntos.required = true; // Forzar a elegir parada si existe transporte
+                    }
+                }
+            }
+        });
 
         document.getElementById('vacanteBannerBox').style.display = 'block';
         document.getElementById('menuVacantesBox').style.display = 'none';
@@ -481,6 +559,7 @@
         const telefono = document.getElementById('postTelefono').value.trim();
         const curp = document.getElementById('postCurp').value.trim().toUpperCase();
         const selectReclutador = document.getElementById("selReclutador");
+        const puntoElegido = document.getElementById('selPuntoRecoleccion').value || "No aplica / No seleccionado";
         
         let telefonoDestino = selectReclutador.value || fallbackTelefonoReclutador;
         let nombreReclutadorCorto = selectReclutador.options[selectReclutador.selectedIndex].dataset.nombreReal || "Asesor Asignado";
@@ -498,14 +577,15 @@
             id: timestampId, nombre: nombre, nombreCompleto: nombre, telefono: telefono, curp: curp,
             edad: datosExtraidos.edad, sexo: datosExtraidos.sexo, genero: datosExtraidos.sexo,
             empresa: empresaId, empresaDestino: empresaId, vacante: datosVacanteGlobal.vacanteNombre || 'Desconocida',
-            puesto: datosVacanteGlobal.vacanteNombre || 'Desconocida', fechaRegistro: fechaYHoraActual, atendidoPor: nombreReclutadorCorto
+            puesto: datosVacanteGlobal.vacanteNombre || 'Desconocida', fechaRegistro: fechaYHoraActual, 
+            atendidoPor: nombreReclutadorCorto, rutaTransporteSeleccionada: puntoElegido
         };
 
         try {
             await db.ref(`postulantes/${timestampId}`).set(payload);
             await db.ref('postulantes_count').update({ total: firebase.database.ServerValue.increment(1) });
 
-            // GENERACIÓN DE ACUSE EN PDF
+            // GENERACIÓN DE ACUSE EN PDF (CON RUTA SELECCIONADA INCLUIDA)
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
@@ -541,6 +621,7 @@
                 { label: "CANDIDATO:", val: payload.nombre.toUpperCase() },
                 { label: "CURP VALIDADA:", val: payload.curp },
                 { label: "TELÉFONO MÓVIL:", val: payload.telefono },
+                { label: "RUTA CONVENIENTE:", val: puntoElegido.toUpperCase() },
                 { label: "FECHA DE REGISTRO:", val: fechaYHoraActual },
                 { label: "RECLUTADOR ASIGNADO:", val: nombreReclutadorCorto.toUpperCase() }
             ];
@@ -571,12 +652,13 @@
 
             doc.save(`Acuse_${payload.curp}.pdf`);
             
-            // WHATSAPP API REDIRECT
+            // REDIRECCIÓN A WHATSAPP API (CON DATA DE TRANSPORTE)
             const mensajeWhatsApp = `*WORKFORCE CONNECT SOLUTION — SOLICITUD DE ENTREVISTA*\n\n` +
                                     `Estimado área de Atracción de Talento,\n\n` +
                                     `Por medio de la presente, presento mi postulación formal para la vacante activa del sistema:\n\n` +
                                     `• *Puesto:* ${payload.vacante.toUpperCase()}\n` +
                                     `• *Socio Comercial:* ${payload.empresa.toUpperCase()}\n` +
+                                    `• *Ruta Conveniente:* ${puntoElegido}\n` +
                                     `• *Folio Único:* ${timestampId}\n\n` +
                                     `*Datos Generales del Postulante:*\n` +
                                     `• *Nombre Completo:* ${payload.nombre}\n` +
