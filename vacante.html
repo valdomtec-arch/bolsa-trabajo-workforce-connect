@@ -6,657 +6,680 @@
     <title>Bolsa de Trabajo - Detalles de la Vacante</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
     <style>
+        /* NUEVA IDENTIDAD CORPORATIVA UNIFICADA - WORKFORCE CONNECT SOLUTION */
         :root {
-            --primary-blue: #0284c7;
-            --secondary-teal: #0d9488;
-            --bg-page: #050b14;
-            --container-bg: #111e30;
-            --card-bg: #18273c;
+            --wf-accent-blue: #38bdf8;         /* Azul brillante / Cyan institucional */
+            --wf-accent-hover: #0ea5e9;        /* Variación hover del azul brillante */
+            --wf-accent-glow: rgba(56, 189, 248, 0.35); /* Resplandor tecnológico */
+            --secondary-blue: #0f1a2c;         /* Azul contenedor secundario */
+            --secondary-blue-dark: #070f1e;    /* Azul noche profundo corporativo */
+            
+            --bg-page: #040814;                /* Fondo base ultra oscuro de la página */          
+            --container-bg: #0b1426;           /* Cuerpo del contenedor principal */     
+            --card-bg: rgba(22, 36, 59, 0.55); /* Tarjetas del contenido */          
+            --bg-form: #0d1a30;                /* Bloque de formularios y enlaces */          
+            --input-bg: #142443;               /* Cajas de texto de los inputs */         
+            
             --white: #ffffff;
-            --text-light: #f1f5f9;
-            --text-muted: #94a3b8;
-            --border-color: #243854;
-            --blue-accent: #38bdf8;
+            --text-light: #f1f5f9;       
+            --text-muted: #94a3b8;       
+            --green-whatsapp: #22c55e;
+            --green-whatsapp-hover: #16a34a;
             --orange-title: #f97316;
+            
+            --border-color: rgba(56, 189, 248, 0.15);     
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --shadow-md: 0 12px 25px -5px rgba(0, 0, 0, 0.6);
+            --shadow-lg: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
         }
-        * { box-sizing: border-box; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
         body {
-            background-color: var(--bg-page);
+            background: radial-gradient(circle at 50% 0%, #0d1f3d 0%, var(--bg-page) 85%);
             color: var(--text-light);
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            margin: 0; padding: 20px 10px;
+            line-height: 1.6;
+            padding: 40px 10px;
+            min-height: 100vh;
         }
+
         .container {
-            max-width: 650px;
+            max-width: 850px;
             margin: 0 auto;
-            background-color: var(--container-bg);
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            background: var(--container-bg);
+            padding: 45px 30px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
         }
+
         #loading {
             text-align: center;
             padding: 40px;
-            font-size: 1.1rem;
-            color: var(--text-muted);
+            font-size: 1.2rem;
+            color: var(--wf-accent-blue);
+            font-weight: 600;
         }
+
+        .btn-regresar {
+            background: var(--secondary-blue);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 10px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-regresar:hover {
+            background: var(--wf-accent-blue);
+            color: var(--secondary-blue-dark);
+            box-shadow: 0 0 15px var(--wf-accent-glow);
+        }
+
         .empresa-header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 35px;
+            background: linear-gradient(135deg, #0e1c33 0%, var(--secondary-blue-dark) 100%);
+            padding: 30px 20px;
+            border-radius: var(--radius-md);
+            border-top: 1px solid rgba(56, 189, 248, 0.25);
+            border-bottom: 4px solid var(--wf-accent-blue);
+            box-shadow: var(--shadow-md);
         }
+
         .empresa-header h1 {
             color: var(--white);
-            font-size: 1.8rem;
-            margin-bottom: 6px;
+            font-size: 2.1rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 800;
         }
+
         .empresa-header .location {
-            color: var(--text-muted);
-            font-size: 0.95rem;
+            color: var(--wf-accent-blue);
+            font-size: 1rem;
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
-        
-        /* --- ESTILOS DEL CARRUSEL --- */
-        .carousel-container {
-            position: relative;
-            width: 100%;
-            height: 220px;
-            margin-bottom: 25px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-        .carousel-slide {
-            display: none;
-            width: 100%;
-            height: 100%;
-        }
-        .carousel-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .carousel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0,0,0,0.5);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        .carousel-btn:hover { background: var(--primary-blue); }
-        .carousel-btn.prev { left: 10px; }
-        .carousel-btn.next { right: 10px; }
 
-        /* --- BANNER PUBLICITARIO --- */
         .banner-container {
             width: 100%;
             margin-bottom: 25px;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             overflow: hidden;
             border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-md);
             display: none;
         }
+
         .banner-container img {
             width: 100%;
             height: auto;
-            max-height: 220px;
+            max-height: 350px;
             object-fit: cover;
             display: block;
         }
 
-        /* --- MENÚ INTERMEDIO DE SELECCIÓN --- */
-        .menu-titulo {
-            font-size: 1.1rem;
-            color: var(--white);
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .vacantes-lista {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .btn-puesto {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-light);
-            padding: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: left;
-            font-size: 1rem;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-        }
-        .btn-puesto:hover {
-            border-color: var(--primary-blue);
-            background-color: #1f314d;
-        }
-        .btn-puesto span.salario-tag {
-            font-size: 0.85rem;
-            color: var(--secondary-teal);
-            font-weight: normal;
-        }
-
-        /* --- DETALLES DE LA VACANTE --- */
-        .btn-regresar {
-            background: none;
-            border: none;
-            color: var(--blue-accent);
-            cursor: pointer;
-            font-size: 0.95rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 0;
-            margin-bottom: 15px;
-        }
-        .btn-regresar:hover { text-decoration: underline; }
-
         .card {
             background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: var(--radius-md);
+            margin-bottom: 25px;
             border: 1px solid var(--border-color);
+            backdrop-filter: blur(8px);
         }
+
         .card h3 {
-            font-size: 1.1rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-            margin-bottom: 12px;
+            font-size: 1.25rem;
+            color: var(--white);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
-        .meta-info {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            background: #0d1724;
-            padding: 10px 15px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
+
+        .vacante-titulo-principal {
+            color: var(--orange-title) !important;
+            font-size: 1.6rem !important;
+            font-weight: 800;
+            text-transform: uppercase;
         }
-        .meta-info span { display: inline-flex; align-items: center; gap: 6px; }
-        .meta-info i { color: var(--primary-blue); }
-        
+
         .grid-detalles {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 10px;
         }
+
         .detalle-item {
-            background: #142238;
-            padding: 12px 15px;
-            border-radius: 6px;
+            background: rgba(8, 17, 34, 0.7);
+            padding: 14px 18px;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
         }
+
         .detalle-item strong {
             display: block;
+            font-size: 0.78rem;
+            color: var(--wf-accent-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+        }
+
+        .detalle-item span {
+            font-size: 1rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        /* DISEÑO DE LA NUEVA TARJETA DE TRANSPORTE DINÁMICO */
+        .card-transporte {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(15, 26, 44, 0.6) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.05);
+        }
+        
+        .badge-transporte {
+            background-color: var(--green-whatsapp);
+            color: var(--secondary-blue-dark);
+            padding: 4px 10px;
             font-size: 0.75rem;
-            color: var(--blue-accent);
+            font-weight: bold;
+            border-radius: 4px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 2px;
         }
-        .detalle-item span { font-size: 0.95rem; color: var(--text-light); }
-        .texto-bloque { white-space: pre-wrap; font-size: 0.95rem; line-height: 1.6; margin: 0; color: #cbd5e1; }
-        
-        /* --- FORMULARIO Y BOTONES --- */
-        .btn {
-            background-color: var(--secondary-teal);
+
+        .map-placeholder {
+            margin-top: 15px;
+            background: #081122;
+            border: 1px dashed var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .map-placeholder i {
+            font-size: 1.8rem;
+            color: var(--wf-accent-blue);
+        }
+
+        .texto-bloque {
+            white-space: pre-wrap;
+            font-size: 0.98rem;
+            line-height: 1.7;
+            margin: 0;
+            color: #cbd5e1;
+        }
+
+        .links-section {
+            background: var(--bg-form);
+            padding: 35px;
+            border-radius: var(--radius-lg);
+            border-top: 4px solid var(--orange-title);
+            box-shadow: var(--shadow-md);
+            margin-top: 35px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            background-color: var(--input-bg);
+            border: 2px solid rgba(56, 189, 248, 0.15);
+            color: var(--white);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--wf-accent-blue);
+            box-shadow: 0 0 15px var(--wf-accent-glow);
+            background-color: #1a2f56;
+        }
+
+        select option {
+            background-color: var(--secondary-blue-dark);
+            color: var(--white);
+        }
+
+        .btn-submit {
+            background-color: var(--green-whatsapp);
             color: var(--white);
             border: none;
-            padding: 14px 20px;
-            border-radius: 6px;
+            padding: 16px 24px;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.1rem;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             text-decoration: none;
             width: 100%;
-            transition: background 0.2s;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .btn:hover { background-color: #0b7a6f; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.88rem; color: var(--text-muted); }
-        input {
-            width: 100%;
-            padding: 12px;
-            background-color: #1d2e47;
-            border: 1px solid var(--border-color);
-            color: white;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.2s;
+
+        .btn-submit:hover {
+            background-color: var(--green-whatsapp-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(34, 197, 94, 0.45);
         }
-        input:focus { border-color: var(--primary-blue); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="loading"><i class="fas fa-spinner fa-spin"></i> Cargando información del servidor...</div>
-    
-    <div id="empresaHeaderBox" class="empresa-header" style="display: none;">
-        <h1 id="mainEmpresaNombre">Nombre de la Empresa</h1>
-        <div class="location"><i class="fa-solid fa-location-dot"></i> <span id="mainEmpresaLugar">—</span></div>
+    <button class="btn-regresar" onclick="regresarAlIndex()">
+        <i class="fas fa-arrow-left"></i> Volver a la Bolsa Principal
+    </button>
+
+    <div id="loading">
+        <i class="fas fa-spinner fa-spin"></i> Cargando información de la vacante...
     </div>
 
-    <div class="carousel-container" id="empresaCarouselBox" style="display: none;">
-        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800" alt="Ubicación 1"></div>
-        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800" alt="Ubicación 2"></div>
-        <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800" alt="Ubicación 3"></div>
-        <button class="carousel-btn prev" onclick="cambiarSlide(-1)">&#10094;</button>
-        <button class="carousel-btn next" onclick="cambiarSlide(1)">&#10095;</button>
-    </div>
-
-    <div class="banner-container" id="vacanteBannerBox">
-        <img id="vacanteBanner" src="" alt="Banner Puesto">
-    </div>
-
-    <div id="menuVacantesBox" style="display: none;">
-        <div class="menu-titulo">Selecciona la vacante de tu interés:</div>
-        <div id="listaVacantesDinamica" class="vacantes-lista"></div>
-    </div>
-
-    <div id="content" style="display:none;">
-        <button id="btnVolverMenu" class="btn-regresar" onclick="regresarAlMenu()"><i class="fa-solid fa-arrow-left"></i> Volver a las vacantes</button>
-        
-        <h1 id="vacanteTitulo" style="color: var(--white); font-size: 1.6rem; margin-bottom: 15px; text-transform: uppercase;">Título de la Vacante</h1>
-        
-        <div class="meta-info">
-            <span><i class="fa-solid fa-building"></i> Empresa: <code id="vacanteEmpresa" style="color:var(--white);">—</code></span>
-            <span><i class="fa-solid fa-eye"></i> Visitas: <span id="vacanteVisitas">0</span></span>
+    <div id="contenidoVacante" style="display: none;">
+        <div class="empresa-header">
+            <h1 id="txtNombreEmpresa">Empresa</h1>
+            <div class="location">
+                <i class="fas fa-map-marker-alt"></i> <span id="txtUbicacionEmpresa">Ubicación</span>
+            </div>
         </div>
 
-        <div class="grid-detalles">
-            <div class="detalle-item"><strong>💰 Salario Ofrecido</strong><span id="detSalario">—</span></div>
-            <div class="detalle-item"><strong>📍 Zona de Trabajo</strong><span id="detLugar">—</span></div>
-            <div class="detalle-item"><strong>🕒 Horarios y Turnos</strong><span id="detTurnos">—</span></div>
-            <div class="detalle-item"><strong>🔞 Edad Solicitada</strong><span id="detEdad">—</span></div>
-            <div class="detalle-item"><strong>👫 Género / Sexo</strong><span id="detSexo">—</span></div>
-            <div class="detalle-item"><strong>💼 Experiencia Mínima</strong><span id="detExperiencia">—</span></div>
-            <div class="detalle-item"><strong>🎓 Escolaridad</strong><span id="detEscolaridad">—</span></div>
+        <div class="banner-container" id="bannerContenedor">
+            <img src="" id="imgBannerVacante" alt="Banner de la Vacante">
         </div>
 
         <div class="card">
-            <h3><i class="fa-solid fa-toolbox"></i> Actividades Principales</h3>
-            <p id="vacanteActividades" class="texto-bloque">Cargando...</p>
+            <h3 class="vacante-titulo-principal">
+                <i class="fas fa-briefcase"></i> <span id="txtTituloVacante">Puesto de Trabajo</span>
+            </h3>
+            
+            <div class="grid-detalles">
+                <div class="detalle-item">
+                    <strong>Sueldo Ofrecido</strong>
+                    <span id="txtSueldo">—</span>
+                </div>
+                <div class="detalle-item">
+                    <strong>Horario / Turnos</strong>
+                    <span id="txtTurnos">—</span>
+                </div>
+                <div class="detalle-item">
+                    <strong>Rango de Edad</strong>
+                    <span id="txtEdadReq">—</span>
+                </div>
+                <div class="detalle-item">
+                    <strong>Lugar de Trabajo / Planta</strong>
+                    <span id="txtLugarDestino">—</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-transporte" id="bloqueTransporte" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(56, 189, 248, 0.2); padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+                    <i class="fas fa-bus-alt"></i> Logística y Transporte
+                </h3>
+                <span class="badge-transporte">Servicio Incluido</span>
+            </div>
+            <div class="map-placeholder">
+                <i class="fas fa-route"></i>
+                <div>
+                    <strong style="color: var(--wf-accent-blue); font-size: 0.85rem; display: block; text-transform: uppercase;">Circuito / Ruta Asignada:</strong>
+                    <span id="txtRutaTransporte" style="color: var(--white); font-weight: 600; font-size: 1.05rem;">Cargando coordenadas...</span>
+                </div>
+            </div>
         </div>
 
         <div class="card">
-            <h3><i class="fa-solid fa-gift"></i> Prestaciones y Beneficios</h3>
-            <p id="vacanteBeneficios" class="texto-bloque">No especificadas.</p>
+            <h3><i class="fas fa-list-check"></i> Requisitos del Puesto</h3>
+            <p class="texto-bloque" id="txtRequisitos">No especificados.</p>
         </div>
 
         <div class="card">
-            <h3><i class="fa-solid fa-note-sticky"></i> Notas Adicionales</h3>
-            <p id="vacanteNotas" class="texto-bloque">Sin notas adicionales.</p>
+            <h3><i class="fas fa-gift"></i> Ofrecimientos y Beneficios</h3>
+            <p class="texto-bloque" id="txtBeneficios">No especificados.</p>
         </div>
 
-        <div class="card" style="border-color: var(--primary-blue); background: rgba(2, 132, 199, 0.01);">
-            <h3 style="color: var(--white); border-bottom-color: var(--primary-blue);"><i class="fa-solid fa-id-card"></i> Formulario de Postulación Exprés</h3>
-            <form id="formPostulacion" onsubmit="enviarPostulacion(event)">
-                <div class="form-group">
-                    <label>Nombre y Apellidos:</label>
-                    <input type="text" id="postNombre" placeholder="Ingresa tus nombres y apellidos" required>
+        <div class="links-section">
+            <h3 style="color: var(--white); margin-bottom: 20px; font-size: 1.3rem; border-bottom: 2px solid rgba(56, 189, 248, 0.15); padding-bottom: 10px;">
+                <i class="fas fa-user-pen"></i> Postulación Express
+            </h3>
+            
+            <form id="formPostulacion" onsubmit="procesarPostulacion(event)">
+                <div class="grid-2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                    <div class="form-group">
+                        <label for="txtNombre">Nombre Completo:</label>
+                        <input type="text" id="txtNombre" required placeholder="Ej: Juan Pérez López">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtTelefono">Teléfono Celular (10 dígitos):</label>
+                        <input type="tel" id="txtTelefono" required pattern="[0-9]{10}" placeholder="Ej: 6461234567">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Teléfono de Contacto:</label>
-                    <input type="tel" id="postTelefono" placeholder="Ej: 6461234567" required>
+
+                <div class="grid-2" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                    <div class="form-group">
+                        <label for="txtCurp">CURP (18 caracteres):</label>
+                        <input type="text" id="txtCurp" required maxlength="18" style="text-transform: uppercase;" placeholder="Completa tu CURP">
+                    </div>
+                    <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="form-group">
+                            <label for="txtEdad">Edad:</label>
+                            <input type="number" id="txtEdad" required min="18" max="70" placeholder="Años">
+                        </div>
+                        <div class="form-group">
+                            <label for="selSexo">Sexo:</label>
+                            <select id="selSexo" required>
+                                <option value="">Selecciona...</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>CURP:</label>
-                    <input type="text" id="postCurp" placeholder="18 caracteres de tu CURP" maxlength="18" style="text-transform: uppercase;" required>
+
+                <div class="form-group" style="margin-top: 5px;">
+                    <label for="selReclutador" style="color: var(--wf-accent-blue); font-weight: bold;">
+                        <i class="fas fa-headset"></i> Selecciona al Asesor / Reclutador que te Atiende:
+                    </label>
+                    <select id="selReclutador" required>
+                        <option value="">Cargando catálogo de reclutadores autorizados...</option>
+                    </select>
                 </div>
-                <button type="submit" class="btn"><i class="fa-solid fa-file-pdf"></i> Confirmar Postulación y Enviar Folio</button>
+
+                <div style="margin-top: 25px;">
+                    <button type="submit" class="btn-submit">
+                        <i class="fab fa-whatsapp"></i> Confirmar Registro e Iniciar Entrevista
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, get, set, update, increment, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, get, child, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     const firebaseConfig = {
-        databaseURL: "https://bolsa-de-trabajo-workforce-default-rtdb.firebaseio.com/"
+        databaseURL: "https://bolsa-de-trabajo-bdf67-default-rtdb.firebaseio.com/"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const empresaId = urlParams.get('empresa');
+    let infoEmpresaGlobal = null;
+    let infoVacanteGlobal = null;
+    let fallbackTelefonoReclutador = "526461974763"; 
 
-    let todasLasVacantesEmpresa = {};
-    let datosVacanteGlobal = null;
-    let vacanteKeyDetectada = "";
-    let tieneMultiplesVacantes = false;
-    let slideIndex = 0;
+    const params = new URLSearchParams(window.location.search);
+    const idEmpresaUrl = params.get("empresa");
+    const idVacanteUrl = params.get("id");
 
-    // Lógica del Carrusel
-    window.cambiarSlide = function(n) {
-        const slides = document.getElementsByClassName("carousel-slide");
-        if (slides.length === 0) return;
-        slides[slideIndex].style.display = "none";
-        slideIndex += n;
-        if (slideIndex >= slides.length) { slideIndex = 0; }
-        if (slideIndex < 0) { slideIndex = slides.length - 1; }
-        slides[slideIndex].style.display = "block";
-    }
+    window.regresarAlIndex = function() {
+        window.location.href = "index.html";
+    };
 
-    function iniciarCarrusel() {
-        const slides = document.getElementsByClassName("carousel-slide");
-        if (slides.length > 0) {
-            slides[0].style.display = "block";
-            setInterval(() => cambiarSlide(1), 5000);
-        }
-    }
-
-    async function cargarDetallesVacante() {
-        if (!empresaId) {
-            document.getElementById('loading').innerHTML = "❌ Parámetro de empresa no especificado.<br><small>Ejemplo: ?empresa=nombre_empresa</small>";
+    document.addEventListener("DOMContentLoaded", async () => {
+        if (!idEmpresaUrl || !idVacanteUrl) {
+            document.getElementById("loading").innerHTML = "❌ Enlace inválido. No se especificó la vacante de destino.";
             return;
         }
+        
+        await Promise.all([
+            cargarDatosVacante(),
+            cargarCatalogoReclutadores()
+        ]);
+    });
 
+    async function cargarDatosVacante() {
         try {
-            const lasVacantesRef = ref(db, `vacantes_detalles/${empresaId}`);
-            const snapshot = await get(lasVacantesRef);
+            const dbRef = ref(db);
             
-            if (snapshot.exists()) {
-                const dataRaw = snapshot.val();
-                
-                // Normalizar si viene directo o agrupado en sub-nodos
-                if (dataRaw.vacanteNombre || dataRaw.salario) {
-                    todasLasVacantesEmpresa = {};
-                    const llaveUnica = dataRaw.vacanteNombre.replace(/\s+/g, '_').toLowerCase() || "puesto_unico";
-                    todasLasVacantesEmpresa[llaveUnica] = dataRaw;
-                } else {
-                    todasLasVacantesEmpresa = dataRaw;
-                }
-
-                const keys = Object.keys(todasLasVacantesEmpresa).filter(k => k !== 'undefined' && k !== '');
-                
-                if (keys.length === 0) {
-                    document.getElementById('loading').innerText = "❌ No hay vacantes activas para esta empresa.";
-                    return;
-                }
-
-                // Configurar encabezado primario de la empresa
-                const primerVacante = todasLasVacantesEmpresa[keys[0]];
-                document.getElementById('mainEmpresaNombre').innerText = primerVacante.empresaNombre || empresaId.toUpperCase();
-                document.getElementById('mainEmpresaLugar').innerText = primerVacante.lugarOrigen || 'Ubicación no especificada';
-                document.getElementById('empresaHeaderBox').style.display = 'block';
-
-                // Mostrar carrusel por defecto en el menú inicial
-                document.getElementById('empresaCarouselBox').style.display = 'block';
-                iniciarCarrusel();
-
-                document.getElementById('loading').style.display = 'none';
-
-                if (keys.length > 1) {
-                    // MÚLTIPLES VACANTES: Construir menú intermedio dinámico
-                    tieneMultiplesVacantes = true;
-                    document.getElementById('btnVolverMenu').style.display = 'inline-flex';
-                    
-                    const listaContenedor = document.getElementById('listaVacantesDinamica');
-                    listaContenedor.innerHTML = '';
-                    
-                    keys.forEach(key => {
-                        const vac = todasLasVacantesEmpresa[key];
-                        const btn = document.createElement('button');
-                        btn.className = 'btn-puesto';
-                        btn.onclick = () => seleccionarPuesto(key);
-                        btn.innerHTML = `
-                            <span>${vac.vacanteNombre || key}</span>
-                            <span class="salario-tag">${vac.salario || ''} <i class="fa-solid fa-chevron-right"></i></span>
-                        `;
-                        listaContenedor.appendChild(btn);
-                    });
-                    
-                    document.getElementById('menuVacantesBox').style.display = 'block';
-                } else {
-                    // UNA SOLA VACANTE: Renderizar directo
-                    tieneMultiplesVacantes = false;
-                    document.getElementById('btnVolverMenu').style.display = 'none';
-                    seleccionarPuesto(keys[0]);
-                }
-
-            } else {
-                document.getElementById('loading').innerText = "❌ La empresa especificada no cuenta con registros vigentes.";
+            const snapEmpresa = await get(child(dbRef, `empresas_principales/${idEmpresaUrl}`));
+            if (!snapEmpresa.exists()) {
+                document.getElementById("loading").innerHTML = "❌ La empresa asociada a esta vacante ya no existe.";
+                return;
             }
+            infoEmpresaGlobal = snapEmpresa.val();
+
+            const snapVacante = await get(child(dbRef, `vacantes_por_empresa/${idEmpresaUrl}/${idVacanteUrl}`));
+            if (!snapVacante.exists()) {
+                document.getElementById("loading").innerHTML = "❌ La vacante solicitada no se encuentra disponible.";
+                return;
+            }
+            infoVacanteGlobal = snapVacante.val();
+
+            // Renderizar datos básicos
+            document.getElementById("txtNombreEmpresa").innerText = infoEmpresaGlobal.nombreComercial || "Empresa Organismo";
+            document.getElementById("txtUbicacionEmpresa").innerText = infoEmpresaGlobal.ubicacion || "Región General";
+            
+            document.getElementById("txtTituloVacante").innerText = infoVacanteGlobal.nombreVacante || "Puesto General";
+            document.getElementById("txtSueldo").innerText = infoVacanteGlobal.salarioSemanal ? `$${infoVacanteGlobal.salarioSemanal}` : "A convenir";
+            document.getElementById("txtTurnos").innerText = infoVacanteGlobal.turnos || "No especificado";
+            document.getElementById("txtEdadReq").innerText = infoVacanteGlobal.edadRequisito || "Cualquiera";
+            document.getElementById("txtLugarDestino").innerText = infoVacanteGlobal.lugarDestino || "Planta Central";
+            
+            document.getElementById("txtRequisitos").innerText = infoVacanteGlobal.requisitos || "Requisitos de ley.";
+            document.getElementById("txtBeneficios").innerText = infoVacanteGlobal.beneficios || "Prestaciones superiores.";
+
+            // LÓGICA DE TRANSPORTE DINÁMICO DESDE EL SERVIDOR
+            if (infoVacanteGlobal.ofreceTransporte === true || infoVacanteGlobal.rutaTransporte) {
+                const rutaTexto = infoVacanteGlobal.rutaTransporte || `Disponible hacia: ${infoVacanteGlobal.lugarDestino || 'Planta'}`;
+                document.getElementById("txtRutaTransporte").innerText = rutaTexto;
+                document.getElementById("bloqueTransporte").style.display = "block";
+            }
+
+            if (infoVacanteGlobal.urlImagen) {
+                const imgElement = document.getElementById("imgBannerVacante");
+                imgElement.src = infoVacanteGlobal.urlImagen;
+                document.getElementById("bannerContenedor").style.display = "block";
+            }
+
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("contenidoVacante").style.display = "block";
+
         } catch (error) {
-            console.error(error);
-            document.getElementById('loading').innerText = "❌ Error de conexión con el servidor.";
+            console.error("Error cargando Firebase data:", error);
+            document.getElementById("loading").innerHTML = "❌ Ocurrió un error en la conexión de datos de red.";
         }
     }
 
-    async function seleccionarPuesto(key) {
-        vacanteKeyDetectada = key;
-        const data = todasLasVacantesEmpresa[key];
-        datosVacanteGlobal = data;
+    async function cargarCatalogoReclutadores() {
+        const selectElement = document.getElementById("selReclutador");
+        try {
+            const snapReclutadores = await get(ref(db, "reclutadores_autorizados"));
+            selectElement.innerHTML = ""; 
 
-        // Ocultar menú intermedio si existía
-        if (tieneMultiplesVacantes) {
-            document.getElementById('menuVacantesBox').style.display = 'none';
-        }
+            if (snapReclutadores.exists()) {
+                const listado = snapReclutadores.val();
+                
+                const optDef = document.createElement("option");
+                optDef.value = "";
+                optDef.textContent = "— Elige un Reclutador / Asesor disponible —";
+                selectElement.appendChild(optDef);
 
-        // --- MANEJO DE BANNER VS CARRUSEL ---
-        if (data.bannerUrl && data.bannerUrl.trim() !== "") {
-            document.getElementById('vacanteBanner').src = data.bannerUrl.trim();
-            document.getElementById('vacanteBannerBox').style.display = 'block';
-            document.getElementById('empresaCarouselBox').style.display = 'none'; // Reemplaza por el banner específico
-        } else {
-            document.getElementById('vacanteBannerBox').style.display = 'none';
-            document.getElementById('empresaCarouselBox').style.display = 'block'; // Mantiene o regresa al carrusel
-        }
+                Object.keys(listado).forEach(key => {
+                    const rec = listado[key];
+                    let telfLimpio = "";
+                    if (rec.telefono) {
+                        telfLimpio = typeof rec.telefono === 'object' ? (rec.telefono.valor || rec.telefono.numero) : rec.telefono;
+                    }
 
-        // --- INCREMENTAR CONTADOR DE VISITAS ---
-        const pathVisita = `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}/visitas`;
-        if (!sessionStorage.getItem(`visita_${empresaId}_${vacanteKeyDetectada}`)) {
-            try {
-                await runTransaction(ref(db, pathVisita), (currentValue) => {
-                    return (currentValue || 0) + 1;
+                    if (telfLimpio) {
+                        const option = document.createElement("option");
+                        option.value = telfLimpio.trim();
+                        option.textContent = `${rec.nombreCompleto || rec.nombre} (${rec.puesto || 'Reclutador Asesor'})`;
+                        selectElement.appendChild(option);
+                    }
                 });
-                sessionStorage.setItem(`visita_${empresaId}_${vacanteKeyDetectada}`, 'true');
-            } catch(e) { console.log("Visita omitida"); }
+            } else {
+                const optFallback = document.createElement("option");
+                optFallback.value = fallbackTelefonoReclutador;
+                optFallback.textContent = "Asesor General de Guardia";
+                selectElement.appendChild(optFallback);
+            }
+        } catch (e) {
+            console.error("Error al poblar reclutadores:", e);
+            selectElement.innerHTML = `<option value="${fallbackTelefonoReclutador}">Asesor General de Guardia (Error de Red)</option>`;
         }
-
-        // Renderizar datos en pantalla
-        document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Sin Nombre';
-        document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
-        document.getElementById('vacanteVisitas').innerText = data.visitas ? (data.visitas + 1) : 1;
-        
-        document.getElementById('detSalario').innerText = data.salario || 'No especificado';
-        document.getElementById('detLugar').innerText = data.lugarOrigen || 'No especificado';
-        document.getElementById('detTurnos').innerText = data.turnos || 'No especificado';
-        document.getElementById('detEdad').innerText = data.edad || 'Indistinto';
-        document.getElementById('detSexo').innerText = data.sexo || 'Indistinto';
-        document.getElementById('detExperiencia').innerText = data.experiencia || 'No requerida';
-        document.getElementById('detEscolaridad').innerText = data.escolaridad || 'No especificada';
-
-        document.getElementById('vacanteActividades').innerText = data.actividades || 'No especificadas.';
-        document.getElementById('vacanteBeneficios').innerText = data.beneficios || 'No especificadas.';
-        document.getElementById('vacanteNotas').innerText = data.informacionGeneral || 'Sin notas adicionales.';
-
-        // Mostrar la sección B
-        document.getElementById('content').style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    window.regresarAlMenu = function() {
-        document.getElementById('content').style.display = 'none';
-        document.getElementById('vacanteBannerBox').style.display = 'none';
-        document.getElementById('empresaCarouselBox').style.display = 'block'; // Regresar al carrusel base siempre
-        document.getElementById('menuVacantesBox').style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function extraerDatosCurp(curp) {
-        if (!curp || curp.length < 11) return { edad: "Indistinto", sexo: "Indistinto" };
-        
-        const letraSexo = curp.charAt(10).toUpperCase();
-        let sexo = "Indistinto";
-        if (letraSexo === 'H') sexo = "Masculino";
-        else if (letraSexo === 'M') sexo = "Femenino";
-
-        let anio = parseInt(curp.substr(4, 2), 10);
-        const mes = parseInt(curp.substr(6, 2), 10);
-        const dia = parseInt(curp.substr(8, 2), 10);
-        
-        const digitoSiglo = curp.charAt(16);
-        if (isNaN(parseInt(digitoSiglo, 10))) {
-            anio += 2000;
-        } else {
-            anio += (anio > 30) ? 1900 : 2000; 
-        }
-
-        const fechaNacimiento = new Date(anio, mes - 1, dia);
-        const fechaActual = new Date(); 
-        
-        let edadCalculada = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
-        const m = fechaActual.getMonth() - fechaNacimiento.getMonth();
-        if (m < 0 || (m === 0 && fechaActual.getDate() < fechaNacimiento.getDate())) {
-            edadCalculada--;
-        }
-
-        return {
-            edad: isNaN(edadCalculada) ? "Indistinto" : String(edadCalculada),
-            sexo: sexo
-        };
-    }
-
-    window.enviarPostulacion = async function(e) {
+    window.procesarPostulacion = async function(e) {
         e.preventDefault();
         
-        if (!datosVacanteGlobal) return;
-
-        const nombre = document.getElementById('postNombre').value.trim();
-        const telefono = document.getElementById('postTelefono').value.trim();
-        const curp = document.getElementById('postCurp').value.trim().toUpperCase();
+        const timestampId = "FOLIO-" + Date.now();
+        const inputTel = document.getElementById("txtTelefono").value.trim();
+        const selectReclutador = document.getElementById("selReclutador");
         
-        // --- VALIDACIÓN ESTRICTA DE CURP MEXICANA ---
-        const curpRegex = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/;
-        if (!curpRegex.test(curp)) {
-            alert("❌ El formato de la CURP es incorrecto. Por favor verifícalo.");
-            return;
+        let telefonoDestinoWhatsApp = selectReclutador.value;
+        let nombreReclutadorSeleccionado = selectReclutador.options[selectReclutador.selectedIndex].text;
+
+        if (telefonoDestinoWhatsApp.length === 10) {
+            telefonoDestinoWhatsApp = "52" + telefonoDestinoWhatsApp;
         }
 
-        const datosExtraidos = extraerDatosCurp(curp);
-        const timestampId = "post-" + Date.now();
-        
+        // Obtener datos de transporte para el registro
+        const transportInfo = infoVacanteGlobal.rutaTransporte || (infoVacanteGlobal.ofreceTransporte ? "Sí (Ruta General)" : "No Especificado");
+
         const payloadPostulante = {
-            id: timestampId,
-            nombre: nombre,
-            nombreCompleto: nombre,
-            telefono: telefono,
-            curp: curp,
-            edad: datosExtraidos.edad,
-            sexo: datosExtraidos.sexo,
-            genero: datosExtraidos.sexo,
-            empresa: empresaId,
-            empresaDestino: empresaId,
-            vacante: datosVacanteGlobal.vacanteNombre || 'Desconocida',
-            puesto: datosVacanteGlobal.vacanteNombre || 'Desconocida',
-            fechaRegistro: new Date().toLocaleString()
+            folio: timestampId,
+            vacante: infoVacanteGlobal.nombreVacante ? infoVacanteGlobal.nombreVacante.toUpperCase() : "PUESTO GENERAL",
+            empresa: infoEmpresaGlobal.idUnico ? infoEmpresaGlobal.idUnico : idEmpresaUrl,
+            destinoPlanta: infoVacanteGlobal.lugarDestino || "No asignado",
+            rutaTransporte: transportInfo,
+            nombre: document.getElementById("txtNombre").value.trim(),
+            telefono: inputTel,
+            curp: document.getElementById("txtCurp").value.trim().toUpperCase(),
+            edad: document.getElementById("txtEdad").value,
+            sexo: document.getElementById("selSexo").value,
+            fechaRegistro: new Date().toLocaleString(),
+            atendidoPor: nombreReclutadorSeleccionado
         };
 
         try {
-            await set(ref(db, `postulantes/${timestampId}`), payloadPostulante);
-            await update(ref(db, 'postulantes_count'), { total: increment(1) });
+            await set(ref(db, `postulantes_registrados/${timestampId}`), payloadPostulante);
 
-            alert("¡Postulación exitosa! Guardando datos y generando comprobante digital...");
+            // Inyectar datos de la ruta en el PDF de Acuse de recibo
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.setFillColor(11, 20, 38);
+                doc.rect(0, 0, 220, 40, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(18);
+                doc.setFont("helvetica", "bold");
+                doc.text("WORKFORCE CONNECT SOLUTION", 15, 25);
+                
+                doc.setTextColor(15, 26, 44);
+                doc.setFontSize(22);
+                doc.text("ACUSE DE POSTULACIÓN OFICIAL", 15, 60);
+                
+                doc.setDrawColor(56, 189, 248);
+                doc.setLineWidth(1);
+                doc.line(15, 65, 195, 65);
+                
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "normal");
+                doc.text(`Folio de Registro: ${payloadPostulante.folio}`, 15, 78);
+                doc.text(`Fecha y Hora: ${payloadPostulante.fechaRegistro}`, 15, 86);
+                doc.text(`Puesto de Interés: ${payloadPostulante.vacante}`, 15, 94);
+                doc.text(`Socio Comercial: ${payloadPostulante.empresa.toUpperCase()}`, 15, 102);
+                doc.text(`Ruta Asignada: ${payloadPostulante.rutaTransporte}`, 15, 110); // NUEVO CAMPO EN PDF
+                
+                doc.setFont("helvetica", "bold");
+                doc.text("DATOS GENERALES DEL CANDIDATO:", 15, 126);
+                doc.setFont("helvetica", "normal");
+                doc.text(`Nombre Completo: ${payloadPostulante.nombre}`, 15, 136);
+                doc.text(`Teléfono de Contacto: ${payloadPostulante.telefono}`, 15, 144);
+                doc.text(`CURP: ${payloadPostulante.curp}`, 15, 152);
+                doc.text(`Edad: ${payloadPostulante.edad} años`, 15, 160);
+                doc.text(`Sexo: ${payloadPostulante.sexo}`, 15, 168);
+                doc.text(`Asesor Asignado: ${payloadPostulante.atendidoPor}`, 15, 176);
+                
+                doc.setFillColor(244, 115, 22);
+                doc.rect(15, 195, 180, 25, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.text("IMPORTANTE: Tu entrevista ha sido agendada con éxito.", 20, 205);
+                doc.text("Presenta este documento digital al iniciar tu chat de WhatsApp.", 20, 211);
+                
+                doc.save(`Acuse_Postulacion_${payloadPostulante.folio}.pdf`);
+            } catch (pdfError) {
+                console.error("Error generando el acuse PDF:", pdfError);
+            }
 
-            // Generación de PDF con jsPDF
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            doc.setFillColor(15, 42, 74); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(56, 189, 248); doc.setFont("Helvetica", "bold"); doc.setFontSize(22); doc.text("WORKFORCE CONNECT", 15, 26);
-            doc.setTextColor(255, 255, 255); doc.setFontSize(10); doc.setFont("Helvetica", "normal"); doc.text("COMPROBANTE DE POSTULACIÓN OFICIAL", 125, 25);
-            doc.setTextColor(33, 33, 33); doc.setFontSize(14); doc.setFont("Helvetica", "bold"); doc.text("Detalles del Registro", 15, 55);
-            doc.setLineWidth(0.5); doc.setDrawColor(210, 210, 210); doc.line(15, 58, 195, 58);
-
-            doc.setFontSize(11);
-            let y = 68;
-            
-            const datosImpresion = [
-                { label: "Folio de Postulación:", val: timestampId },
-                { label: "Puesto Solicitado:", val: payloadPostulante.vacante },
-                { label: "Empresa Destino:", val: payloadPostulante.empresa.toUpperCase() },
-                { label: "Nombre Candidato:", val: payloadPostulante.nombre },
-                { label: "CURP:", val: payloadPostulante.curp },
-                { label: "Teléfono:", val: payloadPostulante.telefono },
-                { label: "Edad calculada:", val: `${payloadPostulante.edad} años` },
-                { label: "Sexo detectado:", val: payloadPostulante.sexo },
-                { label: "Fecha:", val: payloadPostulante.fechaRegistro }
-            ];
-
-            datosImpresion.forEach(item => {
-                doc.setFont("Helvetica", "bold"); doc.text(item.label, 15, y);
-                doc.setFont("Helvetica", "normal"); doc.text(String(item.val), 60, y);
-                y += 10;
-            });
-
-            y += 10;
-            doc.setFillColor(241, 245, 249); doc.rect(15, y, 180, 25, 'F');
-            doc.setTextColor(15, 42, 74); doc.setFont("Helvetica", "bold"); doc.setFontSize(10); doc.text("Nota informativa:", 20, y + 8);
-            doc.setFont("Helvetica", "normal");
-            doc.text("Guarda este archivo en tu dispositivo. Tu postulación ya se encuentra en nuestra base de datos.", 20, y + 14);
-
-            doc.save(`Comprobante-${payloadPostulante.curp}.pdf`);
-            
-            // --- NÚMERO DE RECLUTADOR DINÁMICO ---
-            const telefonoReclutador = datosVacanteGlobal.telefonoReclutador ? datosVacanteGlobal.telefonoReclutador.trim() : "526461974763";
-            
+            // Mensaje de WhatsApp dinámico con datos de la ruta para el Reclutador
             const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante.\n\n` +
                                     `*📌 Detalles de mi Postulación:*\n` +
-                                    `• *Folio:* ${timestampId}\n` +
+                                    `• *Folio:* ${payloadPostulante.folio}\n` +
                                     `• *Puesto:* ${payloadPostulante.vacante}\n` +
-                                    `• *Empresa:* ${payloadPostulante.empresa.toUpperCase()}\n\n` +
+                                    `• *Destino:* ${payloadPostulante.destinoPlanta}\n` +
+                                    `• *Ruta / Transporte:* ${payloadPostulante.rutaTransporte}\n\n` + // NUEVO CAMPO EN WHATSAPP
                                     `*👤 Mis Datos de Contacto:*\n` +
                                     `• *Nombre:* ${payloadPostulante.nombre}\n` +
                                     `• *Teléfono:* ${payloadPostulante.telefono}\n` +
                                     `• *CURP:* ${payloadPostulante.curp}\n` +
                                     `• *Edad:* ${payloadPostulante.edad} años\n` +
                                     `• *Sexo:* ${payloadPostulante.sexo}\n\n` +
-                                    `Ya descargué mi acuse en formato PDF. Quedo atento a su respuesta.`;
+                                    `Ya descargué mi acuse en formato PDF y requiero iniciar mi proceso de entrevista con usted como mi asesor asignado. Quedo atento a su respuesta.`;
 
             document.getElementById('formPostulacion').reset();
-            window.location.href = `https://wa.me/${telefonoReclutador}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+            window.location.href = `https://wa.me/${telefonoDestinoWhatsApp}?text=${encodeURIComponent(mensajeWhatsApp)}`;
             
         } catch (err) {
             console.error(err);
             alert("❌ Ocurrió un error al guardar la postulación: " + err.message);
         }
     };
-
-    window.onload = cargarDetallesVacante;
 </script>
+
 </body>
 </html>
