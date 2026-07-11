@@ -813,7 +813,19 @@ window.procesarMultivacanteConIA = async function() {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: [{ text: promptStr }] }], generationConfig: { responseMimeType: "application/json" } })
     });
+    
     const resJson = await res.json();
+
+    // 1. Validar si la API de Google devolvió un error explícito
+    if (resJson.error) {
+      throw new Error(`API Error (${resJson.error.code}): ${resJson.error.message}`);
+    }
+
+    // 2. Validar si existen candidatos en la respuesta
+    if (!resJson.candidates || resJson.candidates.length === 0) {
+      throw new Error("La IA no generó ninguna respuesta válida o fue bloqueada por filtros de seguridad.");
+    }
+
     const cleanText = resJson.candidates[0].content.parts[0].text;
     vacantesProcesadasGlobal = JSON.parse(cleanText);
 
@@ -824,7 +836,8 @@ window.procesarMultivacanteConIA = async function() {
     });
     cambiarVacanteVerdeSeleccionada();
   } catch(e) {
-    document.getElementById('codigoJsonVerde').textContent = "❌ Error parseando JSON: " + e.message;
+    // Ahora verás el verdadero motivo del error (ej. API Key vencida, cuota saturada, etc.)
+    document.getElementById('codigoJsonVerde').textContent = "❌ Error en el proceso: " + e.message;
   }
 };
 
