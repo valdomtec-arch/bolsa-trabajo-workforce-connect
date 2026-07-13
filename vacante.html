@@ -285,7 +285,7 @@
         input:focus, select:focus { outline: none; border-color: var(--wf-accent-blue); box-shadow: 0 0 15px var(--wf-accent-glow); background-color: #1a2f56; }
         
         .btn-submit {
-            background-color: var(--green-whatsapp); color: var(--white); border: none; padding: 16px 24px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.1rem; display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3); transition: all 0.3s ease; text-transform: uppercase;
+            background-color: var(--green-whatsapp); color: var(--white); border: none; padding: 16px 24px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease;
         }
         .btn-submit:hover { background-color: var(--green-whatsapp-hover); transform: translateY(-2px); box-shadow: 0 12px 24px rgba(34, 197, 94, 0.45); }
         .btn-submit:disabled { background-color: #334155; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
@@ -693,6 +693,7 @@
         const bloqueTransVisible = document.getElementById('bloqueTransporte').style.display !== 'none';
         const puntoElegido = inputOcultoPunto.value ? inputOcultoPunto.value : "No aplica / No seleccionado";
 
+        // Validaciones previas
         if (bloqueTransVisible && !inputOcultoPunto.value) { 
             alert("⚠️ Por favor selecciona una de las rutas/paradas de transporte mostradas en el panel interactivo."); 
             return; 
@@ -701,41 +702,50 @@
         if (telefono.length !== 10) { alert("❌ El teléfono debe constar de 10 dígitos numéricos."); return; }
         if (!selectReclutador.value) { alert("❌ Por favor, selecciona al Asesor que te atiende."); return; }
 
+        // Deshabilitar botón y mostrar estado
         btnSubmit.disabled = true;
-        btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Subiendo expediente digital...`;
-
-        let telefonoDestino = selectReclutador.value; 
-        let nombreReclutadorCorto = selectReclutador.options[selectReclutador.selectedIndex].dataset.nombreReal || "Asesor Asignado";
-        
-        if (telefonoDestino.length === 10) telefonoDestino = "52" + telefonoDestino;
-
-        const datosExtraidos = extraerDatosCurp(curp);
-        const timestampId = "WF-" + Math.floor(100000 + Math.random() * 900000);
-        const fechaYHoraActual = new Date().toLocaleString();
-
-        const payloadPostulante = {
-            id: timestampId,
-            nombre: nombre,
-            nombreCompleto: nombre,
-            telefono: telefono,
-            curp: curp,
-            edad: datosExtraidos.edad,
-            sexo: datosExtraidos.sexo,
-            genero: datosExtraidos.sexo,
-            empresa: empresaId,
-            empresaDestino: empresaId,
-            vacante: datosVacanteGlobal.vacanteNombre || "Desconocida",
-            puesto: datosVacanteGlobal.vacanteNombre || "Desconocida",
-            fechaRegistro: fechaYHoraActual,
-            atendidoPor: nombreReclutadorCorto,
-            rutaTransporteSeleccionada: puntoElegido,
-            urlAcusePdf: "" 
-        };
+        btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Procesando postulación...`;
 
         try {
-            // ---> AQUÍ SE APLICÓ LA SOLUCIÓN DIRECTA PARA jsPDF <---
-            const doc = new window.jspdf.jsPDF();
+            let telefonoDestino = selectReclutador.value; 
+            let nombreReclutadorCorto = selectReclutador.options[selectReclutador.selectedIndex].dataset.nombreReal || "Asesor Asignado";
             
+            if (telefonoDestino.length === 10) telefonoDestino = "52" + telefonoDestino;
+
+            const datosExtraidos = extraerDatosCurp(curp);
+            const timestampId = "WF-" + Math.floor(100000 + Math.random() * 900000);
+            const fechaYHoraActual = new Date().toLocaleString();
+
+            const payloadPostulante = {
+                id: timestampId,
+                nombre: nombre,
+                nombreCompleto: nombre,
+                telefono: telefono,
+                curp: curp,
+                edad: datosExtraidos.edad,
+                sexo: datosExtraidos.sexo,
+                genero: datosExtraidos.sexo,
+                empresa: empresaId,
+                empresaDestino: empresaId,
+                vacante: datosVacanteGlobal.vacanteNombre || "Desconocida",
+                puesto: datosVacanteGlobal.vacanteNombre || "Desconocida",
+                fechaRegistro: fechaYHoraActual,
+                atendidoPor: nombreReclutadorCorto,
+                rutaTransporteSeleccionada: puntoElegido,
+                urlAcusePdf: "" 
+            };
+
+            // ✅ SOLUCIÓN CORREGIDA: Destructuración correcta de jsPDF
+            btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Generando PDF...`;
+            
+            const { jsPDF } = window.jspdf;
+            if (!jsPDF) {
+                throw new Error("jsPDF no se cargó correctamente. Por favor intenta nuevamente.");
+            }
+
+            const doc = new jsPDF();
+            
+            // Encabezado
             doc.setFillColor(11, 20, 38); 
             doc.rect(0, 0, 210, 45, 'F');
             
@@ -750,15 +760,18 @@
             doc.text("Sistema de Registro y Control de Talentos", 15, 28);
             doc.text(`Folio Digital: ${timestampId}`, 150, 20);
 
+            // Título
             doc.setTextColor(15, 26, 44); 
             doc.setFontSize(15); 
             doc.setFont("helvetica", "bold");
             doc.text("CONFIRMACIÓN OFICIAL DE POSTULACIÓN", 15, 60);
             
+            // Línea divisoria
             doc.setDrawColor(56, 189, 248);
             doc.setLineWidth(1);
             doc.line(15, 65, 195, 65); 
             
+            // Campos de información
             doc.setFontSize(11); 
             let y = 78;
             
@@ -789,6 +802,7 @@
                 y += 12;
             });
 
+            // Pie de página
             doc.setFillColor(248, 250, 252);
             doc.rect(15, y + 5, 180, 25, 'F');
             doc.setFont("helvetica", "italic");
@@ -797,17 +811,25 @@
             doc.text("Este acuse ha sido generado por el sistema automatizado de Workforce Connect.", 20, y + 15);
             doc.text("Protección de Datos Garantizada. Aislado de los motores de rastreo de Google.", 20, y + 21);
 
+            // Obtener blob del PDF
             const pdfBlobOutput = doc.output('blob');
 
+            // Subir a Firebase Storage
+            btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Subiendo expediente digital...`;
+            
             const storagePathRef = storage.ref(`expedientes_postulados/${timestampId}_${curp}.pdf`);
             const uploadSnapshot = await storagePathRef.put(pdfBlobOutput);
             
             const urlDescargaSegura = await uploadSnapshot.ref.getDownloadURL();
             payloadPostulante.urlAcusePdf = urlDescargaSegura;
 
+            // Guardar en Realtime Database
+            btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Registrando postulación...`;
+            
             await db.ref(`postulantes/${timestampId}`).set(payloadPostulante);
             await db.ref('postulantes_count').update({ total: firebase.database.ServerValue.increment(1) });
 
+            // Preparar mensaje de WhatsApp
             const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante.\n\n` +
                                     `*📌 Detalles de mi Postulación:*\n` +
                                     `• *Folio:* ${timestampId}\n` +
@@ -824,15 +846,17 @@
                                     `${urlDescargaSegura}\n\n` +
                                     `_Atendido por: ${nombreReclutadorCorto}_`;
 
+            // Limpiar formulario
             document.getElementById('formPostulacion').reset();
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = `<i class="fab fa-whatsapp"></i> Enviar Postulación Formal`;
             
+            // Abrir WhatsApp con el mensaje
             window.location.href = `https://wa.me/${telefonoDestino}?text=${encodeURIComponent(mensajeWhatsApp)}`;
             
         } catch (err) {
-            console.error(err);
-            alert("❌ Ocurrió un error al procesar la postulación o al subir el archivo: " + err.message);
+            console.error("Error en enviarPostulacion:", err);
+            alert(`❌ Error: ${err.message || 'Ocurrió un error al procesar la postulación'}`);
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = `<i class="fab fa-whatsapp"></i> Enviar Postulación Formal`;
         }
