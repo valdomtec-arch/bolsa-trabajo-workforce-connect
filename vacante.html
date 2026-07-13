@@ -424,6 +424,9 @@
     const urlParams = new URLSearchParams(window.location.search);
     const empresaId = urlParams.get('empresa');
 
+    // Definimos la variable limpia globalmente para usarla en todo el documento
+    const empresaLimpia = empresaId ? empresaId.toLowerCase().trim() : "";
+
     let todasLasVacantesEmpresa = {};
     let datosVacanteGlobal = null;
     let vacanteKeyDetectada = "";
@@ -431,16 +434,12 @@
     const fallbackTelefonoReclutador = "526461974763";
 
    async function cargarDetallesVacante() {
-        if (!empresaId) {
+        if (!empresaLimpia) {
             document.getElementById('loading').innerHTML = "❌ Enlace no válido.<br><small>Falta parámetro ?empresa=ID</small>";
             return;
         }
 
-        // 1. Forzamos a minúsculas para que coincida con tu nodo de Firebase (ej: "aspen")
-        const empresaLimpia = empresaId.toLowerCase().trim();
-
         try {
-            // 2. Agregamos el manejador de errores al final de la consulta .once()
             db.ref(`vacantes_detalles/${empresaLimpia}`).once('value', async function(snapshot) {
                 if (snapshot.exists()) {
                     const dataRaw = snapshot.val();
@@ -486,16 +485,22 @@
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('menuVacantesBox').style.display = 'block';
                 } else {
-                    document.getElementById('loading').innerHTML = `❌ Empresa <strong>"${empresaLimpia}"</strong> no encontrada en la base de datos.`;
+                    // Si no existe, quitamos el spinner animado y mostramos el error real con estilo
+                    document.getElementById('loading').innerHTML = `
+                        <div style="color: #f97316; padding: 15px;">
+                            <i class="fa-solid fa-circle-question" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p><strong>Empresa no encontrada</strong></p>
+                            <small style="color: var(--text-muted);">El identificador "${empresaLimpia}" no existe en la base de datos.</small>
+                        </div>
+                    `;
                 }
             }, function(error) {
-                // 3. Esta función se dispara si tus reglas o App Check rechazan la petición
                 console.error("Firebase bloqueó la lectura:", error);
                 document.getElementById('loading').innerHTML = `
                     <div style="color: #ef4444; padding: 15px;">
                         <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.8rem; margin-bottom: 8px;"></i>
                         <p><strong>Acceso denegado por el servidor</strong></p>
-                        <small style="color: var(--text-muted);">Firebase rechazó la consulta web. Si tus reglas están bien, revisa en tu consola que la pestaña <b>App Check</b> no esté bloqueando las solicitudes públicas.</small>
+                        <small style="color: var(--text-muted);">Firebase rechazó la consulta web. Verifica que tus reglas permitan acceso público.</small>
                     </div>
                 `;
             });
@@ -509,16 +514,17 @@
         const data = todasLasVacantesEmpresa[key];
         datosVacanteGlobal = data;
         
-        const pathVisita = `vacantes_detalles/${empresaId}/${vacanteKeyDetectada}/visitas`;
-        if (!sessionStorage.getItem(`visita_${empresaId}_${vacanteKeyDetectada}`)) {
+        // Corregido aquí: usamos empresaLimpia para evitar fallos de mayúsculas en el contador de visitas
+        const pathVisita = `vacantes_detalles/${empresaLimpia}/${vacanteKeyDetectada}/visitas`;
+        if (!sessionStorage.getItem(`visita_${empresaLimpia}_${vacanteKeyDetectada}`)) {
             db.ref(pathVisita).transaction((currentValue) => {
                 return (currentValue || 0) + 1;
             });
-            sessionStorage.setItem(`visita_${empresaId}_${vacanteKeyDetectada}`, 'true');
+            sessionStorage.setItem(`visita_${empresaLimpia}_${vacanteKeyDetectada}`, 'true');
         }
 
         document.getElementById('vacanteTitulo').innerText = data.vacanteNombre || 'Puesto';
-        document.getElementById('vacanteEmpresa').innerText = empresaId.toUpperCase();
+        document.getElementById('vacanteEmpresa').innerText = empresaLimpia.toUpperCase();
         document.getElementById('vacanteVisitas').innerText = data.visitas ? (data.visitas + 1) : 1;
         
         document.getElementById('detSalario').innerText = data.salario || 'No especificado';
@@ -537,8 +543,7 @@
         if (data.bannerUrl && data.bannerUrl.trim() !== "") {
             imagenFinalBanner = data.bannerUrl.trim();
         } else {
-            const idEmpresaLimpio = empresaId.toLowerCase().trim();
-            imagenFinalBanner = `https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/imagen-${idEmpresaLimpio}.jpg`;
+            imagenFinalBanner = `https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/imagen-${empresaLimpia}.jpg`;
         }
         
         const imgElement = document.getElementById('vacanteBanner');
@@ -561,7 +566,7 @@
             inputOcultoPunto.value = "";
             buscadorInput.value = "";
 
-            db.ref(`rutas_transporte/${empresaId}`).once('value', function(snapRuta) {
+            db.ref(`rutas_transporte/${empresaLimpia}`).once('value', function(snapRuta) {
                 if (snapRuta.exists()) {
                     const dataRuta = snapRuta.val();
                     const infoTransporte = dataRuta.transporte_privado_empresa || dataRuta.transporte_privado;
@@ -719,7 +724,6 @@
             const timestampId = "WF-" + Math.floor(100000 + Math.random() * 900000);
             const fechaYHoraActual = new Date().toLocaleString();
 
-            // ✅ URL Dinámica Gratuita apuntando a tu acuse.html en GitHub Pages
             const urlAcuseDigital = `https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/acuse.html?folio=${timestampId}`;[cite: 1]
 
             const payloadPostulante = {
@@ -731,8 +735,8 @@
                 edad: datosExtraidos.edad,
                 sexo: datosExtraidos.sexo,
                 genero: datosExtraidos.sexo,
-                empresa: empresaId,
-                empresaDestino: empresaId,
+                empresa: empresaLimpia,
+                empresaDestino: empresaLimpia,
                 vacante: datosVacanteGlobal.vacanteNombre || "Desconocida",
                 puesto: datosVacanteGlobal.vacanteNombre || "Desconocida",
                 fechaRegistro: fechaYHoraActual,
@@ -741,11 +745,9 @@
                 urlAcusePdf: urlAcuseDigital 
             };
 
-            // ✅ GUARDAR EN BASE DE DATOS (100% Gratis)
             await db.ref(`postulantes/${timestampId}`).set(payloadPostulante);
             await db.ref('postulantes_count').update({ total: firebase.database.ServerValue.increment(1) });
 
-            // ✅ ARMAR MENSAJE QUE VA DIRECTO EN EL TEXTO DE WHATSAPP
             const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante.\n\n` +
                                     `*📌 Detalles de mi Postulación:*\n` +
                                     `• *Folio:* ${timestampId}\n` +
