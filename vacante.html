@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bolsa de Trabajo - Detalles de la Vacante</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <!-- LIBRERÍAS CLÁSICAS COMPATIBLES -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
     <style>
         :root {
@@ -418,12 +416,10 @@
 
 <script>
     const firebaseConfig = {
-        databaseURL: "https://bolsa-de-trabajo-workforce-default-rtdb.firebaseio.com/",
-        storageBucket: "bolsa-de-trabajo-workforce.appspot.com"
+        databaseURL: "https://bolsa-de-trabajo-workforce-default-rtdb.firebaseio.com/"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const storage = firebase.storage();
 
     const urlParams = new URLSearchParams(window.location.search);
     const empresaId = urlParams.get('empresa');
@@ -539,9 +535,6 @@
             imgElement.onerror = null;
         };
 
-        // ========================================================
-        // LEER E INYECTAR PARADAS DESDE NODO COMPLETO (rutas002.jpg)
-        // ========================================================
         const bloqueTrans = document.getElementById('bloqueTransporte');
         const txtDetallesTrans = document.getElementById('txtDetallesTransporte');
         const pantallaRutas = document.getElementById('gridPantallaRutasDinamicas');
@@ -564,7 +557,6 @@
                         
                         const puntos = infoTransporte.puntos_recoleccion;
                         if (puntos && Array.isArray(puntos)) {
-                            // Guardar únicamente objetos que contengan la clave "nombre"
                             puntosLimpiosGlobal = puntos.filter(p => p && p.nombre);
 
                             function pintarPantallaRutas(listaFiltrada) {
@@ -680,80 +672,6 @@
         return { edad: isNaN(edadCalculada) ? "Indistinto" : String(edadCalculada), sexo: sexo };
     }
 
-    // ✅ FUNCIÓN MEJORADA: SUBIR PDF CON TIMEOUT Y MEJOR MANEJO DE ERRORES
-    function subirPdfFirebaseConTimeout(pdfBlob, timestampId, curp) {
-        console.log(`[📤 CARGA PDF] Iniciando subida: ${timestampId}_${curp}.pdf`);
-        
-        return new Promise((resolve, reject) => {
-            const TIMEOUT_MS = 30000; // 30 segundos
-            let timeoutId = null;
-            let uploadCompleted = false;
-
-            // Crear timeout para evitar bucle infinito
-            timeoutId = setTimeout(() => {
-                if (!uploadCompleted) {
-                    uploadCompleted = true;
-                    console.error("[⏱️ TIMEOUT] La carga de PDF excedió 30 segundos");
-                    reject(new Error("Timeout en carga de PDF. Firebase Storage puede estar saturado o con permisos limitados."));
-                }
-            }, TIMEOUT_MS);
-
-            try {
-                const storageRef = storage.ref(`expedientes_postulados/${timestampId}_${curp}.pdf`);
-                const uploadTask = storageRef.put(pdfBlob);
-
-                uploadTask.on(
-                    'state_changed',
-                    (snapshot) => {
-                        if (uploadCompleted) return;
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        console.log(`[📊 PROGRESO] ${progress.toFixed(2)}% - ${snapshot.bytesTransferred}/${snapshot.totalBytes} bytes`);
-                    },
-                    (error) => {
-                        if (uploadCompleted) return;
-                        uploadCompleted = true;
-                        clearTimeout(timeoutId);
-                        
-                        console.error("[❌ ERROR STORAGE]", error);
-                        console.error("Código error:", error.code);
-                        console.error("Mensaje:", error.message);
-                        
-                        // Mensajes de error específicos
-                        if (error.code === 'storage/unauthorized') {
-                            reject(new Error("❌ Permiso denegado. Firebase Storage no está configurado correctamente."));
-                        } else if (error.code === 'storage/retry-limit-exceeded') {
-                            reject(new Error("❌ Límite de intentos excedido. Intenta de nuevo."));
-                        } else {
-                            reject(error);
-                        }
-                    },
-                    () => {
-                        if (uploadCompleted) return;
-                        uploadCompleted = true;
-                        clearTimeout(timeoutId);
-                        
-                        console.log("[✅ CARGA COMPLETADA] PDF subido, obteniendo URL...");
-                        
-                        uploadTask.snapshot.ref.getDownloadURL()
-                            .then((downloadURL) => {
-                                console.log("[✅ URL OBTENIDA]", downloadURL);
-                                resolve(downloadURL);
-                            })
-                            .catch((error) => {
-                                console.error("[❌ ERROR AL OBTENER URL]", error);
-                                reject(error);
-                            });
-                    }
-                );
-            } catch (error) {
-                uploadCompleted = true;
-                clearTimeout(timeoutId);
-                console.error("[❌ ERROR GENERAL]", error);
-                reject(error);
-            }
-        });
-    }
-
     window.enviarPostulacion = async function(e) {
         e.preventDefault();
         
@@ -767,32 +685,28 @@
         const bloqueTransVisible = document.getElementById('bloqueTransporte').style.display !== 'none';
         const puntoElegido = inputOcultoPunto.value ? inputOcultoPunto.value : "No aplica / No seleccionado";
 
-        // Validaciones previas
         if (bloqueTransVisible && !inputOcultoPunto.value) { 
-            alert("⚠️ Por favor selecciona una de las rutas/paradas de transporte mostradas en el panel interactivo."); 
+            alert("⚠️ Por favor selecciona una de las rutas/paradas de transporte."); 
             return; 
         }
         if (curp.length !== 18) { alert("❌ La CURP debe tener exactamente 18 caracteres."); return; }
-        if (telefono.length !== 10) { alert("❌ El teléfono debe constar de 10 dígitos numéricos."); return; }
-        if (!selectReclutador.value) { alert("❌ Por favor, selecciona al Asesor que te atiende."); return; }
+        if (telefono.length !== 10) { alert("❌ El teléfono debe constar de 10 dígitos."); return; }
+        if (!selectReclutador.value) { alert("❌ Por favor, selecciona al Asesor."); return; }
 
-        // Deshabilitar botón y mostrar estado
         btnSubmit.disabled = true;
-        btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Procesando postulación...`;
-
-        console.log("[🚀 INICIO] Postulación de:", nombre);
+        btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Registrando Postulación...`;
 
         try {
             let telefonoDestino = selectReclutador.value; 
             let nombreReclutadorCorto = selectReclutador.options[selectReclutador.selectedIndex].dataset.nombreReal || "Asesor Asignado";
-            
             if (telefonoDestino.length === 10) telefonoDestino = "52" + telefonoDestino;
 
             const datosExtraidos = extraerDatosCurp(curp);
             const timestampId = "WF-" + Math.floor(100000 + Math.random() * 900000);
             const fechaYHoraActual = new Date().toLocaleString();
 
-            console.log("[📋 DATOS] Folio:", timestampId);
+            // ✅ URL Dinámica Gratuita apuntando a tu acuse.html en GitHub Pages
+            const urlAcuseDigital = `https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/acuse.html?folio=${timestampId}`;[cite: 1]
 
             const payloadPostulante = {
                 id: timestampId,
@@ -810,132 +724,14 @@
                 fechaRegistro: fechaYHoraActual,
                 atendidoPor: nombreReclutadorCorto,
                 rutaTransporteSeleccionada: puntoElegido,
-                urlAcusePdf: "" 
+                urlAcusePdf: urlAcuseDigital 
             };
 
-            // ✅ GENERAR PDF
-            btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Generando PDF...`;
-            console.log("[📄 PDF] Generando documento...");
-            
-            const { jsPDF } = window.jspdf;
-            if (!jsPDF) {
-                throw new Error("jsPDF no se cargó correctamente. Por favor intenta nuevamente.");
-            }
+            // ✅ GUARDAR EN BASE DE DATOS (100% Gratis)
+            await db.ref(`postulantes/${timestampId}`).set(payloadPostulante);
+            await db.ref('postulantes_count').update({ total: firebase.database.ServerValue.increment(1) });
 
-            const doc = new jsPDF();
-            
-            // Encabezado
-            doc.setFillColor(11, 20, 38); 
-            doc.rect(0, 0, 210, 45, 'F');
-            
-            doc.setTextColor(56, 189, 248); 
-            doc.setFont("helvetica", "bold"); 
-            doc.setFontSize(20); 
-            doc.text("WORKFORCE CONNECT SOLUTION", 15, 20);
-            
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
-            doc.text("Sistema de Registro y Control de Talentos", 15, 28);
-            doc.text(`Folio Digital: ${timestampId}`, 150, 20);
-
-            // Título
-            doc.setTextColor(15, 26, 44); 
-            doc.setFontSize(15); 
-            doc.setFont("helvetica", "bold");
-            doc.text("CONFIRMACIÓN OFICIAL DE POSTULACIÓN", 15, 60);
-            
-            // Línea divisoria
-            doc.setDrawColor(56, 189, 248);
-            doc.setLineWidth(1);
-            doc.line(15, 65, 195, 65); 
-            
-            // Campos de información
-            doc.setFontSize(11); 
-            let y = 78;
-            
-            const camposPdf = [
-                { label: "PUESTO SOLICITADO:", val: payloadPostulante.vacante.toUpperCase() },
-                { label: "SOCIO COMERCIAL:", val: payloadPostulante.empresa.toUpperCase() },
-                { label: "CANDIDATO:", val: payloadPostulante.nombre.toUpperCase() },
-                { label: "CURP VALIDADA:", val: payloadPostulante.curp },
-                { label: "TELÉFONO MÓVIL:", val: payloadPostulante.telefono },
-                { label: "RUTA CONVENIENTE:", val: puntoElegido.toUpperCase() },
-                { label: "FECHA DE REGISTRO:", val: fechaYHoraActual },
-                { label: "ASESOR ASIGNADO:", val: nombreReclutadorCorto.toUpperCase() }
-            ];
-
-            camposPdf.forEach(item => {
-                doc.setFont("helvetica", "bold"); 
-                doc.setTextColor(71, 85, 105);
-                doc.text(item.label, 15, y);
-                
-                doc.setFont("helvetica", "normal"); 
-                doc.setTextColor(15, 26, 44);
-                doc.text(String(item.val), 68, y);
-                
-                doc.setDrawColor(226, 232, 240);
-                doc.setLineWidth(0.2);
-                doc.line(15, y + 3, 195, y + 3);
-                
-                y += 12;
-            });
-
-            // Pie de página
-            doc.setFillColor(248, 250, 252);
-            doc.rect(15, y + 5, 180, 25, 'F');
-            doc.setFont("helvetica", "italic");
-            doc.setFontSize(9);
-            doc.setTextColor(100, 116, 139);
-            doc.text("Este acuse ha sido generado por el sistema automatizado de Workforce Connect.", 20, y + 15);
-            doc.text("Protección de Datos Garantizada. Aislado de los motores de rastreo de Google.", 20, y + 21);
-
-            // Obtener blob del PDF
-            const pdfBlobOutput = doc.output('blob');
-            console.log("[✅ PDF] Generado correctamente. Tamaño:", pdfBlobOutput.size, "bytes");
-
-            // ✅ SUBIR A FIREBASE STORAGE (CON TIMEOUT Y MEJOR MANEJO)
-            btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Subiendo expediente digital (máx 30s)...`;
-            
-            let urlDescargaSegura = "";
-            
-            try {
-                urlDescargaSegura = await subirPdfFirebaseConTimeout(pdfBlobOutput, timestampId, curp);
-                console.log("[✅ STORAGE] PDF subido exitosamente");
-            } catch (uploadError) {
-                console.error("[⚠️ STORAGE FALLIDO]", uploadError.message);
-                
-                // Preguntar si continuar sin PDF
-                const continuarSinPdf = confirm(
-                    `⚠️ No se pudo subir el PDF a Storage:\n${uploadError.message}\n\n¿Deseas continuar sin el archivo en línea?`
-                );
-                
-                if (!continuarSinPdf) {
-                    throw uploadError;
-                }
-                
-                urlDescargaSegura = "⚠️ PDF generado localmente pero no subido a Storage";
-            }
-            
-            payloadPostulante.urlAcusePdf = urlDescargaSegura;
-
-            // ✅ GUARDAR EN REALTIME DATABASE
-            btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Registrando postulación en base de datos...`;
-            console.log("[💾 BD] Guardando datos de postulante...");
-            
-            try {
-                await db.ref(`postulantes/${timestampId}`).set(payloadPostulante);
-                await db.ref('postulantes_count').update({ total: firebase.database.ServerValue.increment(1) });
-                console.log("[✅ BD] Postulación guardada correctamente");
-            } catch (dbError) {
-                console.error("[❌ BD] Error al guardar:", dbError);
-                throw new Error("Error al registrar la postulación en BD: " + dbError.message);
-            }
-
-            // ✅ PREPARAR MENSAJE WHATSAPP
-            btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Abriendo WhatsApp...`;
-            console.log("[💬 WHATSAPP] Preparando mensaje para:", telefonoDestino);
-            
+            // ✅ ARMAR MENSAJE QUE VA DIRECTO EN EL TEXTO DE WHATSAPP
             const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante.\n\n` +
                                     `*📌 Detalles de mi Postulación:*\n` +
                                     `• *Folio:* ${timestampId}\n` +
@@ -945,30 +741,21 @@
                                     `*👤 Mis Datos de Contacto:*\n` +
                                     `• *Nombre:* ${payloadPostulante.nombre}\n` +
                                     `• *Teléfono:* ${payloadPostulante.telefono}\n` +
-                                    `• *CURP:* ${payloadPostulante.curp}\n` +
-                                    `• *Edad:* ${payloadPostulante.edad} años\n` +
-                                    `• *Sexo:* ${payloadPostulante.sexo}\n\n` +
-                                    `*📄 Mi Acuse Digital:*\n` +
-                                    `${urlDescargaSegura}\n\n` +
+                                    `• *CURP:* ${payloadPostulante.curp}\n\n` +
+                                    `*📄 Mi Acuse Digital Oficial:*\n` +
+                                    `${urlAcuseDigital}\n\n` +
                                     `_Atendido por: ${nombreReclutadorCorto}_`;
 
-            // Limpiar formulario
             document.getElementById('formPostulacion').reset();
-            
-            // Reestablecer botón ANTES de abrir WhatsApp
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = `<i class="fab fa-whatsapp"></i> Enviar Postulación Formal`;
             
-            console.log("[✅ COMPLETADO] Postulación exitosa. Redirigiendo a WhatsApp...");
-            
-            // Pequeño delay y luego abrir WhatsApp
             setTimeout(() => {
                 window.location.href = `https://wa.me/${telefonoDestino}?text=${encodeURIComponent(mensajeWhatsApp)}`;
             }, 500);
             
         } catch (err) {
-            console.error("[❌ ERROR GENERAL]", err);
-            alert(`❌ Error: ${err.message || 'Ocurrió un error al procesar la postulación'}`);
+            alert(`❌ Error: ${err.message}`);
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = `<i class="fab fa-whatsapp"></i> Enviar Postulación Formal`;
         }
