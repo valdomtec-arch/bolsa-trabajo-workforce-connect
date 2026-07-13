@@ -285,7 +285,7 @@
         input:focus, select:focus { outline: none; border-color: var(--wf-accent-blue); box-shadow: 0 0 15px var(--wf-accent-glow); background-color: #1a2f56; }
         
         .btn-submit {
-            background-color: var(--green-whatsapp); color: var(--white); border: none; padding: 16px 24px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease;
+            background-color: var(--green-whatsapp); color: var(--white); border: none; padding: 16px 24px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease;
         }
         .btn-submit:hover { background-color: var(--green-whatsapp-hover); transform: translateY(-2px); box-shadow: 0 12px 24px rgba(34, 197, 94, 0.45); }
         .btn-submit:disabled { background-color: #334155; color: #94a3b8; cursor: not-allowed; box-shadow: none; }
@@ -735,7 +735,7 @@
                 urlAcusePdf: "" 
             };
 
-            // ✅ SOLUCIÓN CORREGIDA: Destructuración correcta de jsPDF
+            // ✅ SOLUCIÓN CORREGIDA: Generar PDF sin errores
             btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Generando PDF...`;
             
             const { jsPDF } = window.jspdf;
@@ -814,22 +814,44 @@
             // Obtener blob del PDF
             const pdfBlobOutput = doc.output('blob');
 
-            // Subir a Firebase Storage
+            // ✅ SOLUCIÓN CORREGIDA: Subir a Firebase Storage CON MANEJO DE ERRORES
             btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Subiendo expediente digital...`;
             
-            const storagePathRef = storage.ref(`expedientes_postulados/${timestampId}_${curp}.pdf`);
-            const uploadSnapshot = await storagePathRef.put(pdfBlobOutput);
+            let urlDescargaSegura = "";
             
-            const urlDescargaSegura = await uploadSnapshot.ref.getDownloadURL();
+            try {
+                const storagePathRef = storage.ref(`expedientes_postulados/${timestampId}_${curp}.pdf`);
+                const uploadTask = storagePathRef.put(pdfBlobOutput);
+                
+                // Esperar a que la subida se complete
+                await uploadTask;
+                
+                // Obtener la URL de descarga
+                urlDescargaSegura = await storagePathRef.getDownloadURL();
+                console.log("✅ PDF subido exitosamente:", urlDescargaSegura);
+            } catch (uploadError) {
+                console.error("⚠️ Error al subir PDF, continuando sin URL:", uploadError);
+                // Continuar sin URL si hay error
+                urlDescargaSegura = "PDF generado pero no disponible en línea (error al subir)";
+            }
+            
             payloadPostulante.urlAcusePdf = urlDescargaSegura;
 
-            // Guardar en Realtime Database
-            btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Registrando postulación...`;
+            // ✅ GUARDAR EN REALTIME DATABASE
+            btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Registrando postulación en base de datos...`;
             
-            await db.ref(`postulantes/${timestampId}`).set(payloadPostulante);
-            await db.ref('postulantes_count').update({ total: firebase.database.ServerValue.increment(1) });
+            try {
+                await db.ref(`postulantes/${timestampId}`).set(payloadPostulante);
+                await db.ref('postulantes_count').update({ total: firebase.database.ServerValue.increment(1) });
+                console.log("✅ Postulación guardada en BD");
+            } catch (dbError) {
+                console.error("⚠️ Error al guardar en BD:", dbError);
+                throw new Error("Error al registrar la postulación: " + dbError.message);
+            }
 
-            // Preparar mensaje de WhatsApp
+            // ✅ PREPARAR MENSAJE WHATSAPP
+            btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Abriendo WhatsApp...`;
+            
             const mensajeWhatsApp = `¡Hola! Me acabo de postular a una vacante.\n\n` +
                                     `*📌 Detalles de mi Postulación:*\n` +
                                     `• *Folio:* ${timestampId}\n` +
@@ -848,14 +870,18 @@
 
             // Limpiar formulario
             document.getElementById('formPostulacion').reset();
+            
+            // Reestablecer botón ANTES de abrir WhatsApp
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = `<i class="fab fa-whatsapp"></i> Enviar Postulación Formal`;
             
-            // Abrir WhatsApp con el mensaje
-            window.location.href = `https://wa.me/${telefonoDestino}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+            // Pequeño delay y luego abrir WhatsApp
+            setTimeout(() => {
+                window.location.href = `https://wa.me/${telefonoDestino}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+            }, 500);
             
         } catch (err) {
-            console.error("Error en enviarPostulacion:", err);
+            console.error("❌ Error en enviarPostulacion:", err);
             alert(`❌ Error: ${err.message || 'Ocurrió un error al procesar la postulación'}`);
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = `<i class="fab fa-whatsapp"></i> Enviar Postulación Formal`;
