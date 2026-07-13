@@ -514,7 +514,6 @@
         const data = todasLasVacantesEmpresa[key];
         datosVacanteGlobal = data;
         
-        // Corregido aquí: usamos empresaLimpia para evitar fallos de mayúsculas en el contador de visitas
         const pathVisita = `vacantes_detalles/${empresaLimpia}/${vacanteKeyDetectada}/visitas`;
         if (!sessionStorage.getItem(`visita_${empresaLimpia}_${vacanteKeyDetectada}`)) {
             db.ref(pathVisita).transaction((currentValue) => {
@@ -724,7 +723,8 @@
             const timestampId = "WF-" + Math.floor(100000 + Math.random() * 900000);
             const fechaYHoraActual = new Date().toLocaleString();
 
-            const urlAcuseDigital = `https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/acuse.html?folio=${timestampId}`;[cite: 1]
+            // Línea corregida (se removió el texto inválido que rompía la app)
+            const urlAcuseDigital = `https://valdomtec-arch.github.io/bolsa-trabajo-workforce-connect/acuse.html?folio=${timestampId}`;
 
             const payloadPostulante = {
                 id: timestampId,
