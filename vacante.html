@@ -430,14 +430,18 @@
     let puntosLimpiosGlobal = []; 
     const fallbackTelefonoReclutador = "526461974763";
 
-    async function cargarDetallesVacante() {
+   async function cargarDetallesVacante() {
         if (!empresaId) {
             document.getElementById('loading').innerHTML = "❌ Enlace no válido.<br><small>Falta parámetro ?empresa=ID</small>";
             return;
         }
 
+        // 1. Forzamos a minúsculas para que coincida con tu nodo de Firebase (ej: "aspen")
+        const empresaLimpia = empresaId.toLowerCase().trim();
+
         try {
-            db.ref(`vacantes_detalles/${empresaId}`).once('value', async function(snapshot) {
+            // 2. Agregamos el manejador de errores al final de la consulta .once()
+            db.ref(`vacantes_detalles/${empresaLimpia}`).once('value', async function(snapshot) {
                 if (snapshot.exists()) {
                     const dataRaw = snapshot.val();
                     
@@ -456,7 +460,7 @@
                     }
 
                     const primerVacante = todasLasVacantesEmpresa[keys[0]];
-                    document.getElementById('mainEmpresaNombre').innerText = primerVacante.empresaNombre || empresaId.toUpperCase();
+                    document.getElementById('mainEmpresaNombre').innerText = primerVacante.empresaNombre || empresaLimpia.toUpperCase();
                     document.getElementById('mainEmpresaLugar').innerText = primerVacante.lugarOrigen || 'México';
                     document.getElementById('empresaHeaderBox').style.display = 'block';
 
@@ -482,8 +486,18 @@
                     document.getElementById('loading').style.display = 'none';
                     document.getElementById('menuVacantesBox').style.display = 'block';
                 } else {
-                    document.getElementById('loading').innerText = "❌ Empresa no encontrada.";
+                    document.getElementById('loading').innerHTML = `❌ Empresa <strong>"${empresaLimpia}"</strong> no encontrada en la base de datos.`;
                 }
+            }, function(error) {
+                // 3. Esta función se dispara si tus reglas o App Check rechazan la petición
+                console.error("Firebase bloqueó la lectura:", error);
+                document.getElementById('loading').innerHTML = `
+                    <div style="color: #ef4444; padding: 15px;">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.8rem; margin-bottom: 8px;"></i>
+                        <p><strong>Acceso denegado por el servidor</strong></p>
+                        <small style="color: var(--text-muted);">Firebase rechazó la consulta web. Si tus reglas están bien, revisa en tu consola que la pestaña <b>App Check</b> no esté bloqueando las solicitudes públicas.</small>
+                    </div>
+                `;
             });
         } catch (error) {
             document.getElementById('loading').innerText = "❌ Error al conectar al servidor.";
