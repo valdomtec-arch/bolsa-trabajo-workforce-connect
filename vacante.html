@@ -680,6 +680,38 @@
         return { edad: isNaN(edadCalculada) ? "Indistinto" : String(edadCalculada), sexo: sexo };
     }
 
+    // ✅ FUNCIÓN AUXILIAR PARA SUBIR PDF A FIREBASE STORAGE
+    function subirPdfFirebase(pdfBlob, timestampId, curp) {
+        return new Promise((resolve, reject) => {
+            const storageRef = storage.ref(`expedientes_postulados/${timestampId}_${curp}.pdf`);
+            const uploadTask = storageRef.put(pdfBlob);
+
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    // Progreso (opcional)
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('📤 Progreso de carga:', progress + '%');
+                },
+                (error) => {
+                    // Error
+                    console.error("❌ Error al subir PDF:", error);
+                    reject(error);
+                },
+                () => {
+                    // Éxito: Obtener URL de descarga
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        console.log("✅ PDF subido exitosamente. URL:", downloadURL);
+                        resolve(downloadURL);
+                    }).catch((error) => {
+                        console.error("❌ Error al obtener URL:", error);
+                        reject(error);
+                    });
+                }
+            );
+        });
+    }
+
     window.enviarPostulacion = async function(e) {
         e.preventDefault();
         
@@ -735,7 +767,7 @@
                 urlAcusePdf: "" 
             };
 
-            // ✅ SOLUCIÓN CORREGIDA: Generar PDF sin errores
+            // ✅ GENERAR PDF
             btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Generando PDF...`;
             
             const { jsPDF } = window.jspdf;
@@ -814,24 +846,15 @@
             // Obtener blob del PDF
             const pdfBlobOutput = doc.output('blob');
 
-            // ✅ SOLUCIÓN CORREGIDA: Subir a Firebase Storage CON MANEJO DE ERRORES
+            // ✅ SUBIR A FIREBASE STORAGE (CON PROMESA CORRECTA)
             btnSubmit.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Subiendo expediente digital...`;
             
             let urlDescargaSegura = "";
             
             try {
-                const storagePathRef = storage.ref(`expedientes_postulados/${timestampId}_${curp}.pdf`);
-                const uploadTask = storagePathRef.put(pdfBlobOutput);
-                
-                // Esperar a que la subida se complete
-                await uploadTask;
-                
-                // Obtener la URL de descarga
-                urlDescargaSegura = await storagePathRef.getDownloadURL();
-                console.log("✅ PDF subido exitosamente:", urlDescargaSegura);
+                urlDescargaSegura = await subirPdfFirebase(pdfBlobOutput, timestampId, curp);
             } catch (uploadError) {
                 console.error("⚠️ Error al subir PDF, continuando sin URL:", uploadError);
-                // Continuar sin URL si hay error
                 urlDescargaSegura = "PDF generado pero no disponible en línea (error al subir)";
             }
             
