@@ -733,8 +733,8 @@
         };
 
         try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            // ---> AQUÍ SE APLICÓ LA SOLUCIÓN DIRECTA PARA jsPDF <---
+            const doc = new window.jspdf.jsPDF();
             
             doc.setFillColor(11, 20, 38); 
             doc.rect(0, 0, 210, 45, 'F');
